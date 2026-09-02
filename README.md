@@ -109,6 +109,3 @@ Privacy Note: Transmitted email content includes the sender address, subject lin
 
 📄 License
 Distributed under the MIT License. See LICENSE for more information.
-
-
-Would you like help creating a release script to zip this into an installable `.xpi` fil
