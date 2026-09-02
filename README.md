@@ -35,8 +35,10 @@ An AI-powered spam detection and training extension for Mozilla Thunderbird. **O
 ## 📁 Repository Structure
 
 ```text
+OpenAI-Spam-Detector-for-Thunderbird/
 ├── manifest.json
 ├── background.js
+├── README.md
 ├── icons/
 │   ├── icon-48.png
 │   ├── not-spam-green.png
