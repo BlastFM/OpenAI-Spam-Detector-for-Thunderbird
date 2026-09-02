@@ -19,6 +19,19 @@ An AI-powered spam detection and training extension for Mozilla Thunderbird. **O
 
 ---
 
+## Installation
+
+### Method 1: Install from `.xpi` File
+1. Download the latest `.xpi` file from the [Releases](https://github.com/BlastFM/OpenAI-Spam-Detector-for-Thunderbird/releases) page.
+2. Open **Thunderbird** and navigate to **Settings** > **Add-ons and Themes**.
+3. Click the gear icon ⚙️ in the top right and select **Install Add-on From File...**.
+4. Choose the downloaded `.xpi` file and confirm the installation.
+
+### Method 2: Manual Development Build
+1. Clone this repository:
+   ```cmd
+   git clone [https://github.com/BlastFM/OpenAI-Spam-Detector-for-Thunderbird.git](https://github.com/BlastFM/OpenAI-Spam-Detector-for-Thunderbird.git)
+
 ## 📁 Repository Structure
 
 ```text
@@ -34,22 +47,6 @@ An AI-powered spam detection and training extension for Mozilla Thunderbird. **O
     ├── options.js
     ├── popup.html
     └── popup.js
-
-🚀 Installation & Setup
-Manual Installation in Thunderbird
-Download or clone this repository to your local machine:
-
-Bash
-git clone [https://github.com/your-username/openai-spam-detector.git](https://github.com/your-username/openai-spam-detector.git)
-Zip the contents of the root folder (or compile into a .xpi file).
-
-Open Mozilla Thunderbird.
-
-Go to Settings > Add-ons and Themes (or press Ctrl + Shift + A / Cmd + Shift + A).
-
-Click the gear icon (⚙️) in the top-right corner and select Install Add-on From File....
-
-Select your zipped file or .xpi package to complete installation.
 
 ⚙️ Configuration
 Right-click the extension in your Thunderbird Add-ons Manager and select Options (or open the settings page from the notification prompt).
