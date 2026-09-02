@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thunderbird OpenAI Spam Detector Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand">
+        <img src="../icons/icon-48.png" alt="Logo" class="logo-icon">
+        <div>
+          <h1>Thunderbird OpenAI Spam Detector</h1>
+          <p class="subtitle">AI-powered email filtering & custom training</p>
+        </div>
+      </div>
+      <div id="status" class="status-badge hidden"></div>
+    </header>
+
+    <main class="app-main">
+      <!-- Left Column: Configuration Settings -->
+      <section class="card settings-card">
+        <h2>Configuration</h2>
+        
+        <div class="form-group">
+          <label for="apiKey">OpenAI API Key</label>
+          <div class="input-with-button">
+            <input type="password" id="apiKey" placeholder="sk-..." autocomplete="off">
+            <button id="testKey" class="btn btn-secondary" title="Test Key Connection">
+              <span>Test Key</span>
+              <span class="btn-spinner hidden"></span>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="model">OpenAI Model</label>
+          <select id="model">
+            <option value="gpt-4o-mini">gpt-4o-mini (Recommended - Fast & Cheap)</option>
+            <option value="gpt-4o">gpt-4o (High Accuracy)</option>
+            <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="customPrompt">Custom Classification Prompt Rules</label>
+          <textarea id="customPrompt" rows="4" placeholder="e.g., Always treat emails containing invoices from 'acme.com' as HAM. Mark newsletters with 'unsubscribe' links as SPAM."></textarea>
+          <span class="field-hint">Add specific rules for the AI to follow during analysis.</span>
+        </div>
+
+        <div class="form-actions">
+          <button id="save" class="btn btn-primary">Save Settings</button>
+        </div>
+      </section>
+
+      <!-- Right Column: Logs & Training Memory -->
+      <section class="card logs-card">
+        <div class="logs-header">
+          <h2>Detected Spam Log</h2>
+          <button id="clearSpamLog" class="btn btn-orange-outline btn-sm">Clear Log</button>
+        </div>
+        <div id="spamLogContainer" class="log-container">
+          <div class="empty-state">No spam detected yet.</div>
+        </div>
+
+        <hr class="divider">
+
+        <div class="logs-header">
+          <h2>Active AI Training Memory (Not Spam)</h2>
+          <button id="clearFPLog" class="btn btn-orange-outline btn-sm">Clear Memory</button>
+        </div>
+        <div id="falsePositivesContainer" class="log-container">
+          <div class="empty-state">No false positives recorded.</div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>
