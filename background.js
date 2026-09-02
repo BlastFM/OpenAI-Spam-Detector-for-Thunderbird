@@ -27,7 +27,7 @@ function setupContextMenus() {
 
 // Setup periodic alarm (runs every 5 minutes)
 function setupPeriodicScan() {
-  messenger.alarms.create("periodicMailScan", { periodInMinutes: 5 });
+  messenger.alarms.create("periodicMailScan", { periodInMinutes: 1 });
 }
 
 messenger.runtime.onInstalled.addListener(() => {
