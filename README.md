@@ -1,34 +1,25 @@
-# Thunderbird OpenAI Spam Detector
+# OpenAI Spam Detector for Thunderbird
 
-A powerful Mozilla Thunderbird Mail Extension that uses OpenAI's GPT models to automatically detect spam, filter junk emails, and learn from user feedback.
+![Extension Version](https://img.shields.io/badge/version-1.3-blue.svg)
+![Thunderbird](https://img.shields.io/badge/Thunderbird-115.0%2B-58A6FF.svg?logo=thunderbird&logoColor=white)
+![Manifest Version](https://img.shields.io/badge/manifest-v3-green.svg)
+![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)
 
-[![GitHub license](https://img.shields.io/github/license/BlastFM/OpenAI-Spam-Detector-for-Thunderbird)](https://github.com/BlastFM/OpenAI-Spam-Detector-for-Thunderbird)
-[![GitHub release](https://img.shields.io/github/v/release/BlastFM/OpenAI-Spam-Detector-for-Thunderbird)](https://github.com/BlastFM/OpenAI-Spam-Detector-for-Thunderbird/releases)
-
----
-
-## Features
-
-* **AI-Powered Email Classification:** Automatically screens incoming mail using OpenAI models (e.g., `gpt-4o-mini`).
-* **Origin-Tracking Restores:** Marking an email as "Not Spam" moves it back to its original folder (Inbox, custom folders, etc.), rather than forcing everything into the main Inbox.
-* **Smart Training & Overrides:** Context-menu options allow training the AI on false positives with dynamic context injection into system prompts.
-* **Automatic Deduplication:** Clean log management prevents duplicate entries in both the *Detected Spam Log* and *Active AI Training Memory*.
-* **Customizable Prompts:** Define custom system prompt rules directly from the settings page to tweak detection aggressiveness.
+An AI-powered spam detection and training extension for Mozilla Thunderbird. **OpenAI Spam Detector** utilizes OpenAI's Chat Completions API (such as `gpt-4o-mini` and `gpt-4o`) to classify incoming emails, move unwanted messages to your deleted folder automatically, and continuously adapt to your preferences via few-shot context learning.
 
 ---
 
-## Installation
+## 🌟 Key Features
 
-### Method 1: Install from `.xpi` File
-1. Download the latest `.xpi` file from the [Releases](https://github.com/BlastFM/OpenAI-Spam-Detector-for-Thunderbird/releases) page.
-2. Open **Thunderbird** and navigate to **Settings** > **Add-ons and Themes**.
-3. Click the gear icon ⚙️ in the top right and select **Install Add-on From File...**.
-4. Choose the downloaded `.xpi` file and confirm the installation.
+* **Automated AI Spam Classification**: Scans incoming mail synchronously and evaluates content against OpenAI models.
+* **Dynamic Context Learning (Few-Shot Training)**:
+  * **Spam Training**: Remembers past user-flagged spam and uses example snippets to detect similar future spam.
+  * **False Positive Prevention**: Remembers emails marked as "Not Spam" (HAM) to ensure legitimate senders or formats aren't flagged again.
+* **Custom Prompting Rules**: Add user-defined heuristics directly into the classification prompt (e.g., *"Always allow invoice emails from acme.com"*).
+* **Interactive Desktop Notifications**: Provides instant alerts when spam is intercepted with a one-click **Undo / Restore** button.
+* **Modern Dashboard**: Features a responsive options page with light/dark theme support, API key validation testing, and active memory controls.
 
-### Method 2: Manual Development Build
-1. Clone this repository:
-   ```cmd
-   git clone [https://github.com/BlastFM/OpenAI-Spam-Detector-for-Thunderbird.git](https://github.com/BlastFM/OpenAI-Spam-Detector-for-Thunderbird.git)
+---
 
 ## 📁 Repository Structure
 
