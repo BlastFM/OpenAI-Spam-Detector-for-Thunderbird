@@ -25,12 +25,27 @@ function setupContextMenus() {
   }).catch(err => console.error("[Thunderbird OpenAI Spam Detector] Context Menu error:", err));
 }
 
+// Setup periodic alarm (runs every 5 minutes)
+function setupPeriodicScan() {
+  messenger.alarms.create("periodicMailScan", { periodInMinutes: 5 });
+}
+
 messenger.runtime.onInstalled.addListener(() => {
   setupContextMenus();
+  setupPeriodicScan();
 });
 
 messenger.runtime.onStartup.addListener(() => {
   setupContextMenus();
+  setupPeriodicScan();
+});
+
+// Periodic alarm handler: Scans all non-trash folders across all accounts
+messenger.alarms.onAlarm.addListener(async (alarm) => {
+  if (alarm.name === "periodicMailScan") {
+    console.log("[Thunderbird OpenAI Spam Detector] Running periodic scan across all accounts...");
+    await scanAllNonTrashFolders();
+  }
 });
 
 // Context Menu Click Listener
@@ -49,8 +64,14 @@ messenger.menus.onClicked.addListener(async (info, tab) => {
   }
 });
 
-// Automatic New Mail Classifier
+// Immediate event-based listener for standard new incoming mail
 messenger.messages.onNewMailReceived.addListener(async (folder, messages) => {
+  if (isTrashFolder(folder)) return;
+  await processMessageList(messages.messages);
+});
+
+// Core logic to process a list of messages against OpenAI
+async function processMessageList(messages) {
   const { apiKey, model, customPrompt } = await messenger.storage.sync.get(['apiKey', 'model', 'customPrompt']);
   
   if (!apiKey) {
@@ -61,9 +82,13 @@ messenger.messages.onNewMailReceived.addListener(async (folder, messages) => {
   const activeModel = model || 'gpt-4o-mini';
   const { falsePositives } = await messenger.storage.local.get({ falsePositives: [] });
 
-  for await (let message of messages.messages) {
+  for (let message of messages) {
     try {
       const fullMessage = await messenger.messages.get(message.id);
+      
+      // Skip messages already in trash or already processed
+      if (isTrashFolder(fullMessage.folder)) continue;
+
       const messageBody = await messenger.messages.getFull(message.id);
       
       let bodyText = "";
@@ -84,14 +109,61 @@ messenger.messages.onNewMailReceived.addListener(async (folder, messages) => {
       });
 
       if (isSpam) {
-        console.log(`[Thunderbird OpenAI Spam Detector] Spam detected: "${fullMessage.subject}"`);
+        console.log(`[Thunderbird OpenAI Spam Detector] Spam detected in "${fullMessage.folder.name}": "${fullMessage.subject}"`);
         await handleSpamMessage(fullMessage, bodyText);
       }
     } catch (err) {
       console.error("[Thunderbird OpenAI Spam Detector] Error processing message:", err);
     }
   }
-});
+}
+
+// Recursively scan all accounts & non-trash folders for recent unread or unclassified messages
+async function scanAllNonTrashFolders() {
+  try {
+    const accounts = await messenger.accounts.list();
+    for (let account of accounts) {
+      await checkFoldersRecursively(account.folders);
+    }
+  } catch (err) {
+    console.error("[Thunderbird OpenAI Spam Detector] Periodic scan error:", err);
+  }
+}
+
+async function checkFoldersRecursively(folders) {
+  for (let folder of folders) {
+    // Check folder unless it's a Trash/Deleted/Bin variant
+    if (!isTrashFolder(folder)) {
+      try {
+        // Query unread messages in non-trash folders (including Junk/Spam/Inbox/Subfolders)
+        const page = await messenger.messages.query({ folder: folder, unread: true });
+        if (page.messages && page.messages.length > 0) {
+          await processMessageList(page.messages);
+        }
+      } catch (e) {
+        console.warn(`[Thunderbird OpenAI Spam Detector] Could not query folder "${folder.name}":`, e);
+      }
+    }
+
+    // Traverse nested subfolders
+    if (folder.subFolders && folder.subFolders.length > 0) {
+      await checkFoldersRecursively(folder.subFolders);
+    }
+  }
+}
+
+function isTrashFolder(folder) {
+  if (!folder) return false;
+  const name = (folder.name || "").toLowerCase();
+  const type = (folder.type || "").toLowerCase();
+  
+  return type === 'trash' || 
+         name === 'trash' || 
+         name === 'deleted' || 
+         name === 'deleted items' || 
+         name === 'bin' || 
+         name === 'recycle bin';
+}
 
 function extractTextFromParts(parts) {
   let text = "";
@@ -162,7 +234,6 @@ async function handleSpamMessage(messageHeader, fullBody) {
     originFolderId: originFolderId
   };
 
-  // Remove duplicate entries with matching ID or matching author + subject
   const deduplicatedLog = spamLog.filter(item => 
     item.id !== newEntry.id && !(item.author === newEntry.author && item.subject === newEntry.subject)
   );
@@ -215,7 +286,6 @@ async function manualMarkAsNotSpam(messageId) {
       dateAdded: new Date().toISOString()
     };
 
-    // Remove duplicate entries from falsePositives memory
     const deduplicatedFP = falsePositives.filter(item => 
       item.id !== newFP.id && !(item.author === newFP.author && item.subject === newFP.subject)
     );
@@ -238,7 +308,7 @@ async function manualMarkAsNotSpam(messageId) {
 
 function findTrashFolder(folders) {
   for (let f of folders) {
-    if (f.type === 'trash' || f.name.toLowerCase() === 'trash' || f.name.toLowerCase() === 'deleted' || f.name.toLowerCase() === 'deleted items') return f;
+    if (isTrashFolder(f)) return f;
     if (f.subFolders && f.subFolders.length > 0) {
       const found = findTrashFolder(f.subFolders);
       if (found) return found;
