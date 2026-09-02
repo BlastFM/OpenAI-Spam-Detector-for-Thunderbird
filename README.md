@@ -34,7 +34,8 @@ An AI-powered spam detection and training extension for Mozilla Thunderbird. **O
     ├── options.css
     ├── options.html
     ├── options.js
-    └── popup.html
+    ├── popup.html
+    └── popup.js
 
 🚀 Installation & Setup
 Manual Installation in Thunderbird
