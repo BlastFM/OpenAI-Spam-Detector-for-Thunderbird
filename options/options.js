@@ -90,8 +90,13 @@ async function markLogItemAsNotSpam(index) {
   if (!item) return;
 
   const { falsePositives } = await messenger.storage.local.get({ falsePositives: [] });
-  const updatedFP = [item, ...falsePositives].slice(0, 20);
   
+  // Deduplicate before adding to falsePositives list
+  const deduplicatedFP = falsePositives.filter(fp => 
+    fp.id !== item.id && !(fp.author === item.author && fp.subject === item.subject)
+  );
+  
+  const updatedFP = [item, ...deduplicatedFP].slice(0, 20);
   spamLog.splice(index, 1);
 
   await messenger.storage.local.set({

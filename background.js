@@ -151,7 +151,6 @@ async function classifyEmailWithOpenAI({ author, subject, body, apiKey, model, c
 async function handleSpamMessage(messageHeader, fullBody) {
   const { spamLog } = await messenger.storage.local.get({ spamLog: [] });
 
-  // Store origin folder so it can be restored to its exact original location if needed
   const originFolderId = messageHeader.folder ? messageHeader.folder.id : null;
 
   const newEntry = {
@@ -163,7 +162,12 @@ async function handleSpamMessage(messageHeader, fullBody) {
     originFolderId: originFolderId
   };
 
-  const updatedLog = [newEntry, ...spamLog].slice(0, 50);
+  // Remove duplicate entries with matching ID or matching author + subject
+  const deduplicatedLog = spamLog.filter(item => 
+    item.id !== newEntry.id && !(item.author === newEntry.author && item.subject === newEntry.subject)
+  );
+
+  const updatedLog = [newEntry, ...deduplicatedLog].slice(0, 50);
   await messenger.storage.local.set({ spamLog: updatedLog });
 
   try {
@@ -187,7 +191,6 @@ async function manualMarkAsNotSpam(messageId) {
     const { spamLog } = await messenger.storage.local.get({ spamLog: [] });
     const { falsePositives } = await messenger.storage.local.get({ falsePositives: [] });
 
-    // Check if we have an originFolderId recorded in the spam log
     const logItem = spamLog.find(item => item.id === messageId);
     let targetFolder = null;
 
@@ -199,13 +202,11 @@ async function manualMarkAsNotSpam(messageId) {
       }
     }
 
-    // Fallback to Inbox if origin folder isn't found
     if (!targetFolder) {
       const account = await messenger.accounts.get(messageHeader.folder.accountId);
       targetFolder = findInboxFolder(account.folders);
     }
 
-    // Update AI Training Memory
     const newFP = {
       id: messageHeader.id,
       author: messageHeader.author,
@@ -214,7 +215,12 @@ async function manualMarkAsNotSpam(messageId) {
       dateAdded: new Date().toISOString()
     };
 
-    const updatedFP = [newFP, ...falsePositives].slice(0, 20);
+    // Remove duplicate entries from falsePositives memory
+    const deduplicatedFP = falsePositives.filter(item => 
+      item.id !== newFP.id && !(item.author === newFP.author && item.subject === newFP.subject)
+    );
+
+    const updatedFP = [newFP, ...deduplicatedFP].slice(0, 20);
     const updatedSpamLog = spamLog.filter(item => item.id !== messageId);
 
     await messenger.storage.local.set({
