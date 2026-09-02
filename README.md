@@ -48,24 +48,16 @@ An AI-powered spam detection and training extension for Mozilla Thunderbird. **O
     ├── popup.html
     └── popup.js
 
-⚙️ Configuration
-Right-click the extension in your Thunderbird Add-ons Manager and select Options (or open the settings page from the notification prompt).
+⚙️ Setup & Configuration
+Open Thunderbird and click the extension icon in the toolbar, or open Add-ons and Themes > OpenAI Spam Detector > Options.
 
-Enter your OpenAI API Key (sk-...).
+Input your OpenAI API Key.
 
-Click Test Key to verify connection and key validity.
+Select your desired OpenAI Model (default: gpt-4o-mini).
 
-Select your preferred OpenAI Model:
+(Optional) Add custom prompts to refine classification logic.
 
-gpt-4o-mini (Recommended): Fast, lightweight, and cost-effective for high-volume email processing.
-
-gpt-4o: Maximum classification accuracy for complex edge cases.
-
-gpt-3.5-turbo: Legacy support.
-
-(Optional) Add Custom Classification Prompt Rules to refine how the AI handles specific email patterns.
-
-Click Save Settings.
+Click Test API Key to verify connection, then click Save.
 
 💡 How It Works
 Context Menu Training
