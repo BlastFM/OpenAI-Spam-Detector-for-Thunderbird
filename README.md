@@ -11,13 +11,11 @@ An AI-powered spam detection and training extension for Mozilla Thunderbird. **O
 
 ## 🌟 Key Features
 
-* **Automated AI Spam Classification**: Scans incoming mail synchronously and evaluates content against OpenAI models.
-* **Dynamic Context Learning (Few-Shot Training)**:
-  * **Spam Training**: Remembers past user-flagged spam and uses example snippets to detect similar future spam.
-  * **False Positive Prevention**: Remembers emails marked as "Not Spam" (HAM) to ensure legitimate senders or formats aren't flagged again.
-* **Custom Prompting Rules**: Add user-defined heuristics directly into the classification prompt (e.g., *"Always allow invoice emails from acme.com"*).
-* **Interactive Desktop Notifications**: Provides instant alerts when spam is intercepted with a one-click **Undo / Restore** button.
-* **Modern Dashboard**: Features a responsive options page with light/dark theme support, API key validation testing, and active memory controls.
+* **AI-Powered Email Classification:** Automatically screens incoming mail using OpenAI models (e.g., `gpt-4o-mini`).
+* **Origin-Tracking Restores:** Marking an email as "Not Spam" moves it back to its original folder (Inbox, custom folders, etc.), rather than forcing everything into the main Inbox.
+* **Smart Training & Overrides:** Context-menu options allow training the AI on false positives with dynamic context injection into system prompts.
+* **Automatic Deduplication:** Clean log management prevents duplicate entries in both the *Detected Spam Log* and *Active AI Training Memory*.
+* **Customizable Prompts:** Define custom system prompt rules directly from the settings page to tweak detection aggressiveness.
 
 ---
 
