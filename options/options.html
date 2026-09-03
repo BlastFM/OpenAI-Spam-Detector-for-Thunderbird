@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Thunderbird OpenAI Spam Detector Settings</title>
   <link rel="stylesheet" href="options.css">
+  <script src="options.js" defer></script>
 </head>
 <body>
   <div class="app-container">
@@ -58,9 +59,20 @@
 
       <!-- Right Column: Logs & Training Memory -->
       <section class="card logs-card">
+        <!-- Top Section: Detected Spam Log -->
         <div class="logs-header">
           <h2>Detected Spam Log</h2>
-          <button id="clearSpamLog" class="btn btn-orange-outline btn-sm">Clear Log</button>
+          <div class="header-actions">
+            <button id="exportBackup" type="button" class="btn btn-green-outline btn-sm">Export Backup</button>
+            
+            <!-- Native label wrapping transparent input bypasses Gecko click security restrictions -->
+            <label for="importFileInput" class="btn btn-green-outline btn-sm" style="cursor: pointer; margin: 0;">
+              Import Backup
+              <input type="file" id="importFileInput" accept=".json,application/json" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0;">
+            </label>
+
+            <button id="clearSpamLog" type="button" class="btn btn-orange-outline btn-sm">Clear Log</button>
+          </div>
         </div>
         <div id="spamLogContainer" class="log-container">
           <div class="empty-state">No spam detected yet.</div>
@@ -68,9 +80,12 @@
 
         <hr class="divider">
 
+        <!-- Bottom Section: Active AI Training Memory -->
         <div class="logs-header">
           <h2>Active AI Training Memory (Not Spam)</h2>
-          <button id="clearFPLog" class="btn btn-orange-outline btn-sm">Clear Memory</button>
+          <div class="header-actions">
+            <button id="clearFPLog" type="button" class="btn btn-orange-outline btn-sm">Clear Memory</button>
+          </div>
         </div>
         <div id="falsePositivesContainer" class="log-container">
           <div class="empty-state">No false positives recorded.</div>
@@ -78,7 +93,5 @@
       </section>
     </main>
   </div>
-
-  <script src="options.js"></script>
 </body>
 </html>
