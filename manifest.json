@@ -4,7 +4,8 @@
   "version": "1.0.0",
   "description": "AI-powered email filtering & custom training for Mozilla Thunderbird.",
   "permissions": [
-    "storage",
+   "storage",
+    "downloads",
     "messagesRead",
     "messagesMove",
     "accountsRead",
