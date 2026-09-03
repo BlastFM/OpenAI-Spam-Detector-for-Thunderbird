@@ -232,3 +232,67 @@ function showStatus(text, type) {
     status.style.display = 'none';
   }, type === 'error' ? 5000 : 3000);
 }
+// Pure JS Backup & Restore handlers (No HTML/CSS changes needed)
+document.addEventListener("keydown", async (event) => {
+  const isCmdOrCtrl = event.ctrlKey || event.metaKey;
+  const api = typeof browser !== "undefined" ? browser : messenger;
+
+  // 1. EXPORT BACKUP: Press Ctrl + Shift + E (or Cmd + Shift + E)
+  if (isCmdOrCtrl && event.shiftKey && event.key.toLowerCase() === "e") {
+    event.preventDefault();
+    try {
+      const allData = await api.storage.local.get(null);
+      const jsonStr = JSON.stringify(allData, null, 2);
+      const blob = new Blob([jsonStr], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `spam_detector_backup_${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      alert("Backup successfully exported!");
+    } catch (err) {
+      console.error("Export failed:", err);
+      alert("Failed to export storage backup.");
+    }
+  }
+
+  // 2. IMPORT BACKUP: Press Ctrl + Shift + I (or Cmd + Shift + I)
+  if (isCmdOrCtrl && event.shiftKey && event.key.toLowerCase() === "i") {
+    event.preventDefault();
+    
+    // Dynamically create an off-screen file picker
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = ".json";
+
+    fileInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async (uploadEvent) => {
+        try {
+          const importedData = JSON.parse(uploadEvent.target.result);
+          if (typeof importedData !== "object" || importedData === null) {
+            throw new Error("Invalid JSON structure");
+          }
+
+          await api.storage.local.set(importedData);
+          alert("Backup restored successfully! Reloading settings page...");
+          window.location.reload();
+        } catch (err) {
+          console.error("Import failed:", err);
+          alert("Failed to import backup. Please make sure it's a valid JSON file.");
+        }
+      };
+      reader.readAsText(file);
+    });
+
+    fileInput.click();
+  }
+});
