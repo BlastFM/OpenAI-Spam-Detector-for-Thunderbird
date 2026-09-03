@@ -275,17 +275,16 @@ input:focus, select:focus, textarea:focus {
 
 /* Update this block in options.css */
 .log-container {
-  height: 250px;            /* Fix explicitly to prevent vertical column stretching */
-  max-height: 250px;
-  overflow-y: auto;         /* Enable vertical scrolling */
-  overflow-x: hidden;       /* Prevent unwanted horizontal overflow */
+  max-height: 280px;        /* Sets scrolling threshold without forcing child compression */
+  overflow-y: auto;         /* Enables vertical scrollbar */
+  overflow-x: hidden;       /* Prevents horizontal layout breaks */
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  scroll-behavior: smooth;
-  padding-right: 4px;
+  gap: 12px;                /* Adds healthy breathing room between cards */
+  padding: 4px 6px 4px 2px; /* Leaves padding for scrollbar & glowing borders */
 }
 
+/* Custom Scrollbars with Light & Dark Mode Support */
 .log-container::-webkit-scrollbar {
   width: 6px;
 }
@@ -300,13 +299,23 @@ input:focus, select:focus, textarea:focus {
   border-radius: 4px;
 }
 
+.log-container::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Firefox Native Theme Support */
+.log-container {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) var(--bg-color);
+}
+
 .log-card-item {
   background: var(--bg-color);
   border: 1px solid var(--border-color);
   border-radius: var(--radius);
-  padding: 10px;
+  padding: 12px;            /* Gives inside content ample vertical room */
   min-width: 0;
-  overflow: hidden;
+  flex-shrink: 0;           /* CRITICAL: Prevents cards from getting vertically squished */
   transition: all 0.2s ease-in-out;
 }
 
@@ -418,21 +427,9 @@ input:focus, select:focus, textarea:focus {
 .hidden {
   display: none !important;
 }
-@keyframes pulseGlow {
-  0% {
-    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
-  }
-  70% {
-    box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
-  }
-}
-
-.log-card-item.newest-entry {
-  border-color: #22c55e;
-  background-color: rgba(34, 197, 94, 0.05);
-  animation: slideInDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards,
-             pulseGlow 1.5s ease-out 1;
+/* Header button group alignment */
+.header-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
 }
