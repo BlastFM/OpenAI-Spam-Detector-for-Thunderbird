@@ -11,13 +11,37 @@ An AI-powered spam detection and training extension for Mozilla Thunderbird. **O
 
 ## 🌟 Key Features
 
-* **Automated AI Spam Classification**: Scans incoming mail synchronously and evaluates content against OpenAI models.
-* **Dynamic Context Learning (Few-Shot Training)**:
-  * **Spam Training**: Remembers past user-flagged spam and uses example snippets to detect similar future spam.
-  * **False Positive Prevention**: Remembers emails marked as "Not Spam" (HAM) to ensure legitimate senders or formats aren't flagged again.
-* **Custom Prompting Rules**: Add user-defined heuristics directly into the classification prompt (e.g., *"Always allow invoice emails from acme.com"*).
-* **Interactive Desktop Notifications**: Provides instant alerts when spam is intercepted with a one-click **Undo / Restore** button.
-* **Modern Dashboard**: Features a responsive options page with light/dark theme support, API key validation testing, and active memory controls.
+- **Automated Spam Detection**: Leverages OpenAI models (`gpt-4o-mini`, `gpt-4o`) to classify incoming messages.
+- **Two-Pane History Dashboard**:
+  - **Detected Spam Log**: Keeps track of flagged spam items.
+  - **AI Training Memory**: Stores non-spam classifications to refine filter accuracy.
+- **Scrollable Log Views**: Vertical overflow containers prevent layout disruption regardless of log entry volume.
+- **JSON Backup & Restore**: Export and import your storage configuration and logs at any time.
+
+---
+
+## ⌨️ Backup & Restore (Settings Shortcuts)
+
+To maintain UI performance and prevent layout reflows in Thunderbird, storage backups can be exported or imported directly from the **Settings Page** using native keyboard shortcuts:
+
+| Action | Shortcut (Windows/Linux) | Shortcut (Mac) | Description |
+| :--- | :--- | :--- | :--- |
+| **Export Backup** | `Ctrl` + `Shift` + `E` | `Cmd` + `Shift` + `E` | Downloads a `.json` backup file containing all local logs and API configurations. |
+| **Import Backup** | `Ctrl` + `Shift` + `I` | `Cmd` + `Shift` + `I` | Opens a file picker to restore extension storage from a previously exported `.json` file. |
+
+> **Note**: These shortcuts must be pressed while active on the **OpenAI Spam Detector Settings** tab.
+
+---
+
+## 🚀 Installation & Release Packaging
+
+Open Thunderbird:
+
+Go to Tools > Add-ons and Themes.
+
+Click the ⚙️ (Gear Icon) and select Install Add-on From File...
+
+Select openai-spam-detector-v1.1.0.xpi.
 
 ---
 
