@@ -35,17 +35,13 @@ To maintain UI performance and prevent layout reflows in Thunderbird, storage ba
 
 ## 🚀 Installation & Release Packaging
 
-1. Clone the repository and navigate to the root directory:
-   ```bash
-   git clone [https://github.com/your-username/openai-spam-detector.git](https://github.com/your-username/openai-spam-detector.git)
+Open Thunderbird:
 
-* **Automated AI Spam Classification**: Scans incoming mail synchronously and evaluates content against OpenAI models.
-* **Dynamic Context Learning (Few-Shot Training)**:
-  * **Spam Training**: Remembers past user-flagged spam and uses example snippets to detect similar future spam.
-  * **False Positive Prevention**: Remembers emails marked as "Not Spam" (HAM) to ensure legitimate senders or formats aren't flagged again.
-* **Custom Prompting Rules**: Add user-defined heuristics directly into the classification prompt (e.g., *"Always allow invoice emails from acme.com"*).
-* **Interactive Desktop Notifications**: Provides instant alerts when spam is intercepted with a one-click **Undo / Restore** button.
-* **Modern Dashboard**: Features a responsive options page with light/dark theme support, API key validation testing, and active memory controls.
+Go to Tools > Add-ons and Themes.
+
+Click the ⚙️ (Gear Icon) and select Install Add-on From File...
+
+Select openai-spam-detector-v1.1.0.xpi.
 
 ---
 
