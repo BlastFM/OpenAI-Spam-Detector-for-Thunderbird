@@ -9,18 +9,11 @@ An AI-powered spam detection and training extension for Mozilla Thunderbird. **O
 
 ---
 
-## 🚀 v1.2.0 — UI Layout Stabilization & JSON Storage Backup
-This update focuses on core dashboard stability, vertical overflow control for log containers, and a zero-UI backup and restore system designed to prevent layout reflows in Thunderbird.
+## 🚀 v1.2.0 — Fixed Log Scrolling & Zero-UI Storage BackupThis release stabilizes the two-column options layout, locks the vertical scrolling behavior for both log containers to prevent display reflows, and provides native keyboard shortcuts for log backup and restoration.🚀 New FeaturesZero-UI JSON Backup & Restore: Added shortcut handlers (Ctrl/Cmd + Shift + E for export, Ctrl/Cmd + Shift + I for import) to backup and restore storage data safely without DOM modifications.
 
-## 🚀 New Features
-Zero-UI JSON Backup & Restore: Added keyboard shortcuts (Ctrl/Cmd + Shift + E to Export, Ctrl/Cmd + Shift + I to Import) on the Settings page to safely manage local log data without altering HTML layout structures.
+## 🐛 Bug Fixes & Layout ImprovementsFixed Column Scrolling (overflow-y: auto): Locked the Detected Spam Log and Active AI Training Memory containers to a fixed 250px height with strict vertical overflow rules (overflow-x: hidden). This enables smooth scrolling without stretching cards or breaking the two-column dashboard structure.  Prevented Grid Layout Shifts: Resolved flexible container expansion in Thunderbird's rendering engine by locking log height bounds and preserving the responsive auto-fit grid.
 
-## 🐛 Bug Fixes & Stability
-Prevented Dashboard Grid Collapse: Replaced flexible container structures with a fixed layout to prevent the two-pane horizontal view from stacking vertically in Thunderbird's Gecko engine.
-
-Resolved Container Reflows: Locked log display areas to a fixed height (380px) with vertical overflow scrolling (overflow-y: auto), preventing layout shifts as log entries grow.
-
-Shielded Extension Storage Access: Bypassed UI-heavy DOM elements in favor of keyboard handlers to give users full browser.storage.local backup and restore capabilities cleanly.
+## 📦 Assetsopenai-spam-detector-v1.2.0.xpi: Main extension package. Fully compatible with Thunderbird WebExtension API standards.Installation Note: Install via Thunderbird Add-ons Manager (Tools > Add-ons and Themes > ⚙️ > Install Add-on From File...).
 
 ## 🌟 Key Features
 
