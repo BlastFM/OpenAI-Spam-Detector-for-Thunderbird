@@ -11,6 +11,34 @@ An AI-powered spam detection and training extension for Mozilla Thunderbird. **O
 
 ## 🌟 Key Features
 
+- **Automated Spam Detection**: Leverages OpenAI models (`gpt-4o-mini`, `gpt-4o`) to classify incoming messages.
+- **Two-Pane History Dashboard**:
+  - **Detected Spam Log**: Keeps track of flagged spam items.
+  - **AI Training Memory**: Stores non-spam classifications to refine filter accuracy.
+- **Scrollable Log Views**: Vertical overflow containers prevent layout disruption regardless of log entry volume.
+- **JSON Backup & Restore**: Export and import your storage configuration and logs at any time.
+
+---
+
+## ⌨️ Backup & Restore (Settings Shortcuts)
+
+To maintain UI performance and prevent layout reflows in Thunderbird, storage backups can be exported or imported directly from the **Settings Page** using native keyboard shortcuts:
+
+| Action | Shortcut (Windows/Linux) | Shortcut (Mac) | Description |
+| :--- | :--- | :--- | :--- |
+| **Export Backup** | `Ctrl` + `Shift` + `E` | `Cmd` + `Shift` + `E` | Downloads a `.json` backup file containing all local logs and API configurations. |
+| **Import Backup** | `Ctrl` + `Shift` + `I` | `Cmd` + `Shift` + `I` | Opens a file picker to restore extension storage from a previously exported `.json` file. |
+
+> **Note**: These shortcuts must be pressed while active on the **OpenAI Spam Detector Settings** tab.
+
+---
+
+## 🚀 Installation & Release Packaging
+
+1. Clone the repository and navigate to the root directory:
+   ```bash
+   git clone [https://github.com/your-username/openai-spam-detector.git](https://github.com/your-username/openai-spam-detector.git)
+
 * **Automated AI Spam Classification**: Scans incoming mail synchronously and evaluates content against OpenAI models.
 * **Dynamic Context Learning (Few-Shot Training)**:
   * **Spam Training**: Remembers past user-flagged spam and uses example snippets to detect similar future spam.
