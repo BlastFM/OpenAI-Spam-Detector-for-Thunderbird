@@ -9,25 +9,18 @@ An AI-powered spam detection and training extension for Mozilla Thunderbird. **O
 
 ---
 
-🚀 v1.2.0 — UI Layout Stabilization & JSON Storage Backup
+## 🚀 v1.2.0 — UI Layout Stabilization & JSON Storage Backup
 This update focuses on core dashboard stability, vertical overflow control for log containers, and a zero-UI backup and restore system designed to prevent layout reflows in Thunderbird.
 
-🚀 New Features
+## 🚀 New Features
 Zero-UI JSON Backup & Restore: Added keyboard shortcuts (Ctrl/Cmd + Shift + E to Export, Ctrl/Cmd + Shift + I to Import) on the Settings page to safely manage local log data without altering HTML layout structures.
 
-🐛 Bug Fixes & Stability
+## 🐛 Bug Fixes & Stability
 Prevented Dashboard Grid Collapse: Replaced flexible container structures with a fixed layout to prevent the two-pane horizontal view from stacking vertically in Thunderbird's Gecko engine.
 
 Resolved Container Reflows: Locked log display areas to a fixed height (380px) with vertical overflow scrolling (overflow-y: auto), preventing layout shifts as log entries grow.
 
 Shielded Extension Storage Access: Bypassed UI-heavy DOM elements in favor of keyboard handlers to give users full browser.storage.local backup and restore capabilities cleanly.
-
-📦 Assets
-openai-spam-detector-v1.2.0.xpi: Main extension package. Compatible with Thunderbird WebExtension API standards.
-
-Installation Note: Install via Thunderbird Add-ons Manager (Tools > Add-ons and Themes > ⚙️ > Install Add-on From File...).
-
-Source Code (.zip / .tar.gz): Complete repository snapshot including automated release workflows and updated documentation.
 
 ## 🌟 Key Features
 
