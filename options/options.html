@@ -55,30 +55,45 @@
           <button id="save" class="btn btn-primary">Save Settings</button>
         </div>
       </section>
+<!-- Right Column: Logs & Training Memory -->
+<section class="card logs-card">
+  <!-- Top Section: Detected Spam Log -->
+  <div class="logs-header">
+    <h2>Detected Spam Log</h2>
+    
+<div class="header-actions">
+  <button id="exportBackup" type="button" class="btn btn-green-outline btn-sm">Export Backup</button>
+  
+  <!-- Native label wrapping transparent input bypasses Gecko click security restrictions -->
+  <label for="importFileInput" class="btn btn-green-outline btn-sm" style="cursor: pointer; margin: 0;">
+    Import Backup
+    <input type="file" id="importFileInput" accept=".json,application/json" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0;">
+  </label>
 
-      <!-- Right Column: Logs & Training Memory -->
-      <section class="card logs-card">
-        <div class="logs-header">
-          <h2>Detected Spam Log</h2>
-          <button id="clearSpamLog" class="btn btn-orange-outline btn-sm">Clear Log</button>
-        </div>
-        <div id="spamLogContainer" class="log-container">
-          <div class="empty-state">No spam detected yet.</div>
-        </div>
+  <button id="clearSpamLog" type="button" class="btn btn-orange-outline btn-sm">Clear Log</button>
+</div>
 
-        <hr class="divider">
-
-        <div class="logs-header">
-          <h2>Active AI Training Memory (Not Spam)</h2>
-          <button id="clearFPLog" class="btn btn-orange-outline btn-sm">Clear Memory</button>
-        </div>
-        <div id="falsePositivesContainer" class="log-container">
-          <div class="empty-state">No false positives recorded.</div>
-        </div>
-      </section>
-    </main>
+  </div>
+  <div id="spamLogContainer" class="log-container">
+    <div class="empty-state">No spam detected yet.</div>
   </div>
 
-  <script src="options.js"></script>
+  <hr class="divider">
+
+  <!-- Bottom Section: Active AI Training Memory -->
+  <div class="logs-header">
+    <h2>Active AI Training Memory (Not Spam)</h2>
+    <div class="header-actions">
+      <button id="clearFPLog" class="btn btn-orange-outline btn-sm">Clear Memory</button>
+    </div>
+  </div>
+  <div id="falsePositivesContainer" class="log-container">
+    <div class="empty-state">No false positives recorded.</div>
+  </div>
+</section>
+    </main>
+  </div>
+<script src="options.js" defer></script>
+</body>
 </body>
 </html>

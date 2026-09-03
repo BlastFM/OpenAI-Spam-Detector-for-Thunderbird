@@ -1,23 +1,34 @@
 document.addEventListener('DOMContentLoaded', async () => {
-  const { apiKey, model, customPrompt } = await messenger.storage.sync.get(['apiKey', 'model', 'customPrompt']);
+  const api = typeof messenger !== 'undefined' ? messenger : browser;
+
+  // 1. Load saved settings
+  const { apiKey, model, customPrompt } = await api.storage.sync.get(['apiKey', 'model', 'customPrompt']);
   if (apiKey) document.getElementById('apiKey').value = apiKey;
   if (model) document.getElementById('model').value = model || 'gpt-4o-mini';
   if (customPrompt) document.getElementById('customPrompt').value = customPrompt;
 
+  // 2. Initial logs render
   await loadLogs();
 
-  messenger.storage.onChanged.addListener((changes, areaName) => {
+  // 3. Storage change listener
+  api.storage.onChanged.addListener((changes, areaName) => {
     if (areaName === 'local') {
       if (changes.spamLog || changes.falsePositives) {
         loadLogs();
       }
     }
   });
+
+  // 4. Attach Backup & Restore handlers
+  setupBackupHandlers();
 });
 
+// --- LOG LOADING & RENDERING ---
+
 async function loadLogs() {
-  const { spamLog } = await messenger.storage.local.get({ spamLog: [] });
-  const { falsePositives } = await messenger.storage.local.get({ falsePositives: [] });
+  const api = typeof messenger !== 'undefined' ? messenger : browser;
+  const { spamLog } = await api.storage.local.get({ spamLog: [] });
+  const { falsePositives } = await api.storage.local.get({ falsePositives: [] });
 
   renderLog('spamLogContainer', spamLog, 'No spam detected yet.');
   renderLog('falsePositivesContainer', falsePositives, 'No false positives recorded.');
@@ -38,18 +49,23 @@ function renderLog(containerId, list, emptyMessage) {
   container.innerHTML = list.map((item, index) => {
     const isNewest = index === 0;
     const iconPath = isSpamLog ? '../icons/spam-red.png' : '../icons/not-spam-green.png';
+    const author = item.author || item.sender || 'Unknown Sender';
+    const subject = item.subject || 'No Subject';
+    const dateRaw = item.dateAdded || item.timestamp || item.date;
+    const formattedDate = dateRaw ? new Date(dateRaw).toLocaleDateString() + ' ' + new Date(dateRaw).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
+
     return `
       <div class="log-card-item ${isNewest ? 'newest-entry' : ''}">
         <div class="log-card-header">
           <div class="log-author-wrap">
             <img src="${iconPath}" alt="Status" style="width:14px; height:14px; flex-shrink:0;">
-            <span class="log-author">${escapeHtml(item.author)}</span>
+            <span class="log-author">${escapeHtml(author)}</span>
             ${isNewest ? '<span class="entry-badge">Latest</span>' : ''}
           </div>
-          <span class="log-date">${item.dateAdded ? new Date(item.dateAdded).toLocaleDateString() + ' ' + new Date(item.dateAdded).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : ''}</span>
+          <span class="log-date">${formattedDate}</span>
         </div>
-        <div class="log-subject">${escapeHtml(item.subject)}</div>
-        <div class="log-snippet">${escapeHtml(item.bodySnippet)}</div>
+        <div class="log-subject">${escapeHtml(subject)}</div>
+        <div class="log-snippet">${escapeHtml(item.bodySnippet || '')}</div>
         <div class="log-footer">
           ${isSpamLog ? `
             <button class="btn btn-green-outline btn-sm mark-not-spam-btn" data-index="${index}">Mark as Not Spam</button>
@@ -84,22 +100,25 @@ function renderLog(containerId, list, emptyMessage) {
   container.scrollTop = 0;
 }
 
+// --- LOG ACTION HANDLERS ---
+
 async function markLogItemAsNotSpam(index) {
-  const { spamLog } = await messenger.storage.local.get({ spamLog: [] });
+  const api = typeof messenger !== 'undefined' ? messenger : browser;
+  const { spamLog } = await api.storage.local.get({ spamLog: [] });
   const item = spamLog[index];
   if (!item) return;
 
-  const { falsePositives } = await messenger.storage.local.get({ falsePositives: [] });
+  const { falsePositives } = await api.storage.local.get({ falsePositives: [] });
   const updatedFP = [item, ...falsePositives].slice(0, 20);
   
   spamLog.splice(index, 1);
 
-  await messenger.storage.local.set({
+  await api.storage.local.set({
     spamLog: spamLog,
     falsePositives: updatedFP
   });
 
-  if (item.id) {
+  if (item.id && typeof messenger !== 'undefined') {
     try {
       const messageHeader = await messenger.messages.get(item.id);
       if (messageHeader) {
@@ -141,17 +160,17 @@ async function markLogItemAsNotSpam(index) {
 }
 
 async function removeFalsePositive(index) {
-  const { falsePositives } = await messenger.storage.local.get({ falsePositives: [] });
+  const api = typeof messenger !== 'undefined' ? messenger : browser;
+  const { falsePositives } = await api.storage.local.get({ falsePositives: [] });
   falsePositives.splice(index, 1);
-  await messenger.storage.local.set({ falsePositives });
+  await api.storage.local.set({ falsePositives });
   showStatus('Training memory item removed.', 'success');
 }
 
-function escapeHtml(str) {
-  return (str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
+// --- SETTINGS FORM & API TESTING ---
 
 document.getElementById('save').addEventListener('click', async () => {
+  const api = typeof messenger !== 'undefined' ? messenger : browser;
   const apiKey = document.getElementById('apiKey').value.trim();
   const model = document.getElementById('model').value;
   const customPrompt = document.getElementById('customPrompt').value.trim();
@@ -161,7 +180,7 @@ document.getElementById('save').addEventListener('click', async () => {
     return;
   }
 
-  await messenger.storage.sync.set({ apiKey, model, customPrompt });
+  await api.storage.sync.set({ apiKey, model, customPrompt });
   showStatus('Saved successfully!', 'success');
 });
 
@@ -201,20 +220,105 @@ document.getElementById('testKey').addEventListener('click', async () => {
 });
 
 document.getElementById('clearSpamLog').addEventListener('click', async () => {
+  const api = typeof messenger !== 'undefined' ? messenger : browser;
   const confirmed = confirm("Are you sure you want to clear the Detected Spam Log?");
   if (!confirmed) return;
 
-  await messenger.storage.local.set({ spamLog: [], spamExamples: [] });
+  await api.storage.local.set({ spamLog: [], spamExamples: [] });
   showStatus('Spam log cleared successfully!', 'success');
 });
 
 document.getElementById('clearFPLog').addEventListener('click', async () => {
+  const api = typeof messenger !== 'undefined' ? messenger : browser;
   const confirmed = confirm("Are you sure you want to clear the Active AI Training Memory?");
   if (!confirmed) return;
 
-  await messenger.storage.local.set({ falsePositives: [] });
+  await api.storage.local.set({ falsePositives: [] });
   showStatus('AI training memory cleared successfully!', 'success');
 });
+
+// --- BACKUP & RESTORE MODULE ---
+
+function setupBackupHandlers() {
+  const exportBtn = document.getElementById('exportBackup');
+  const importFileInput = document.getElementById('importFileInput');
+
+  // EXPORT
+  if (exportBtn) {
+    exportBtn.addEventListener('click', async () => {
+      try {
+        const api = typeof messenger !== 'undefined' ? messenger : browser;
+        const allData = await api.storage.local.get(null);
+        const jsonStr = JSON.stringify(allData, null, 2);
+
+        const blob = new Blob([jsonStr], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const fileName = `spam_detector_backup_${new Date().toISOString().slice(0, 10)}.json`;
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+
+        setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, 150);
+
+        showStatus("Backup exported successfully!", "success");
+      } catch (err) {
+        console.error("Export error:", err);
+        showStatus("Export failed: " + err.message, "error");
+      }
+    });
+  }
+
+  // IMPORT
+  if (importFileInput) {
+    importFileInput.addEventListener('change', (e) => {
+      const api = typeof messenger !== 'undefined' ? messenger : browser;
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async (uploadEvent) => {
+        try {
+          const importedData = JSON.parse(uploadEvent.target.result);
+
+          if (typeof importedData !== "object" || importedData === null) {
+            throw new Error("Invalid JSON structure");
+          }
+
+          // Clear local storage & set imported state
+          await api.storage.local.clear();
+          await api.storage.local.set(importedData);
+
+          showStatus("Backup restored successfully!", "success");
+
+          // Instant re-render
+          await loadLogs();
+        } catch (err) {
+          console.error("Import error:", err);
+          showStatus("Import failed: " + err.message, "error");
+        }
+      };
+
+      reader.readAsText(file);
+    });
+  }
+}
+
+// --- UTILITY FUNCTIONS ---
+
+function escapeHtml(str) {
+  return String(str || '')
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
 
 let statusTimeout = null;
 function showStatus(text, type) {
@@ -232,67 +336,3 @@ function showStatus(text, type) {
     status.style.display = 'none';
   }, type === 'error' ? 5000 : 3000);
 }
-// Pure JS Backup & Restore handlers (No HTML/CSS changes needed)
-document.addEventListener("keydown", async (event) => {
-  const isCmdOrCtrl = event.ctrlKey || event.metaKey;
-  const api = typeof browser !== "undefined" ? browser : messenger;
-
-  // 1. EXPORT BACKUP: Press Ctrl + Shift + E (or Cmd + Shift + E)
-  if (isCmdOrCtrl && event.shiftKey && event.key.toLowerCase() === "e") {
-    event.preventDefault();
-    try {
-      const allData = await api.storage.local.get(null);
-      const jsonStr = JSON.stringify(allData, null, 2);
-      const blob = new Blob([jsonStr], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `spam_detector_backup_${new Date().toISOString().slice(0, 10)}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-
-      alert("Backup successfully exported!");
-    } catch (err) {
-      console.error("Export failed:", err);
-      alert("Failed to export storage backup.");
-    }
-  }
-
-  // 2. IMPORT BACKUP: Press Ctrl + Shift + I (or Cmd + Shift + I)
-  if (isCmdOrCtrl && event.shiftKey && event.key.toLowerCase() === "i") {
-    event.preventDefault();
-    
-    // Dynamically create an off-screen file picker
-    const fileInput = document.createElement("input");
-    fileInput.type = "file";
-    fileInput.accept = ".json";
-
-    fileInput.addEventListener("change", (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = async (uploadEvent) => {
-        try {
-          const importedData = JSON.parse(uploadEvent.target.result);
-          if (typeof importedData !== "object" || importedData === null) {
-            throw new Error("Invalid JSON structure");
-          }
-
-          await api.storage.local.set(importedData);
-          alert("Backup restored successfully! Reloading settings page...");
-          window.location.reload();
-        } catch (err) {
-          console.error("Import failed:", err);
-          alert("Failed to import backup. Please make sure it's a valid JSON file.");
-        }
-      };
-      reader.readAsText(file);
-    });
-
-    fileInput.click();
-  }
-});
