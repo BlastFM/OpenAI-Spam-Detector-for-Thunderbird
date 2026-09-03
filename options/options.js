@@ -81,7 +81,10 @@ function renderLog(containerId, list, emptyMessage) {
     });
   }
 
+  // Use requestAnimationFrame to ensure DOM rendering completes before scrolling:
+requestAnimationFrame(() => {
   container.scrollTop = 0;
+});
 }
 
 async function markLogItemAsNotSpam(index) {
