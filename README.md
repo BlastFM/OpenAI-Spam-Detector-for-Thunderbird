@@ -9,7 +9,7 @@ An AI-powered spam detection and training extension for Mozilla Thunderbird. **O
 
 ---
 
-## 🚀 v1.2.0 — Fixed Log Scrolling & Zero-UI Storage BackupThis release stabilizes the two-column options layout, locks the vertical scrolling behavior for both log containers to prevent display reflows, and provides native keyboard shortcuts for log backup and restoration.🚀 New FeaturesZero-UI JSON Backup & Restore: Added shortcut handlers (Ctrl/Cmd + Shift + E for export, Ctrl/Cmd + Shift + I for import) to backup and restore storage data safely without DOM modifications.
+## 🚀 v1.2.0 — Fixed Log Scrolling & Zero-UI Storage Backup ## This release stabilizes the two-column options layout, locks the vertical scrolling behavior for both log containers to prevent display reflows, and provides native keyboard shortcuts for log backup and restoration.🚀 New FeaturesZero-UI JSON Backup & Restore: Added shortcut handlers (Ctrl/Cmd + Shift + E for export, Ctrl/Cmd + Shift + I for import) to backup and restore storage data safely without DOM modifications.
 
 ## 🐛 Bug Fixes & Layout ImprovementsFixed Column Scrolling (overflow-y: auto): Locked the Detected Spam Log and Active AI Training Memory containers to a fixed 250px height with strict vertical overflow rules (overflow-x: hidden). This enables smooth scrolling without stretching cards or breaking the two-column dashboard structure.  Prevented Grid Layout Shifts: Resolved flexible container expansion in Thunderbird's rendering engine by locking log height bounds and preserving the responsive auto-fit grid.
 
