@@ -22,13 +22,6 @@ Resolved Container Reflows: Locked log display areas to a fixed height (380px) w
 
 Shielded Extension Storage Access: Bypassed UI-heavy DOM elements in favor of keyboard handlers to give users full browser.storage.local backup and restore capabilities cleanly.
 
-## 📦 Assets
-openai-spam-detector-v1.2.0.xpi: Main extension package. Compatible with Thunderbird WebExtension API standards.
-
-Installation Note: Install via Thunderbird Add-ons Manager (Tools > Add-ons and Themes > ⚙️ > Install Add-on From File...).
-
-Source Code (.zip / .tar.gz): Complete repository snapshot including automated release workflows and updated documentation.
-
 ## 🌟 Key Features
 
 - **Automated Spam Detection**: Leverages OpenAI models (`gpt-4o-mini`, `gpt-4o`) to classify incoming messages.
