@@ -42,7 +42,7 @@ function renderLog(containerId, list, emptyMessage) {
       <div class="log-card-item ${isNewest ? 'newest-entry' : ''}">
         <div class="log-card-header">
           <div class="log-author-wrap">
-            <img src="${iconPath}" alt="Status" style="width:14px; height:14px; flex-shrink:0;">
+            <img src="${iconPath}" alt="Status">
             <span class="log-author">${escapeHtml(item.author)}</span>
             ${isNewest ? '<span class="entry-badge">Latest</span>' : ''}
           </div>
@@ -230,7 +230,7 @@ function showStatus(text, type) {
 
   status.textContent = text;
   status.className = `status-badge ${type}`;
-  status.style.display = 'inline-block';
+  status.style.display = 'inline-flex';
 
   statusTimeout = setTimeout(() => {
     status.className = 'status-badge hidden';
