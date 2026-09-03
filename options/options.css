@@ -273,9 +273,12 @@ input:focus, select:focus, textarea:focus {
   margin: 20px 0;
 }
 
+/* Update this block in options.css */
 .log-container {
+  height: 250px;            /* Fix explicitly to prevent vertical column stretching */
   max-height: 250px;
-  overflow-y: auto;
+  overflow-y: auto;         /* Enable vertical scrolling */
+  overflow-x: hidden;       /* Prevent unwanted horizontal overflow */
   display: flex;
   flex-direction: column;
   gap: 8px;
