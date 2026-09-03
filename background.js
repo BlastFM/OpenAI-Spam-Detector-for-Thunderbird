@@ -61,7 +61,8 @@ messenger.messages.onNewMailReceived.addListener(async (folder, messages) => {
   const activeModel = model || 'gpt-4o-mini';
   const { falsePositives } = await messenger.storage.local.get({ falsePositives: [] });
 
-  for await (let message of messages.messages) {
+  const messageList = messages.messages || [];
+  for (let message of messageList) {
     try {
       const fullMessage = await messenger.messages.get(message.id);
       const messageBody = await messenger.messages.getFull(message.id);
@@ -72,6 +73,9 @@ messenger.messages.onNewMailReceived.addListener(async (folder, messages) => {
       } else if (messageBody.body) {
         bodyText = messageBody.body;
       }
+
+      // Strip HTML tags if extractTextFromParts yielded raw HTML
+      bodyText = stripHtmlTags(bodyText);
 
       const isSpam = await classifyEmailWithOpenAI({
         author: fullMessage.author,
@@ -98,11 +102,18 @@ function extractTextFromParts(parts) {
   for (let part of parts) {
     if (part.contentType === "text/plain" && part.body) {
       text += part.body + "\n";
+    } else if (part.contentType === "text/html" && part.body && !text) {
+      // Fallback for HTML-only emails
+      text += part.body + "\n";
     } else if (part.parts) {
       text += extractTextFromParts(part.parts);
     }
   }
   return text;
+}
+
+function stripHtmlTags(str) {
+  return (str || "").replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim();
 }
 
 async function classifyEmailWithOpenAI({ author, subject, body, apiKey, model, customPrompt, falsePositives }) {
@@ -183,6 +194,7 @@ async function manualMarkAsNotSpam(messageId) {
     const messageHeader = await messenger.messages.get(messageId);
     const messageBody = await messenger.messages.getFull(messageId);
     let bodyText = extractTextFromParts(messageBody.parts || []);
+    bodyText = stripHtmlTags(bodyText);
 
     const { spamLog } = await messenger.storage.local.get({ spamLog: [] });
     const { falsePositives } = await messenger.storage.local.get({ falsePositives: [] });

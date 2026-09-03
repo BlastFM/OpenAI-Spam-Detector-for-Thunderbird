@@ -3,14 +3,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // 1. Load saved settings
   const { apiKey, model, customPrompt } = await api.storage.sync.get(['apiKey', 'model', 'customPrompt']);
-  if (apiKey) document.getElementById('apiKey').value = apiKey;
+  if (apiKey) document.getElementById('apiKey').value = apiKey || '';
   if (model) document.getElementById('model').value = model || 'gpt-4o-mini';
-  if (customPrompt) document.getElementById('customPrompt').value = customPrompt;
+  if (customPrompt) document.getElementById('customPrompt').value = customPrompt || '';
 
   // 2. Initial logs render
   await loadLogs();
 
-  // 3. Storage change listener
+  // 3. Storage change listener (Filters external storage updates)
   api.storage.onChanged.addListener((changes, areaName) => {
     if (areaName === 'local') {
       if (changes.spamLog || changes.falsePositives) {
@@ -296,11 +296,15 @@ function setupBackupHandlers() {
 
           showStatus("Backup restored successfully!", "success");
 
+          // Reset value to allow re-importing the same file if needed
+          e.target.value = '';
+
           // Instant re-render
           await loadLogs();
         } catch (err) {
           console.error("Import error:", err);
           showStatus("Import failed: " + err.message, "error");
+          e.target.value = '';
         }
       };
 
