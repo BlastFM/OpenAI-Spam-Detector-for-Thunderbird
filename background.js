@@ -1,8 +1,4 @@
-console.log("[Thunderbird OpenAI Spam Detector] Optimized background worker initialized.");
-
-// Account folder cache with TTL support
-const folderCache = new Map();
-const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minute cache invalidation
+console.log("[Thunderbird OpenAI Spam Detector] Background service worker initialized.");
 
 function setupContextMenus() {
   messenger.menus.removeAll().then(() => {
@@ -28,24 +24,18 @@ function setupContextMenus() {
   }).catch(err => console.error("[Thunderbird OpenAI Spam Detector] Context Menu error:", err));
 }
 
-messenger.runtime.onInstalled.addListener(() => setupContextMenus());
-messenger.runtime.onStartup.addListener(() => setupContextMenus());
+messenger.runtime.onInstalled.addListener(() => {
+  setupContextMenus();
+});
 
-// Reliable worker queue for controlled concurrency
-async function processInBatches(items, limit, fn) {
-  const results = [];
-  for (let i = 0; i < items.length; i += limit) {
-    const chunk = items.slice(i, i + limit);
-    const chunkResults = await Promise.all(chunk.map(item => fn(item)));
-    results.push(...chunkResults);
-  }
-  return results;
-}
+messenger.runtime.onStartup.addListener(() => {
+  setupContextMenus();
+});
 
 messenger.menus.onClicked.addListener(async (info, tab) => {
   if (!info.selectedMessages || info.selectedMessages.messages.length === 0) return;
 
-  await processInBatches(info.selectedMessages.messages, 3, async (message) => {
+  for (let message of info.selectedMessages.messages) {
     if (info.menuItemId === "mark-as-spam") {
       const fullMessage = await messenger.messages.get(message.id);
       const messageBody = await messenger.messages.getFull(message.id);
@@ -56,10 +46,9 @@ messenger.menus.onClicked.addListener(async (info, tab) => {
     } else if (info.menuItemId === "mark-as-not-spam") {
       await manualMarkAsNotSpam(message.id);
     }
-  });
+  }
 });
 
-// Automatic New Mail Classifier (Throttled Concurrency)
 messenger.messages.onNewMailReceived.addListener(async (folder, messages) => {
   await processIncomingMessages(messages.messages || []);
 });
@@ -116,7 +105,6 @@ async function processIncomingMessages(messageList) {
 
   const activeModel = model || 'gpt-4o-mini';
   const { falsePositives } = await messenger.storage.local.get({ falsePositives: [] });
-  const messageList = messages.messages || [];
 
   for (let message of messageList) {
     try {
@@ -153,7 +141,7 @@ async function processIncomingMessages(messageList) {
       const isSpam = await classifyEmailWithOpenAI({
         author: fullMessage.author,
         subject: fullMessage.subject,
-        body: bodyText.substring(0, 1200),
+        body: bodyText.substring(0, 1500),
         apiKey,
         model: activeModel,
         customPrompt,
@@ -170,18 +158,8 @@ async function processIncomingMessages(messageList) {
   }
 }
 
-function stripHtmlTags(str) {
-  return (str || "")
-    .replace(/<[^>]*>/g, ' ')
-    .replace(/&[a-z0-9#]+;/gi, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
 function extractTextFromParts(parts) {
-  let plainText = "";
-  let htmlText = "";
-
+  let text = "";
   for (let part of parts) {
     if (part.contentType === "text/plain" && part.body) {
       text += part.body + "\n";
@@ -190,11 +168,10 @@ function extractTextFromParts(parts) {
         text += part.body + "\n";
       }
     } else if (part.parts) {
-      const nested = extractTextFromParts(part.parts);
-      if (nested) return nested;
+      text += extractTextFromParts(part.parts);
     }
   }
-  return plainText || htmlText;
+  return text;
 }
 
 function stripHtmlTags(str) {
@@ -214,10 +191,8 @@ async function classifyEmailWithOpenAI({ author, subject, body, apiKey, model, c
   }
 
   const systemPrompt = `You are an expert email spam classifier running inside Thunderbird. Analyze the email and respond strictly with JSON: {"isSpam": true} or {"isSpam": false}. Do not include markdown formatting or commentary.${fpContext}${customPrompt ? `\n\nCustom User Rules:\n${customPrompt}` : ""}`;
-  const userContent = `From: ${author}\nSubject: ${subject}\nBody Snippet:\n${body}`;
 
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 8000);
+  const userContent = `From: ${author}\nSubject: ${subject}\nBody Snippet:\n${body}`;
 
   try {
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -226,71 +201,58 @@ async function classifyEmailWithOpenAI({ author, subject, body, apiKey, model, c
         "Content-Type": "application/json",
         "Authorization": `Bearer ${apiKey}`
       },
-      signal: controller.signal,
       body: JSON.stringify({
         model: model,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userContent }
         ],
-        temperature: 0.0,
-        max_tokens: 15,
+        temperature: 0.1,
         response_format: { type: "json_object" }
       })
     });
 
-    clearTimeout(timeoutId);
-
     if (!response.ok) {
-      console.error("[Thunderbird OpenAI Spam Detector] OpenAI status error:", response.status);
+      console.error("[Thunderbird OpenAI Spam Detector] OpenAI API error status:", response.status);
       return false;
     }
 
     const data = await response.json();
-    const rawContent = data.choices[0].message.content.trim();
-    
-    try {
-      const result = JSON.parse(rawContent);
-      return !!result.isSpam;
-    } catch (parseErr) {
-      return /"isSpam"\s*:\s*true/i.test(rawContent);
-    }
+    const result = JSON.parse(data.choices[0].message.content);
+    return !!result.isSpam;
   } catch (err) {
-    clearTimeout(timeoutId);
-    if (err.name === 'AbortError') {
-      console.error("[Thunderbird OpenAI Spam Detector] OpenAI API request timed out after 8s.");
-    } else {
-      console.error("[Thunderbird OpenAI Spam Detector] Classification error:", err);
-    }
+    console.error("[Thunderbird OpenAI Spam Detector] Classification failed:", err);
     return false;
   }
-}
-
-async function getAccountFoldersCached(accountId) {
-  const now = Date.now();
-  if (folderCache.has(accountId)) {
-    const cached = folderCache.get(accountId);
-    if (now - cached.timestamp < CACHE_TTL_MS) {
-      return cached.folders;
-    }
-  }
-
-  try {
-    const account = await messenger.accounts.get(accountId);
-    if (account && account.folders) {
-      folderCache.set(accountId, { folders: account.folders, timestamp: now });
-      return account.folders;
-    }
-  } catch (e) {
-    folderCache.delete(accountId);
-  }
-  return [];
 }
 
 async function handleSpamMessage(messageHeader, fullBody) {
   const { spamLog } = await messenger.storage.local.get({ spamLog: [] });
   const { targetFolder } = await messenger.storage.sync.get({ targetFolder: 'trash' });
 
+  const originFolderId = messageHeader.folder ? messageHeader.folder.id : null;
+
+  const newEntry = {
+    id: messageHeader.id,
+    author: messageHeader.author,
+    subject: messageHeader.subject,
+    bodySnippet: (fullBody || "").substring(0, 120).replace(/\s+/g, ' '),
+    dateAdded: new Date().toISOString(),
+    originFolderId: originFolderId
+  };
+
+  const updatedLog = [newEntry, ...spamLog].slice(0, 50);
+  await messenger.storage.local.set({ spamLog: updatedLog });
+
+  try {
+    const account = await messenger.accounts.get(messageHeader.folder.accountId);
+    let destinationFolder = null;
+
+    if (targetFolder === 'junk') {
+      destinationFolder = findFolderByType(account.folders, 'junk');
+    } else if (targetFolder === 'local_ai_spam') {
+      destinationFolder = await getOrCreateLocalAISpamFolder();
+    }
     
     if (!destinationFolder) {
       destinationFolder = findFolderByType(account.folders, 'trash');
@@ -349,9 +311,6 @@ async function manualMarkAsNotSpam(messageId) {
 
     if (targetFolder) {
       await messenger.messages.move([messageId], targetFolder);
-      console.log(`[Thunderbird OpenAI Spam Detector] Moved message ${messageId} to ${targetFolder.name}`);
-    } else {
-      console.error("[Thunderbird OpenAI Spam Detector] Could not locate Inbox target folder.");
     }
   } catch (err) {
     console.error("[Thunderbird OpenAI Spam Detector] Error marking message as not spam:", err);
