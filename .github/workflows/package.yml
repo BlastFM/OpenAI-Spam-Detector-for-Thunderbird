@@ -7,7 +7,6 @@ on:
     tags:
       - 'v*'
 
-# Grants GITHUB_TOKEN permissions to create releases and attach .xpi assets
 permissions:
   contents: write
 
@@ -19,16 +18,12 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Fix File Permissions
-        run: |
-          chmod -R 644 ./*
-          chmod -R 755 ./options ./icons 2>/dev/null || true
-
       - name: Build XPI Package
         run: |
-          zip -r openai-spam-detector.xpi manifest.json options/ background.js icons/ _locales/ README.md LICENSE
+          # Package required files explicitly without breaking on missing directories
+          zip -r openai-spam-detector.xpi manifest.json options background.js icons _locales README.md LICENSE -x "*.git*"
 
-      - name: Upload Build Artifact (Actions Tab)
+      - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: openai-spam-detector-xpi
