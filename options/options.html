@@ -76,12 +76,22 @@
           <span class="field-hint">Add specific rules for the AI to follow during analysis.</span>
         </div>
 
+<<<<<<< HEAD
         <!-- Export/Import Buttons Row -->
         <div style="display: flex; gap: 10px; margin-top: 16px; margin-bottom: 12px;">
           <button id="exportRulesKey" type="button" class="btn btn-dark-outline" style="flex: 1;">Export Rules & Key</button>
           <label for="importRulesKeyInput" class="btn btn-dark-outline" style="flex: 1; text-align: center; margin: 0; cursor: pointer;">
             Import Rules & Key
             <input type="file" id="importRulesKeyInput" accept=".json,application/json" style="display: none;">
+=======
+        <!-- Dedicated Left Pane Config Backup Bar -->
+        <div class="config-backup-actions" style="display: flex; gap: 8px; margin-bottom: 15px;">
+          <button id="exportConfigBtn" type="button" class="btn btn-slate btn-sm" style="flex: 1;">Export Rules & Key</button>
+          
+          <label for="importConfigFile" class="btn btn-slate btn-sm" style="flex: 1; cursor: pointer; text-align: center; margin: 0;">
+            Import Rules & Key
+            <input type="file" id="importConfigFile" accept=".json,application/json" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0;">
+>>>>>>> origin/main
           </label>
         </div>
 
@@ -97,10 +107,19 @@
           <h2>Detected Spam Log</h2>
           <div class="header-actions">
             <button id="exportBackup" type="button" class="btn btn-green-outline btn-sm">Export Full Backup</button>
+<<<<<<< HEAD
             <label for="importFileInput" class="btn btn-green-outline btn-sm" style="cursor: pointer; margin: 0;">
               Import Full Backup
               <input type="file" id="importFileInput" accept=".json,application/json" style="display: none;">
             </label>
+=======
+            
+            <label for="importFileInput" class="btn btn-green-outline btn-sm" style="cursor: pointer; margin: 0;">
+              Import Full Backup
+              <input type="file" id="importFileInput" accept=".json,application/json" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0;">
+            </label>
+
+>>>>>>> origin/main
             <button id="clearSpamLog" type="button" class="btn btn-orange-outline btn-sm">Clear Log</button>
           </div>
         </div>

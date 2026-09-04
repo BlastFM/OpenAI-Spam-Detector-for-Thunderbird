@@ -9,6 +9,7 @@ An AI-powered spam detection and training extension for Mozilla Thunderbird. **O
 
 ---
 
+<<<<<<< HEAD
 ## 🚀 v1.2.0 — Fixed Log Scrolling & Zero-UI Storage Backup
 This release stabilizes the two-column options layout, locks the vertical scrolling behavior for both log containers to prevent display reflows, and provides native keyboard shortcuts for log backup and restoration.🚀 New FeaturesZero-UI JSON Backup & Restore: Added shortcut handlers (Ctrl/Cmd + Shift + E for export, Ctrl/Cmd + Shift + I for import) to backup and restore storage data safely without DOM modifications.
 
@@ -18,6 +19,39 @@ Locked the Detected Spam Log and Active AI Training Memory containers to a fixed
 ## 📦 Assets
 # openai-spam-detector-v1.2.0.xpi
 Main extension package. Fully compatible with Thunderbird WebExtension API standards.Installation Note: Install via Thunderbird Add-ons Manager (Tools > Add-ons and Themes > ⚙️ > Install Add-on From File...).
+=======
+## What’s New in v1.3.2
+Custom Spam Destination Selector
+Users can now control exactly where emails marked as spam are moved upon detection. A new dropdown menu in the Options UI allows choosing between multiple routing destinations:
+
+Trash / Bin (Default): Directly moves detected spam to your account's Trash folder.
+
+Account Junk / Spam Folder: Routes detected spam to your account's server-synchronized Junk or Spam folder.
+
+Local Folders / AI Filtered Spam: Automatically creates and routes detected messages to a dedicated local directory (Local Folders > AI Filtered Spam). This safely isolates AI-classified spam away from standard junk folders and keeps false positives easy to manage without risk of auto-purging.
+
+Folder Creation & Fallback Logic
+Automated Local Folder Initialization: Selecting the local destination dynamically creates the AI Filtered Spam folder under Local Folders on first use if it does not already exist.
+
+Improved Fallback Chains: If a custom folder destination becomes unavailable, the background handler gracefully defaults to the standard account Trash to prevent unprocessed emails from sticking in the Inbox.
+
+### Configuration Options
+
+Open the Extension Options page (`Tools > Add-ons & Themes > Options`) to configure the following settings:
+
+| Setting | Description |
+| :--- | :--- |
+| **OpenAI API Key** | Your OpenAI secret key (`sk-...`) used to authenticate requests. |
+| **OpenAI Model** | Select your preferred classification model (`gpt-4o-mini`, `gpt-4o`, `gpt-3.5-turbo`). |
+| **Spam Action Destination** | Target folder where flagged spam is routed (`Trash`, `Account Junk`, or `Local Folders / AI Filtered Spam`). |
+| **Custom Rules** | Text prompt to add strict user rules (e.g., *Always mark newsletters from domain.com as HAM*). |
+
+#### Using the Dedicated Local Spam Folder
+To keep AI-detected spam isolated from server-synced folders:
+1. Open Extension Settings and set **Spam Action Destination** to `Local Folders / AI Filtered Spam`.
+2. When the AI detects a spam email, it automatically creates and routes the message to `Local Folders > AI Filtered Spam` inside Thunderbird.
+3. You can set a custom local retention policy on this folder (e.g., auto-delete after 14 days) by right-clicking the folder in Thunderbird and selecting **Properties > Retention Policy**.
+>>>>>>> origin/main
 
 ## 🌟 Key Features
 
@@ -45,13 +79,26 @@ To maintain UI performance and prevent layout reflows in Thunderbird, storage ba
 
 ## 🚀 Installation & Release Packaging
 
-Open Thunderbird:
+## Download & Installation
 
-Go to Tools > Add-ons and Themes.
+[![Download Release](https://img.shields.io/badge/Download-v1.3.2_.XPI-blue?style=for-the-badge&logo=thunderbird&logoColor=white)](https://github.com/BlastFM/OpenAI-Spam-Detector-for-Thunderbird/releases/download/v1.3.2/openai-spam-detector-v1.3.2.xpi)
+[![Get Latest Release](https://img.shields.io/github/v/release/BlastFM/OpenAI-Spam-Detector-for-Thunderbird?color=green&label=Latest%20Release&style=for-the-badge)](https://github.com/BlastFM/OpenAI-Spam-Detector-for-Thunderbird/releases/latest)
 
-Click the ⚙️ (Gear Icon) and select Install Add-on From File...
+### Direct Downloads
 
-Select openai-spam-detector-v1.1.0.xpi.
+| Asset | Description | Download Link |
+| :--- | :--- | :--- |
+| **Extension Binary** | Ready-to-install Thunderbird Add-on | [`openai-spam-detector-v1.3.2.xpi`](https://github.com/YOUR_USERNAME/YOUR_REPO/releases/download/v1.3.2/openai-spam-detector-v1.3.2.xpi) |
+| **Source Code** | Compressed source files (`.zip`) | [`Source code (zip)`](https://github.com/YOUR_USERNAME/YOUR_REPO/archive/refs/tags/v1.3.2.zip) |
+
+---
+
+### How to Install in Thunderbird
+
+1. Click the download button above to save **`openai-spam-detector-v1.3.2.xpi`** to your computer.
+2. Open Thunderbird and navigate to **Add-ons and Themes** (`Ctrl+Shift+A` or `Cmd+Shift+A`).
+3. Click the gear icon (**Tools for all add-ons**) in the top-right corner.
+4. Select **Install Add-on From File...** and choose the downloaded `.xpi` file.
 
 ---
 
@@ -142,6 +189,17 @@ notifications: To alert you when spam is intercepted or when setup errors occur.
 Host Permission (https://api.openai.com/*): Required to transmit snippet data to OpenAI endpoints for evaluation.
 
 Privacy Note: Transmitted email content includes the sender address, subject line, and the first 1,000 characters of the body text. Data is processed according to OpenAI's Data Usage Policies. No data is sent to intermediate third-party servers.
+
+## Release History
+
+### [v1.3.1] - 2026-09-04
+
+#### Added
+* **Dedicated Configuration Export/Import:** Introduced independent configuration backup and restore controls within the left-hand Configuration panel to back up API keys, model selections, and custom prompt rules separately from log data.
+
+#### Changed
+* **Action Styling:** Applied a dedicated slate/navy blue theme (`.btn-slate`) to Configuration panel backup controls to visually distinguish setting actions from log management.
+* **Hover Interaction:** Enhanced hover feedback across configuration buttons with a higher-contrast steel-blue shade and subtle elevation shadows.
 
 📄 License
 Distributed under the MIT License. See LICENSE for more information.
