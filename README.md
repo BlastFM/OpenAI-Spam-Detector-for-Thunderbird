@@ -9,18 +9,37 @@ An AI-powered spam detection and training extension for Mozilla Thunderbird. **O
 
 ---
 
-## 🚀 v1.2.0 — UI Layout Stabilization & JSON Storage Backup
-This update focuses on core dashboard stability, vertical overflow control for log containers, and a zero-UI backup and restore system designed to prevent layout reflows in Thunderbird.
+## What’s New in v1.3.2
+Custom Spam Destination Selector
+Users can now control exactly where emails marked as spam are moved upon detection. A new dropdown menu in the Options UI allows choosing between multiple routing destinations:
 
-## 🚀 New Features
-Zero-UI JSON Backup & Restore: Added keyboard shortcuts (Ctrl/Cmd + Shift + E to Export, Ctrl/Cmd + Shift + I to Import) on the Settings page to safely manage local log data without altering HTML layout structures.
+Trash / Bin (Default): Directly moves detected spam to your account's Trash folder.
 
-## 🐛 Bug Fixes & Stability
-Prevented Dashboard Grid Collapse: Replaced flexible container structures with a fixed layout to prevent the two-pane horizontal view from stacking vertically in Thunderbird's Gecko engine.
+Account Junk / Spam Folder: Routes detected spam to your account's server-synchronized Junk or Spam folder.
 
-Resolved Container Reflows: Locked log display areas to a fixed height (380px) with vertical overflow scrolling (overflow-y: auto), preventing layout shifts as log entries grow.
+Local Folders / AI Filtered Spam: Automatically creates and routes detected messages to a dedicated local directory (Local Folders > AI Filtered Spam). This safely isolates AI-classified spam away from standard junk folders and keeps false positives easy to manage without risk of auto-purging.
 
-Shielded Extension Storage Access: Bypassed UI-heavy DOM elements in favor of keyboard handlers to give users full browser.storage.local backup and restore capabilities cleanly.
+Folder Creation & Fallback Logic
+Automated Local Folder Initialization: Selecting the local destination dynamically creates the AI Filtered Spam folder under Local Folders on first use if it does not already exist.
+
+Improved Fallback Chains: If a custom folder destination becomes unavailable, the background handler gracefully defaults to the standard account Trash to prevent unprocessed emails from sticking in the Inbox.
+
+### Configuration Options
+
+Open the Extension Options page (`Tools > Add-ons & Themes > Options`) to configure the following settings:
+
+| Setting | Description |
+| :--- | :--- |
+| **OpenAI API Key** | Your OpenAI secret key (`sk-...`) used to authenticate requests. |
+| **OpenAI Model** | Select your preferred classification model (`gpt-4o-mini`, `gpt-4o`, `gpt-3.5-turbo`). |
+| **Spam Action Destination** | Target folder where flagged spam is routed (`Trash`, `Account Junk`, or `Local Folders / AI Filtered Spam`). |
+| **Custom Rules** | Text prompt to add strict user rules (e.g., *Always mark newsletters from domain.com as HAM*). |
+
+#### Using the Dedicated Local Spam Folder
+To keep AI-detected spam isolated from server-synced folders:
+1. Open Extension Settings and set **Spam Action Destination** to `Local Folders / AI Filtered Spam`.
+2. When the AI detects a spam email, it automatically creates and routes the message to `Local Folders > AI Filtered Spam` inside Thunderbird.
+3. You can set a custom local retention policy on this folder (e.g., auto-delete after 14 days) by right-clicking the folder in Thunderbird and selecting **Properties > Retention Policy**.
 
 ## 🌟 Key Features
 
@@ -48,13 +67,26 @@ To maintain UI performance and prevent layout reflows in Thunderbird, storage ba
 
 ## 🚀 Installation & Release Packaging
 
-Open Thunderbird:
+## Download & Installation
 
-Go to Tools > Add-ons and Themes.
+[![Download Release](https://img.shields.io/badge/Download-v1.3.2_.XPI-blue?style=for-the-badge&logo=thunderbird&logoColor=white)](https://github.com/BlastFM/OpenAI-Spam-Detector-for-Thunderbird/releases/download/v1.3.2/openai-spam-detector-v1.3.2.xpi)
+[![Get Latest Release](https://img.shields.io/github/v/release/BlastFM/OpenAI-Spam-Detector-for-Thunderbird?color=green&label=Latest%20Release&style=for-the-badge)](https://github.com/BlastFM/OpenAI-Spam-Detector-for-Thunderbird/releases/latest)
 
-Click the ⚙️ (Gear Icon) and select Install Add-on From File...
+### Direct Downloads
 
-Select openai-spam-detector-v1.1.0.xpi.
+| Asset | Description | Download Link |
+| :--- | :--- | :--- |
+| **Extension Binary** | Ready-to-install Thunderbird Add-on | [`openai-spam-detector-v1.3.2.xpi`](https://github.com/YOUR_USERNAME/YOUR_REPO/releases/download/v1.3.2/openai-spam-detector-v1.3.2.xpi) |
+| **Source Code** | Compressed source files (`.zip`) | [`Source code (zip)`](https://github.com/YOUR_USERNAME/YOUR_REPO/archive/refs/tags/v1.3.2.zip) |
+
+---
+
+### How to Install in Thunderbird
+
+1. Click the download button above to save **`openai-spam-detector-v1.3.2.xpi`** to your computer.
+2. Open Thunderbird and navigate to **Add-ons and Themes** (`Ctrl+Shift+A` or `Cmd+Shift+A`).
+3. Click the gear icon (**Tools for all add-ons**) in the top-right corner.
+4. Select **Install Add-on From File...** and choose the downloaded `.xpi` file.
 
 ---
 
@@ -145,6 +177,17 @@ notifications: To alert you when spam is intercepted or when setup errors occur.
 Host Permission (https://api.openai.com/*): Required to transmit snippet data to OpenAI endpoints for evaluation.
 
 Privacy Note: Transmitted email content includes the sender address, subject line, and the first 1,000 characters of the body text. Data is processed according to OpenAI's Data Usage Policies. No data is sent to intermediate third-party servers.
+
+## Release History
+
+### [v1.3.1] - 2026-09-04
+
+#### Added
+* **Dedicated Configuration Export/Import:** Introduced independent configuration backup and restore controls within the left-hand Configuration panel to back up API keys, model selections, and custom prompt rules separately from log data.
+
+#### Changed
+* **Action Styling:** Applied a dedicated slate/navy blue theme (`.btn-slate`) to Configuration panel backup controls to visually distinguish setting actions from log management.
+* **Hover Interaction:** Enhanced hover feedback across configuration buttons with a higher-contrast steel-blue shade and subtle elevation shadows.
 
 📄 License
 Distributed under the MIT License. See LICENSE for more information.
