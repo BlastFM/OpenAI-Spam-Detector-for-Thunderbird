@@ -1,18 +1,32 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const btn = document.getElementById('openOptions');
+  const params = new URLSearchParams(window.location.search);
+  const target = params.get('target') || 'log';
 
-  btn.addEventListener('click', async () => {
-    const api = typeof messenger !== 'undefined' ? messenger : browser;
+  const titleEl = document.getElementById('popup-title');
+  const descEl = document.getElementById('popup-desc');
+  const confirmBtn = document.getElementById('confirm-btn');
+  const cancelBtn = document.getElementById('cancel-btn');
 
-    try {
-      if (api.runtime.openOptionsPage) {
-        await api.runtime.openOptionsPage();
-      } else {
-        await api.tabs.create({ url: api.runtime.getURL('options/options.html') });
-      }
-    } catch (err) {
-      console.warn('openOptionsPage failed, opening direct tab:', err);
-      api.tabs.create({ url: api.runtime.getURL('options/options.html') });
+  if (target === 'memory') {
+    titleEl.textContent = 'Clear Training Memory?';
+    descEl.textContent = 'Are you sure you want to clear all active AI training memory?';
+  } else {
+    titleEl.textContent = 'Clear Spam Log?';
+    descEl.textContent = 'Are you sure you want to clear all recorded spam log entries?';
+  }
+
+  confirmBtn.addEventListener('click', async () => {
+    if (target === 'memory') {
+      await browser.storage.local.set({ trainingMemory: [] });
+      browser.runtime.sendMessage({ action: 'memoryCleared' });
+    } else {
+      await browser.storage.local.set({ spamLog: [] });
+      browser.runtime.sendMessage({ action: 'logCleared' });
     }
+    window.close();
+  });
+
+  cancelBtn.addEventListener('click', () => {
+    window.close();
   });
 });

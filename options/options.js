@@ -10,29 +10,40 @@ document.addEventListener('DOMContentLoaded', () => {
   
   const saveBtn = document.getElementById('save-btn');
   const statusMessage = document.getElementById('status-message');
+  const rightPanelStatus = document.getElementById('right-panel-status');
 
-  // Left Pane: Settings Backup Controls
   const exportRulesBtn = document.getElementById('export-rules-btn');
   const importRulesBtn = document.getElementById('import-rules-btn');
   const importRulesInput = document.getElementById('import-rules-input');
 
-  // Right Pane: Log & Memory Controls
   const exportBackupBtn = document.getElementById('export-backup-btn');
   const importBackupBtn = document.getElementById('import-backup-btn');
   const importFileInput = document.getElementById('import-file-input');
+
   const clearLogBtn = document.getElementById('clear-log-btn');
   const clearMemoryBtn = document.getElementById('clear-memory-btn');
 
   const spamLogContainer = document.getElementById('spam-log-container');
   const memoryContainer = document.getElementById('memory-container');
 
-  // --- Helper: Status Message Display ---
+  // --- Helper: Left Panel Status ---
   function showStatus(text, isError = false) {
     statusMessage.textContent = text;
     statusMessage.className = `status-msg ${isError ? 'error' : 'success'}`;
     setTimeout(() => {
       statusMessage.textContent = '';
       statusMessage.className = 'status-msg';
+    }, 3000);
+  }
+
+  // --- Helper: Top Right Panel Banner Status ---
+  function showRightBanner(text, isError = false) {
+    rightPanelStatus.textContent = text;
+    rightPanelStatus.className = `status-msg-banner ${isError ? 'error' : 'success'}`;
+    rightPanelStatus.style.display = 'block';
+    setTimeout(() => {
+      rightPanelStatus.style.display = 'none';
+      rightPanelStatus.textContent = '';
     }, 3000);
   }
 
@@ -104,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // --- Export Rules & Key (Left Pane) ---
+  // --- Export / Import Rules & Key (Left Pane) ---
   exportRulesBtn.addEventListener('click', () => {
     const configData = {
       apiKey: apiKeyInput.value.trim(),
@@ -117,7 +128,6 @@ document.addEventListener('DOMContentLoaded', () => {
     downloadJson(configData, 'spam-detector-rules-config.json');
   });
 
-  // --- Import Rules & Key (Left Pane) ---
   importRulesBtn.addEventListener('click', () => importRulesInput.click());
   importRulesInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
@@ -142,14 +152,13 @@ document.addEventListener('DOMContentLoaded', () => {
     reader.readAsText(file);
   });
 
-  // --- Export Full Backup (Right Pane) ---
+  // --- Export / Import Full Backup (Right Pane) ---
   exportBackupBtn.addEventListener('click', () => {
     browser.storage.local.get(null).then((allData) => {
       downloadJson(allData, 'spam-detector-full-backup.json');
     });
   });
 
-  // --- Import Full Backup (Right Pane) ---
   importBackupBtn.addEventListener('click', () => importFileInput.click());
   importFileInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
@@ -161,28 +170,37 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = JSON.parse(event.target.result);
         browser.storage.local.set(data).then(() => {
           loadSettings();
-          showStatus('Full backup imported successfully!');
+          showRightBanner('Full backup imported successfully!');
         });
       } catch (err) {
-        showStatus('Failed to parse backup file.', true);
+        showRightBanner('Failed to parse backup file.', true);
       }
     };
     reader.readAsText(file);
   });
 
-  // --- Clear Log & Memory ---
-  clearLogBtn.addEventListener('click', () => {
-    browser.storage.local.set({ spamLog: [] }).then(() => {
-      renderLogs([]);
-      showStatus('Spam log cleared.');
+  // --- Trigger Clear Dialog Popups ---
+  function openConfirmPopup(targetType) {
+    browser.windows.create({
+      url: browser.runtime.getURL(`popup/popup.html?target=${targetType}`),
+      type: 'popup',
+      width: 400,
+      height: 220
     });
-  });
+  }
 
-  clearMemoryBtn.addEventListener('click', () => {
-    browser.storage.local.set({ trainingMemory: [] }).then(() => {
+  clearLogBtn.addEventListener('click', () => openConfirmPopup('log'));
+  clearMemoryBtn.addEventListener('click', () => openConfirmPopup('memory'));
+
+  // --- Listen for Messages from Popup Window ---
+  browser.runtime.onMessage.addListener((message) => {
+    if (message.action === 'logCleared') {
+      renderLogs([]);
+      showRightBanner('Spam log cleared.');
+    } else if (message.action === 'memoryCleared') {
       renderMemory([]);
-      showStatus('Training memory cleared.');
-    });
+      showRightBanner('Training memory cleared.');
+    }
   });
 
   // --- Render Functions ---
