@@ -9,6 +9,21 @@ An AI-powered spam detection and training extension for Mozilla Thunderbird. **O
 
 ---
 
+## What’s New in v1.3.2
+Custom Spam Destination Selector
+Users can now control exactly where emails marked as spam are moved upon detection. A new dropdown menu in the Options UI allows choosing between multiple routing destinations:
+
+Trash / Bin (Default): Directly moves detected spam to your account's Trash folder.
+
+Account Junk / Spam Folder: Routes detected spam to your account's server-synchronized Junk or Spam folder.
+
+Local Folders / AI Filtered Spam: Automatically creates and routes detected messages to a dedicated local directory (Local Folders > AI Filtered Spam). This safely isolates AI-classified spam away from standard junk folders and keeps false positives easy to manage without risk of auto-purging.
+
+Folder Creation & Fallback Logic
+Automated Local Folder Initialization: Selecting the local destination dynamically creates the AI Filtered Spam folder under Local Folders on first use if it does not already exist.
+
+Improved Fallback Chains: If a custom folder destination becomes unavailable, the background handler gracefully defaults to the standard account Trash to prevent unprocessed emails from sticking in the Inbox.
+
 ### Configuration Options
 
 Open the Extension Options page (`Tools > Add-ons & Themes > Options`) to configure the following settings:
