@@ -1,80 +1,43 @@
 :root {
-  --primary: #16a34a;
-  --primary-hover: #15803d;
-  --bg-color: #f8fafc;
+  --primary-green: #208b3a;
+  --primary-green-hover: #15732e;
+  --text-dark: #1f2937;
+  --text-muted: #6b7280;
+  --bg-main: #f8fafc;
   --card-bg: #ffffff;
-  --text-main: #0f172a;
-  --text-muted: #64748b;
   --border-color: #e2e8f0;
-  
-  --green: #16a34a;
-  --green-hover: #15803d;
-  --green-light: #dcfce7;
-  --green-text: #15803d;
 
-  --orange: #ea580c;
-  --orange-hover: #c2410c;
-  --orange-light: #ffedd5;
-  --orange-text: #c2410c;
+  --btn-light-bg: #f1f5f9;
+  --btn-light-border: #cbd5e1;
+  --btn-light-hover: #e2e8f0;
 
-  --danger: #ef4444;
-  --success-bg: #dcfce7;
-  --success-text: #15803d;
-  --error-bg: #fee2e2;
-  --error-text: #b91c1c;
-  --radius: 8px;
-  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg-color: #0f172a;
-    --card-bg: #1e293b;
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
-    --border-color: #334155;
-    --primary: #22c55e;
-    --primary-hover: #16a34a;
-
-    --green: #22c55e;
-    --green-hover: #16a34a;
-    --green-light: #064e3b;
-    --green-text: #6ee7b7;
-
-    --orange: #f97316;
-    --orange-hover: #ea580c;
-    --orange-light: #7c2d12;
-    --orange-text: #fdba74;
-  }
+  --danger-orange: #e05252;
+  --danger-orange-hover: #c93b3b;
 }
 
 * {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 body {
-  background-color: var(--bg-color);
-  color: var(--text-main);
-  line-height: 1.5;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-dark);
+  margin: 0;
   padding: 24px;
 }
 
 .app-container {
-  max-width: 1100px;
+  max-width: 1280px;
   margin: 0 auto;
-  width: 100%;
 }
 
-/* Header */
 .app-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
-  padding-bottom: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -85,91 +48,81 @@ body {
 }
 
 .logo-icon {
-  width: 40px;
-  height: 40px;
-  object-fit: contain;
-  border-radius: 6px;
-  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
 }
 
-.brand h1 {
+.app-header h1 {
   font-size: 1.4rem;
   font-weight: 700;
+  margin: 0;
 }
 
 .subtitle {
-  font-size: 0.875rem;
+  margin: 2px 0 0 0;
+  font-size: 0.85rem;
   color: var(--text-muted);
 }
 
-/* Layout Main - Responsive Auto-fit Fix */
+/* Main Grid Layout */
 .app-main {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 24px;
+  grid-template-columns: 460px 1fr;
+  gap: 20px;
   align-items: start;
 }
 
-/* Cards & Layout Preventative Containment */
 .card {
   background: var(--card-bg);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius);
+  border-radius: 8px;
   padding: 20px;
-  box-shadow: var(--shadow);
-  min-width: 0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
 }
 
 .card h2 {
-  font-size: 1.1rem;
-  font-weight: 600;
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-top: 0;
   margin-bottom: 16px;
 }
 
-/* Form Styling */
 .form-group {
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .form-group label {
   display: block;
-  font-size: 0.875rem;
   font-weight: 600;
+  font-size: 0.85rem;
   margin-bottom: 6px;
 }
 
-input[type="password"],
 input[type="text"],
+input[type="password"],
 select,
 textarea {
   width: 100%;
-  padding: 8px 12px;
-  background: var(--bg-color);
-  color: var(--text-main);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius);
-  font-size: 0.9rem;
+  padding: 8px 10px;
+  border: 1px solid var(--btn-light-border);
+  border-radius: 6px;
+  font-size: 0.875rem;
+  background-color: #ffffff;
+  color: var(--text-dark);
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+select:focus,
+textarea:focus {
   outline: none;
-  transition: border-color 0.2s;
-  box-sizing: border-box;
+  border-color: var(--primary-green);
+  box-shadow: 0 0 0 2px rgba(32, 139, 58, 0.15);
 }
 
 textarea {
   resize: vertical;
-}
-
-input:focus, select:focus, textarea:focus {
-  border-color: var(--green);
-}
-
-.input-with-button {
-  display: flex;
-  gap: 8px;
-}
-
-.input-with-button input {
-  flex: 1;
-  min-width: 0;
+  font-family: inherit;
 }
 
 .field-hint {
@@ -179,275 +132,193 @@ input:focus, select:focus, textarea:focus {
   margin-top: 4px;
 }
 
-/* Buttons */
+.input-with-button {
+  display: flex;
+  gap: 8px;
+}
+
+.form-actions {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Button Base Styles */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
   padding: 8px 16px;
-  font-size: 0.875rem;
+  font-size: 0.85rem;
   font-weight: 600;
-  border-radius: var(--radius);
+  border-radius: 6px;
+  border: 1px solid transparent;
   cursor: pointer;
-  border: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  text-decoration: none;
   white-space: nowrap;
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
-}
-
-.btn-primary {
-  background: var(--green);
-  color: #ffffff;
-}
-
-.btn-primary:hover {
-  background: var(--green-hover);
-}
-
-.btn-secondary {
-  background: var(--green);
-  color: #ffffff;
-  border: none;
-}
-
-.btn-secondary:hover {
-  background: var(--green-hover);
-}
-
-.btn-green {
-  background: var(--green);
-  color: #ffffff;
-}
-
-.btn-green:hover {
-  background: var(--green-hover);
-}
-
-.btn-green-outline {
-  background: transparent;
-  border: 1px solid var(--green);
-  color: var(--green);
-}
-
-.btn-green-outline:hover {
-  background: var(--green);
-  color: #ffffff;
-}
-
-.btn-orange {
-  background: var(--orange);
-  color: #ffffff;
-}
-
-.btn-orange:hover {
-  background: var(--orange-hover);
-}
-
-.btn-orange-outline {
-  background: transparent;
-  border: 1px solid var(--orange);
-  color: var(--orange);
-}
-
-.btn-orange-outline:hover {
-  background: var(--orange);
-  color: #ffffff;
 }
 
 .btn-sm {
-  padding: 4px 10px;
-  font-size: 0.75rem;
+  padding: 5px 10px;
+  font-size: 0.8rem;
 }
 
-/* Loading Spinner Animation */
-.btn-spinner {
-  width: 12px;
-  height: 12px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  border-top-color: #ffffff;
-  animation: spin 0.8s linear infinite;
-  display: inline-block;
+/* Green Action Buttons (Test Key, Save Settings) */
+.btn-green, .btn-primary {
+  background-color: var(--primary-green) !important;
+  color: #ffffff !important;
+  border: none !important;
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+.btn-green:hover, .btn-primary:hover {
+  background-color: var(--primary-green-hover) !important;
 }
 
-/* Logs Container & Autoscroll */
+/* Light Grey Outline Buttons (Export / Import Rules & Key) */
+.btn-dark-outline, .btn-secondary {
+  background-color: var(--btn-light-bg) !important;
+  color: #334155 !important;
+  border: 1px solid var(--btn-light-border) !important;
+}
+
+.btn-dark-outline:hover, .btn-secondary:hover {
+  background-color: var(--btn-light-hover) !important;
+  border-color: #94a3b8 !important;
+}
+
+/* Green Outlined Buttons (Right Panel Headers) */
+.btn-green-outline {
+  background-color: #ffffff !important;
+  color: var(--primary-green) !important;
+  border: 1px solid var(--primary-green) !important;
+}
+
+.btn-green-outline:hover {
+  background-color: #f0fdf4 !important;
+}
+
+/* Orange/Red Outlined Buttons (Clear Memory / Log) */
+.btn-orange-outline, .btn-danger-outline {
+  background-color: #ffffff !important;
+  color: var(--danger-orange) !important;
+  border: 1px solid var(--danger-orange) !important;
+}
+
+.btn-orange-outline:hover, .btn-danger-outline:hover {
+  background-color: #fef2f2 !important;
+}
+
+/* Right Panel Logs Layout */
 .logs-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
   margin-bottom: 12px;
+  gap: 12px;
+}
+
+.logs-header h2 {
+  margin: 0;
 }
 
 .header-actions {
   display: flex;
-  gap: 6px;
+  gap: 8px;
   align-items: center;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-.divider {
-  border: 0;
-  height: 1px;
-  background: var(--border-color);
-  margin: 20px 0;
 }
 
 .log-container {
+  min-height: 120px;
   max-height: 280px;
   overflow-y: auto;
-  overflow-x: hidden;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 4px 6px 4px 2px;
+  gap: 10px;
 }
 
-/* Custom Scrollbars with Light & Dark Mode Support */
-.log-container::-webkit-scrollbar {
-  width: 6px;
-}
-
-.log-container::-webkit-scrollbar-track {
-  background: var(--bg-color);
-  border-radius: 4px;
-}
-
-.log-container::-webkit-scrollbar-thumb {
-  background: var(--border-color);
-  border-radius: 4px;
-}
-
-.log-container::-webkit-scrollbar-thumb:hover {
-  background: var(--text-muted);
-}
-
-/* Firefox Native Theme Support */
-.log-container {
-  scrollbar-width: thin;
-  scrollbar-color: var(--border-color) var(--bg-color);
-}
-
+/* Log Entry Card Items */
 .log-card-item {
-  background: var(--bg-color);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius);
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
   padding: 12px;
-  min-width: 0;
-  flex-shrink: 0;
-  transition: all 0.2s ease-in-out;
+  margin-bottom: 2px;
+  transition: border-color 0.15s ease;
 }
 
-/* Highlight style for the most recent entry */
-.log-card-item.newest-entry {
-  border-color: #22c55e;
-  background-color: rgba(34, 197, 94, 0.05);
-  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.2);
+.log-card-item:hover {
+  border-color: #cbd5e1;
 }
 
 .log-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 .log-author-wrap {
   display: flex;
   align-items: center;
-  gap: 6px;
-  overflow: hidden;
-  max-width: 70%;
-}
-
-.log-author {
+  gap: 8px;
   font-weight: 600;
-  color: var(--text-main);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-size: 0.85rem;
+  color: var(--text-dark);
 }
 
-.entry-badge {
-  display: inline-block;
-  font-size: 9px;
-  font-weight: 700;
-  color: #16a34a;
-  background: rgba(22, 163, 74, 0.15);
-  padding: 1px 6px;
-  border-radius: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  flex-shrink: 0;
+.log-date {
+  font-size: 0.78rem;
+  color: var(--text-muted);
 }
 
 .log-subject {
-  font-size: 0.85rem;
   font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text-dark);
   margin-bottom: 4px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .log-snippet {
   font-size: 0.8rem;
   color: var(--text-muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  margin-bottom: 10px;
+  line-height: 1.4;
 }
 
 .log-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 8px;
-  gap: 8px;
-}
-
-.training-badge {
-  font-size: 0.65rem;
-  text-transform: uppercase;
-  background: var(--green-light);
-  color: var(--green-text);
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-weight: 700;
 }
 
 .empty-state {
   text-align: center;
   color: var(--text-muted);
-  font-size: 0.85rem;
-  padding: 20px 0;
+  font-size: 0.875rem;
+  padding: 24px;
 }
 
-/* Status Notifications */
+.divider {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: 20px 0;
+}
+
+/* Header Status Text (Inline, Clean Text Indicator) */
 .status-badge {
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   font-weight: 600;
-}
-
-.status-badge.success {
-  background: var(--success-bg);
-  color: var(--success-text);
+  color: var(--primary-green);
+  background: transparent;
+  border: none;
+  padding: 0;
+  box-shadow: none;
 }
 
 .status-badge.error {
-  background: var(--error-bg);
-  color: var(--error-text);
+  color: var(--danger-orange);
+  background: transparent;
 }
 
 .hidden {
