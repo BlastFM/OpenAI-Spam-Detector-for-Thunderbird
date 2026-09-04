@@ -182,27 +182,22 @@ document.addEventListener('DOMContentLoaded', () => {
     reader.readAsText(file);
   });
 
-  // --- Trigger Clear Dialog Popups ---
-  function openConfirmPopup(targetType) {
-    browser.windows.create({
-      url: browser.runtime.getURL(`options/popup.html?target=${targetType}`),
-      type: 'popup',
-      width: 420,
-      height: 220
-    });
-  }
+  // --- Clear Actions with Confirmation Prompt ---
+  clearLogBtn.addEventListener('click', () => {
+    if (confirm('Are you sure you want to clear the detected spam log?')) {
+      browser.storage.local.set({ spamLog: [] }).then(() => {
+        renderLogs([]);
+        showRightBanner('Spam log cleared.');
+      });
+    }
+  });
 
-  clearLogBtn.addEventListener('click', () => openConfirmPopup('log'));
-  clearMemoryBtn.addEventListener('click', () => openConfirmPopup('memory'));
-
-  // --- Listen for Messages from Popup Window ---
-  browser.runtime.onMessage.addListener((message) => {
-    if (message.action === 'logCleared') {
-      renderLogs([]);
-      showRightBanner('Spam log cleared.');
-    } else if (message.action === 'memoryCleared') {
-      renderMemory([]);
-      showRightBanner('Training memory cleared.');
+  clearMemoryBtn.addEventListener('click', () => {
+    if (confirm('Are you sure you want to clear the AI training memory?')) {
+      browser.storage.local.set({ trainingMemory: [] }).then(() => {
+        renderMemory([]);
+        showRightBanner('Training memory cleared.');
+      });
     }
   });
 
