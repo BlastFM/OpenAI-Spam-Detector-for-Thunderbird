@@ -9,18 +9,22 @@ An AI-powered spam detection and training extension for Mozilla Thunderbird. **O
 
 ---
 
-## What's New in v1.3.1
+### Configuration Options
 
-### 🛠️ Dedicated Configuration Export & Import
-* **Rules & Key Backup Bar:** Added a dedicated backup and restore toolbar directly inside the **Configuration** pane on the left side.
-* **Isolated Configuration Files:** You can now export and import strictly your OpenAI API Key, Model preferences, and Custom Prompt Rules without touching or overwriting your local detection logs.
+Open the Extension Options page (`Tools > Add-ons & Themes > Options`) to configure the following settings:
 
-### 🎨 UI & UX Improvements
-* **Professional Slate Styling:** Updated Configuration backup controls with a distinct slate/navy blue style (`.btn-slate`) to clearly separate setup actions from log management.
-* **Enhanced Hover Feedback:** Refined button hover states with a bright steel-blue shade (`#4a6572`) and subtle elevation shadows for crisp interactive feedback.
+| Setting | Description |
+| :--- | :--- |
+| **OpenAI API Key** | Your OpenAI secret key (`sk-...`) used to authenticate requests. |
+| **OpenAI Model** | Select your preferred classification model (`gpt-4o-mini`, `gpt-4o`, `gpt-3.5-turbo`). |
+| **Spam Action Destination** | Target folder where flagged spam is routed (`Trash`, `Account Junk`, or `Local Folders / AI Filtered Spam`). |
+| **Custom Rules** | Text prompt to add strict user rules (e.g., *Always mark newsletters from domain.com as HAM*). |
 
-### 📦 Artifacts
-- Attached release build: `openai-spam-detector-v1.3.1.xpi`
+#### Using the Dedicated Local Spam Folder
+To keep AI-detected spam isolated from server-synced folders:
+1. Open Extension Settings and set **Spam Action Destination** to `Local Folders / AI Filtered Spam`.
+2. When the AI detects a spam email, it automatically creates and routes the message to `Local Folders > AI Filtered Spam` inside Thunderbird.
+3. You can set a custom local retention policy on this folder (e.g., auto-delete after 14 days) by right-clicking the folder in Thunderbird and selecting **Properties > Retention Policy**.
 
 ## 🌟 Key Features
 
