@@ -67,13 +67,26 @@ To maintain UI performance and prevent layout reflows in Thunderbird, storage ba
 
 ## 🚀 Installation & Release Packaging
 
-Download openai-spam-detector-v1.3.2.xpi from the assets section below.
+## Download & Installation
 
-Open Thunderbird and navigate to Add-ons and Themes (Ctrl+Shift+A or Cmd+Shift+A).
+[![Download Release](https://img.shields.io/badge/Download-v1.3.2_.XPI-blue?style=for-the-badge&logo=thunderbird&logoColor=white)](https://github.com/BlastFM/OpenAI-Spam-Detector-for-Thunderbird/releases/download/v1.3.2/openai-spam-detector-v1.3.2.xpi)
+[![Get Latest Release](https://img.shields.io/github/v/release/YOUR_USERNAME/YOUR_REPO?color=green&label=Latest%20Release&style=for-the-badge)](https://github.com/BlastFM/OpenAI-Spam-Detector-for-Thunderbird/releases/latest)
 
-Click the gear icon (Tools for all add-ons) in the upper right.
+### Direct Downloads
 
-Select Install Add-on From File... and choose the openai-spam-detector-v1.3.2.xpi file.
+| Asset | Description | Download Link |
+| :--- | :--- | :--- |
+| **Extension Binary** | Ready-to-install Thunderbird Add-on | [`openai-spam-detector-v1.3.2.xpi`](https://github.com/YOUR_USERNAME/YOUR_REPO/releases/download/v1.3.2/openai-spam-detector-v1.3.2.xpi) |
+| **Source Code** | Compressed source files (`.zip`) | [`Source code (zip)`](https://github.com/YOUR_USERNAME/YOUR_REPO/archive/refs/tags/v1.3.2.zip) |
+
+---
+
+### How to Install in Thunderbird
+
+1. Click the download button above to save **`openai-spam-detector-v1.3.2.xpi`** to your computer.
+2. Open Thunderbird and navigate to **Add-ons and Themes** (`Ctrl+Shift+A` or `Cmd+Shift+A`).
+3. Click the gear icon (**Tools for all add-ons**) in the top-right corner.
+4. Select **Install Add-on From File...** and choose the downloaded `.xpi` file.
 
 ---
 
