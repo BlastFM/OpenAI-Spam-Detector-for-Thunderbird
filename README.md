@@ -146,6 +146,17 @@ Host Permission (https://api.openai.com/*): Required to transmit snippet data to
 
 Privacy Note: Transmitted email content includes the sender address, subject line, and the first 1,000 characters of the body text. Data is processed according to OpenAI's Data Usage Policies. No data is sent to intermediate third-party servers.
 
+## Release History
+
+### [v1.3.1] - 2026-09-04
+
+#### Added
+* **Dedicated Config Export/Import:** Added independent export/import buttons in the Configuration panel to backup or migrate API keys and custom prompt rules separately from log data.
+
+#### Changed
+* **Action Styling:** Applied a custom slate/navy blue theme to Configuration panel controls to visually distinguish setting actions from log actions.
+* **Hover Interaction:** Improved button focus and hover feedback across the extension settings interface with enhanced contrast and elevation shadows.
+
 📄 License
 Distributed under the MIT License. See LICENSE for more information.
 
