@@ -12,10 +12,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const statusMessage = document.getElementById('status-message');
   const rightPanelStatus = document.getElementById('right-panel-status');
 
+  // Left Pane Settings Controls
   const exportRulesBtn = document.getElementById('export-rules-btn');
   const importRulesBtn = document.getElementById('import-rules-btn');
   const importRulesInput = document.getElementById('import-rules-input');
 
+  // Right Pane Backup & Clear Controls
   const exportBackupBtn = document.getElementById('export-backup-btn');
   const importBackupBtn = document.getElementById('import-backup-btn');
   const importFileInput = document.getElementById('import-file-input');
@@ -38,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Helper: Top Right Panel Banner Status ---
   function showRightBanner(text, isError = false) {
+    if (!rightPanelStatus) return;
     rightPanelStatus.textContent = text;
     rightPanelStatus.className = `status-msg-banner ${isError ? 'error' : 'success'}`;
     rightPanelStatus.style.display = 'block';
@@ -182,9 +185,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Trigger Clear Dialog Popups ---
   function openConfirmPopup(targetType) {
     browser.windows.create({
-      url: browser.runtime.getURL(`popup/popup.html?target=${targetType}`),
+      url: browser.runtime.getURL(`options/popup.html?target=${targetType}`),
       type: 'popup',
-      width: 400,
+      width: 420,
       height: 220
     });
   }
