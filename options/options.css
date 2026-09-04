@@ -1,3 +1,24 @@
+:root {
+  --bg-main: #f8fafc;
+  --bg-card: #ffffff;
+  --border-color: #e2e8f0;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  
+  /* Button Colors */
+  --btn-primary-bg: #2563eb;
+  --btn-primary-hover: #1d4ed8;
+  --btn-secondary-bg: #f1f5f9;
+  --btn-secondary-text: #334155;
+  --btn-secondary-border: #cbd5e1;
+  --btn-success-bg: #f0fdf4;
+  --btn-success-text: #166534;
+  --btn-success-border: #86efac;
+  --btn-danger-bg: #fef2f2;
+  --btn-danger-text: #991b1b;
+  --btn-danger-border: #fca5a5;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -6,8 +27,8 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background-color: #f8fafc;
-  color: #1e293b;
+  background-color: var(--bg-main);
+  color: var(--text-main);
   padding: 24px;
   line-height: 1.5;
 }
@@ -18,7 +39,7 @@ body {
   gap: 16px;
   margin-bottom: 24px;
   padding-bottom: 16px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .logo {
@@ -29,12 +50,12 @@ body {
 h1 {
   font-size: 20px;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--text-main);
 }
 
 .subtitle {
   font-size: 13px;
-  color: #64748b;
+  color: var(--text-muted);
 }
 
 .container {
@@ -52,8 +73,8 @@ h1 {
 }
 
 .panel {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
@@ -64,13 +85,14 @@ h1 {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
+  gap: 12px;
 }
 
 h2 {
   font-size: 16px;
   font-weight: 600;
   margin-bottom: 16px;
-  color: #1e293b;
+  color: var(--text-main);
 }
 
 .panel-header h2 {
@@ -99,15 +121,14 @@ textarea {
   border: 1px solid #cbd5e1;
   border-radius: 6px;
   background-color: #ffffff;
-  color: #0f172a;
-  transition: border-color 0.15s ease;
+  color: var(--text-main);
 }
 
 input:focus,
 select:focus,
 textarea:focus {
   outline: none;
-  border-color: #2563eb;
+  border-color: var(--btn-primary-bg);
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
@@ -123,73 +144,73 @@ textarea:focus {
 .help-text {
   display: block;
   font-size: 11px;
-  color: #64748b;
+  color: var(--text-muted);
   margin-top: 4px;
 }
 
-/* --- BUTTON STYLES --- */
-
+/* Base Button */
 .btn {
-  padding: 8px 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 12px;
   font-size: 13px;
   font-weight: 500;
   border-radius: 6px;
   cursor: pointer;
   border: 1px solid transparent;
-  transition: all 0.15s ease-in-out;
+  transition: all 0.15s ease;
   white-space: nowrap;
 }
 
-/* Primary Action (Save Settings) - Solid Blue */
+/* Save Settings */
 .btn-primary {
-  background-color: #2563eb;
+  background-color: var(--btn-primary-bg);
   color: #ffffff;
-  border-color: #2563eb;
+  border-color: var(--btn-primary-bg);
 }
 
 .btn-primary:hover {
-  background-color: #1d4ed8;
-  border-color: #1d4ed8;
+  background-color: var(--btn-primary-hover);
 }
 
-/* Secondary Action (Test Key) - Light Neutral Gray */
+/* Test Key */
 .btn-secondary {
-  background-color: #e2e8f0;
-  color: #1e293b;
-  border-color: #cbd5e1;
+  background-color: var(--btn-secondary-bg);
+  color: var(--btn-secondary-text);
+  border-color: var(--btn-secondary-border);
 }
 
 .btn-secondary:hover {
-  background-color: #cbd5e1;
+  background-color: #e2e8f0;
 }
 
-/* Outline Buttons (Export / Import Backup) - Green Outline */
+/* Export / Import Backup */
 .btn-outline {
-  background-color: #ffffff;
-  color: #15803d;
-  border-color: #16a34a;
+  background-color: var(--btn-success-bg);
+  color: var(--btn-success-text);
+  border-color: var(--btn-success-border);
 }
 
 .btn-outline:hover {
-  background-color: #f0fdf4;
-  color: #166534;
+  background-color: #dcfce7;
 }
 
-/* Danger Outline Buttons (Clear Log / Clear Memory) - Red Outline */
+/* Clear Log & Clear Memory */
 .btn-danger-outline {
-  background-color: #ffffff;
-  color: #dc2626;
-  border-color: #dc2626;
+  background-color: var(--btn-danger-bg);
+  color: var(--btn-danger-text);
+  border-color: var(--btn-danger-border);
 }
 
 .btn-danger-outline:hover {
-  background-color: #fef2f2;
-  color: #b91c1c;
+  background-color: #fee2e2;
 }
 
 .button-group {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .actions-footer {
@@ -234,7 +255,7 @@ textarea:focus {
 .divider {
   border: 0;
   height: 1px;
-  background: #e2e8f0;
+  background: var(--border-color);
   margin: 20px 0;
 }
 
