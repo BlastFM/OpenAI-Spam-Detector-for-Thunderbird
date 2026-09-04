@@ -67,13 +67,13 @@ To maintain UI performance and prevent layout reflows in Thunderbird, storage ba
 
 ## 🚀 Installation & Release Packaging
 
-Open Thunderbird:
+Download openai-spam-detector-v1.3.2.xpi from the assets section below.
 
-Go to Tools > Add-ons and Themes.
+Open Thunderbird and navigate to Add-ons and Themes (Ctrl+Shift+A or Cmd+Shift+A).
 
-Click the ⚙️ (Gear Icon) and select Install Add-on From File...
+Click the gear icon (Tools for all add-ons) in the upper right.
 
-Select openai-spam-detector-v1.1.0.xpi.
+Select Install Add-on From File... and choose the openai-spam-detector-v1.3.2.xpi file.
 
 ---
 
