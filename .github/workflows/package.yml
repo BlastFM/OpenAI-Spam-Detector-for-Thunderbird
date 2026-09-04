@@ -7,7 +7,7 @@ on:
     tags:
       - 'v*'
 
-# Required so GITHUB_TOKEN can publish releases and upload .xpi assets
+# Grants GITHUB_TOKEN permissions to create releases and attach .xpi assets
 permissions:
   contents: write
 
@@ -40,5 +40,6 @@ jobs:
         with:
           files: openai-spam-detector.xpi
           generate_release_notes: true
+          make_latest: "true"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
