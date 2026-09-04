@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // 2. Initial logs render
   await loadLogs();
 
-  // 3. Storage change listener (Filters external storage updates)
+  // 3. Storage change listener
   api.storage.onChanged.addListener((changes, areaName) => {
     if (areaName === 'local') {
       if (changes.spamLog || changes.falsePositives) {
@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // 4. Attach Backup & Restore handlers
   setupBackupHandlers();
+  setupConfigBackupHandlers();
 });
 
 // --- LOG LOADING & RENDERING ---
@@ -237,20 +238,101 @@ document.getElementById('clearFPLog').addEventListener('click', async () => {
   showStatus('AI training memory cleared successfully!', 'success');
 });
 
-// --- BACKUP & RESTORE MODULE ---
+// --- LEFT PANE CONFIGURATION BACKUP & RESTORE ---
+
+function setupConfigBackupHandlers() {
+  const exportConfigBtn = document.getElementById('exportConfigBtn');
+  const importConfigFile = document.getElementById('importConfigFile');
+
+  if (exportConfigBtn) {
+    exportConfigBtn.addEventListener('click', async () => {
+      try {
+        const api = typeof messenger !== 'undefined' ? messenger : browser;
+        const configData = await api.storage.sync.get(['apiKey', 'model', 'customPrompt']);
+        
+        const jsonStr = JSON.stringify(configData, null, 2);
+        const blob = new Blob([jsonStr], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const fileName = `openai_rules_backup_${new Date().toISOString().slice(0, 10)}.json`;
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+
+        setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, 150);
+
+        showStatus("Rules & API Key exported successfully!", "success");
+      } catch (err) {
+        console.error("Config Export error:", err);
+        showStatus("Config Export failed: " + err.message, "error");
+      }
+    });
+  }
+
+  if (importConfigFile) {
+    importConfigFile.addEventListener('change', (e) => {
+      const api = typeof messenger !== 'undefined' ? messenger : browser;
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async (uploadEvent) => {
+        try {
+          const importedData = JSON.parse(uploadEvent.target.result);
+
+          if (typeof importedData !== "object" || importedData === null) {
+            throw new Error("Invalid JSON structure");
+          }
+
+          const apiKey = importedData.apiKey || importedData.syncSettings?.apiKey || '';
+          const model = importedData.model || importedData.syncSettings?.model || 'gpt-4o-mini';
+          const customPrompt = importedData.customPrompt || importedData.syncSettings?.customPrompt || '';
+
+          await api.storage.sync.set({ apiKey, model, customPrompt });
+
+          document.getElementById('apiKey').value = apiKey;
+          document.getElementById('model').value = model;
+          document.getElementById('customPrompt').value = customPrompt;
+
+          showStatus("Rules & API Key imported successfully!", "success");
+          e.target.value = '';
+        } catch (err) {
+          console.error("Config Import error:", err);
+          showStatus("Config Import failed: " + err.message, "error");
+          e.target.value = '';
+        }
+      };
+
+      reader.readAsText(file);
+    });
+  }
+}
+
+// --- FULL BACKUP & RESTORE MODULE ---
 
 function setupBackupHandlers() {
   const exportBtn = document.getElementById('exportBackup');
   const importFileInput = document.getElementById('importFileInput');
 
-  // EXPORT
   if (exportBtn) {
     exportBtn.addEventListener('click', async () => {
       try {
         const api = typeof messenger !== 'undefined' ? messenger : browser;
-        const allData = await api.storage.local.get(null);
-        const jsonStr = JSON.stringify(allData, null, 2);
+        
+        const localData = await api.storage.local.get(null);
+        const syncData = await api.storage.sync.get(['apiKey', 'model', 'customPrompt']);
+        
+        const fullBackup = {
+          syncSettings: syncData,
+          localData: localData
+        };
 
+        const jsonStr = JSON.stringify(fullBackup, null, 2);
         const blob = new Blob([jsonStr], { type: "application/json" });
         const url = URL.createObjectURL(blob);
         const fileName = `spam_detector_backup_${new Date().toISOString().slice(0, 10)}.json`;
@@ -274,7 +356,6 @@ function setupBackupHandlers() {
     });
   }
 
-  // IMPORT
   if (importFileInput) {
     importFileInput.addEventListener('change', (e) => {
       const api = typeof messenger !== 'undefined' ? messenger : browser;
@@ -290,16 +371,27 @@ function setupBackupHandlers() {
             throw new Error("Invalid JSON structure");
           }
 
-          // Clear local storage & set imported state
-          await api.storage.local.clear();
-          await api.storage.local.set(importedData);
+          if (importedData.syncSettings || importedData.localData) {
+            if (importedData.syncSettings) {
+              await api.storage.sync.set(importedData.syncSettings);
+            }
+            if (importedData.localData) {
+              await api.storage.local.clear();
+              await api.storage.local.set(importedData.localData);
+            }
+          } else {
+            await api.storage.local.clear();
+            await api.storage.local.set(importedData);
+          }
 
           showStatus("Backup restored successfully!", "success");
 
-          // Reset value to allow re-importing the same file if needed
-          e.target.value = '';
+          const { apiKey, model, customPrompt } = await api.storage.sync.get(['apiKey', 'model', 'customPrompt']);
+          if (apiKey) document.getElementById('apiKey').value = apiKey;
+          if (model) document.getElementById('model').value = model;
+          if (customPrompt) document.getElementById('customPrompt').value = customPrompt;
 
-          // Instant re-render
+          e.target.value = '';
           await loadLogs();
         } catch (err) {
           console.error("Import error:", err);

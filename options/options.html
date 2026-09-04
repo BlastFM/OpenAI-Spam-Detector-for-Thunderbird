@@ -52,6 +52,16 @@
           <span class="field-hint">Add specific rules for the AI to follow during analysis.</span>
         </div>
 
+        <!-- Dedicated Left Pane Config Backup Bar -->
+        <div class="config-backup-actions" style="display: flex; gap: 8px; margin-bottom: 15px;">
+          <button id="exportConfigBtn" type="button" class="btn btn-slate btn-sm" style="flex: 1;">Export Rules & Key</button>
+          
+          <label for="importConfigFile" class="btn btn-slate btn-sm" style="flex: 1; cursor: pointer; text-align: center; margin: 0;">
+            Import Rules & Key
+            <input type="file" id="importConfigFile" accept=".json,application/json" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0;">
+          </label>
+        </div>
+
         <div class="form-actions">
           <button id="save" class="btn btn-primary">Save Settings</button>
         </div>
@@ -63,11 +73,10 @@
         <div class="logs-header">
           <h2>Detected Spam Log</h2>
           <div class="header-actions">
-            <button id="exportBackup" type="button" class="btn btn-green-outline btn-sm">Export Backup</button>
+            <button id="exportBackup" type="button" class="btn btn-green-outline btn-sm">Export Full Backup</button>
             
-            <!-- Native label wrapping transparent input bypasses Gecko click security restrictions -->
             <label for="importFileInput" class="btn btn-green-outline btn-sm" style="cursor: pointer; margin: 0;">
-              Import Backup
+              Import Full Backup
               <input type="file" id="importFileInput" accept=".json,application/json" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0;">
             </label>
 
