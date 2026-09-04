@@ -4,7 +4,6 @@ console.log("[Thunderbird OpenAI Spam Detector] Optimized background worker init
 const folderCache = new Map();
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minute cache invalidation
 
-// Setup Context Menus safely
 function setupContextMenus() {
   messenger.menus.removeAll().then(() => {
     messenger.menus.create({
@@ -43,15 +42,25 @@ async function processInBatches(items, limit, fn) {
   return results;
 }
 
+<<<<<<< HEAD
+messenger.menus.onClicked.addListener(async (info, tab) => {
+=======
 // Context Menu Click Listener
 messenger.menus.onClicked.addListener(async (info) => {
+>>>>>>> origin/main
   if (!info.selectedMessages || info.selectedMessages.messages.length === 0) return;
 
   await processInBatches(info.selectedMessages.messages, 3, async (message) => {
     if (info.menuItemId === "mark-as-spam") {
       const fullMessage = await messenger.messages.get(message.id);
       const messageBody = await messenger.messages.getFull(message.id);
+<<<<<<< HEAD
+      let bodyText = extractTextFromParts(messageBody.parts || []);
+      if (!bodyText && messageBody.body) bodyText = messageBody.body;
+      bodyText = stripHtmlTags(bodyText);
+=======
       let bodyText = stripHtmlTags(extractTextFromParts(messageBody.parts || []));
+>>>>>>> origin/main
       await handleSpamMessage(fullMessage, bodyText);
     } else if (info.menuItemId === "mark-as-not-spam") {
       await manualMarkAsNotSpam(message.id);
@@ -59,27 +68,110 @@ messenger.menus.onClicked.addListener(async (info) => {
   });
 });
 
+<<<<<<< HEAD
+=======
 // Automatic New Mail Classifier (Throttled Concurrency)
+>>>>>>> origin/main
 messenger.messages.onNewMailReceived.addListener(async (folder, messages) => {
-  const { apiKey, model, customPrompt } = await messenger.storage.sync.get(['apiKey', 'model', 'customPrompt']);
-  
-  if (!apiKey) {
-    console.warn("[Thunderbird OpenAI Spam Detector] Skipping classification: No API key configured.");
-    return;
-  }
+  await processIncomingMessages(messages.messages || []);
+});
+
+if (messenger.messages.onUpdated) {
+  messenger.messages.onUpdated.addListener(async (message, changedProperties) => {
+    if (changedProperties.folder) {
+      await processIncomingMessages([message]);
+    }
+  });
+}
+
+// Helper: Convert wildcard string (* and ?) to RegExp
+function globToRegex(pattern) {
+  const escaped = pattern.trim().toLowerCase().replace(/[.+^${}()|[\]\\]/g, '\\$&');
+  const regexString = '^' + escaped.replace(/\*/g, '.*').replace(/\?/g, '.') + '$';
+  return new RegExp(regexString);
+}
+
+// Helper: Extract full email address from author string
+function getSenderEmail(authorString) {
+  if (!authorString) return '';
+  const match = authorString.match(/<([^>]+)>/) || [null, authorString];
+  return (match[1] || authorString).trim().toLowerCase();
+}
+
+// Helper: Match sender email or domain against wildcard rules
+function matchesDomainPattern(senderEmail, patternList) {
+  if (!patternList || patternList.length === 0) return false;
+
+  const senderDomain = senderEmail.split('@').pop() || '';
+
+  return patternList.some(pattern => {
+    const cleanPattern = pattern.trim().toLowerCase();
+    if (!cleanPattern) return false;
+
+    // Wildcard matching (* or ?)
+    if (cleanPattern.includes('*') || cleanPattern.includes('?')) {
+      const regex = globToRegex(cleanPattern);
+      return regex.test(senderEmail) || regex.test(senderDomain);
+    }
+
+    // Exact domain or subdomain match (e.g. "stripe.com" matches "sub.stripe.com")
+    return senderDomain === cleanPattern || senderDomain.endsWith('.' + cleanPattern);
+  });
+}
+
+async function processIncomingMessages(messageList) {
+  const { apiKey, model, customPrompt, whitelist = '', blacklist = '' } = 
+    await messenger.storage.sync.get(['apiKey', 'model', 'customPrompt', 'whitelist', 'blacklist']);
+
+  const safePatterns = whitelist.split(',').map(d => d.trim()).filter(Boolean);
+  const blockedPatterns = blacklist.split(',').map(d => d.trim()).filter(Boolean);
 
   const activeModel = model || 'gpt-4o-mini';
   const { falsePositives } = await messenger.storage.local.get({ falsePositives: [] });
   const messageList = messages.messages || [];
 
+<<<<<<< HEAD
+  for (let message of messageList) {
+=======
   await processInBatches(messageList, 3, async (message) => {
+>>>>>>> origin/main
     try {
       const fullMessage = await messenger.messages.get(message.id);
+      const senderEmail = getSenderEmail(fullMessage.author);
+
+      // Fast-Path 1: Whitelist Match (Skip AI & Stay in Inbox)
+      if (matchesDomainPattern(senderEmail, safePatterns)) {
+        console.log(`[Thunderbird OpenAI Spam Detector] Whitelisted pattern match (${senderEmail}): Skipping classification.`);
+        continue;
+      }
+
+      // Fast-Path 2: Blacklist Match (Skip AI & Move to Spam)
+      if (matchesDomainPattern(senderEmail, blockedPatterns)) {
+        console.log(`[Thunderbird OpenAI Spam Detector] Blacklisted pattern match (${senderEmail}): Moving to spam.`);
+        await handleSpamMessage(fullMessage, "Blacklisted Sender Pattern Match");
+        continue;
+      }
+
+      // AI Analysis Path
+      if (!apiKey) {
+        console.warn("[Thunderbird OpenAI Spam Detector] Skipping classification: No API key configured.");
+        return;
+      }
+
       const messageBody = await messenger.messages.getFull(message.id);
+<<<<<<< HEAD
+      let bodyText = extractTextFromParts(messageBody.parts || []);
+      if (!bodyText.trim() && messageBody.body) {
+        bodyText = messageBody.body;
+      }
+=======
       
       let bodyText = messageBody.parts && messageBody.parts.length > 0 
         ? extractTextFromParts(messageBody.parts)
         : (messageBody.body || "");
+
+      bodyText = stripHtmlTags(bodyText);
+>>>>>>> origin/main
 
       bodyText = stripHtmlTags(bodyText);
 
@@ -100,8 +192,13 @@ messenger.messages.onNewMailReceived.addListener(async (folder, messages) => {
     } catch (err) {
       console.error("[Thunderbird OpenAI Spam Detector] Error processing message:", err);
     }
+<<<<<<< HEAD
+  }
+}
+=======
   });
 });
+>>>>>>> origin/main
 
 function stripHtmlTags(str) {
   return (str || "")
@@ -117,15 +214,32 @@ function extractTextFromParts(parts) {
 
   for (let part of parts) {
     if (part.contentType === "text/plain" && part.body) {
+<<<<<<< HEAD
+      text += part.body + "\n";
+    } else if (part.contentType === "text/html" && part.body) {
+      if (!text.trim()) {
+        text += part.body + "\n";
+      }
+=======
       plainText += part.body + "\n";
     } else if (part.contentType === "text/html" && part.body) {
       htmlText += part.body + "\n";
+>>>>>>> origin/main
     } else if (part.parts) {
       const nested = extractTextFromParts(part.parts);
       if (nested) return nested;
     }
   }
   return plainText || htmlText;
+}
+
+function stripHtmlTags(str) {
+  return (str || "")
+    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+    .replace(/<[^>]*>?/gm, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 async function classifyEmailWithOpenAI({ author, subject, body, apiKey, model, customPrompt, falsePositives }) {
@@ -211,6 +325,11 @@ async function getAccountFoldersCached(accountId) {
 
 async function handleSpamMessage(messageHeader, fullBody) {
   const { spamLog } = await messenger.storage.local.get({ spamLog: [] });
+<<<<<<< HEAD
+  const { targetFolder } = await messenger.storage.sync.get({ targetFolder: 'trash' });
+
+=======
+>>>>>>> origin/main
   const originFolderId = messageHeader.folder ? messageHeader.folder.id : null;
   const accountId = messageHeader.folder ? messageHeader.folder.accountId : null;
 
@@ -232,14 +351,29 @@ async function handleSpamMessage(messageHeader, fullBody) {
   }
 
   try {
+<<<<<<< HEAD
+    const account = await messenger.accounts.get(messageHeader.folder.accountId);
+    let destinationFolder = null;
+
+    if (targetFolder === 'junk') {
+      destinationFolder = findFolderByType(account.folders, 'junk');
+    } else if (targetFolder === 'local_ai_spam') {
+      destinationFolder = await getOrCreateLocalAISpamFolder();
+    }
+=======
     const folders = await getAccountFoldersCached(accountId);
     const trashFolder = findTrashFolder(folders);
+>>>>>>> origin/main
     
-    if (trashFolder) {
-      await messenger.messages.move([messageHeader.id], trashFolder);
+    if (!destinationFolder) {
+      destinationFolder = findFolderByType(account.folders, 'trash');
+    }
+
+    if (destinationFolder) {
+      await messenger.messages.move([messageHeader.id], destinationFolder);
     }
   } catch (err) {
-    console.error("[Thunderbird OpenAI Spam Detector] Could not move email to Trash:", err);
+    console.error("[Thunderbird OpenAI Spam Detector] Could not move email to target spam folder:", err);
   }
 }
 
@@ -247,7 +381,13 @@ async function manualMarkAsNotSpam(messageId) {
   try {
     const messageHeader = await messenger.messages.get(messageId);
     const messageBody = await messenger.messages.getFull(messageId);
+<<<<<<< HEAD
+    let bodyText = extractTextFromParts(messageBody.parts || []);
+    if (!bodyText && messageBody.body) bodyText = messageBody.body;
+    bodyText = stripHtmlTags(bodyText);
+=======
     let bodyText = stripHtmlTags(extractTextFromParts(messageBody.parts || []));
+>>>>>>> origin/main
 
     const { spamLog } = await messenger.storage.local.get({ spamLog: [] });
     const { falsePositives } = await messenger.storage.local.get({ falsePositives: [] });
@@ -263,6 +403,11 @@ async function manualMarkAsNotSpam(messageId) {
       }
     }
 
+<<<<<<< HEAD
+    if (!targetFolder) {
+      const account = await messenger.accounts.get(messageHeader.folder.accountId);
+      targetFolder = findFolderByType(account.folders, 'inbox');
+=======
     if (!targetFolder && messageHeader.folder) {
       const folders = await getAccountFoldersCached(messageHeader.folder.accountId);
       targetFolder = findInboxFolder(folders);
@@ -270,6 +415,7 @@ async function manualMarkAsNotSpam(messageId) {
       if (!targetFolder && folders) {
         targetFolder = folders.find(f => f.type === 'inbox' || f.name.toUpperCase() === 'INBOX');
       }
+>>>>>>> origin/main
     }
 
     const newFP = {
@@ -299,17 +445,36 @@ async function manualMarkAsNotSpam(messageId) {
   }
 }
 
-function findTrashFolder(folders) {
+function findFolderByType(folders, typeName) {
   for (let f of folders) {
-    if (f.type === 'trash' || f.name.toLowerCase() === 'trash' || f.name.toLowerCase() === 'deleted' || f.name.toLowerCase() === 'deleted items') return f;
+    if (f.type === typeName) return f;
+    const lowerName = (f.name || "").toLowerCase();
+    if (typeName === 'trash' && (lowerName === 'trash' || lowerName === 'deleted' || lowerName === 'deleted items' || lowerName === 'bin')) return f;
+    if (typeName === 'junk' && (lowerName === 'junk' || lowerName === 'spam' || lowerName === 'bulk')) return f;
+    if (typeName === 'inbox' && lowerName === 'inbox') return f;
+
     if (f.subFolders && f.subFolders.length > 0) {
-      const found = findTrashFolder(f.subFolders);
+      const found = findFolderByType(f.subFolders, typeName);
       if (found) return found;
     }
   }
   return null;
 }
 
+<<<<<<< HEAD
+async function getOrCreateLocalAISpamFolder() {
+  try {
+    const accounts = await messenger.accounts.list();
+    const localAccount = accounts.find(a => a.type === "none" || a.name === "Local Folders");
+    
+    if (!localAccount) return null;
+
+    let targetFolder = localAccount.folders.find(f => f.name === "AI Filtered Spam");
+    
+    if (!targetFolder && localAccount.folders.length > 0) {
+      const rootFolder = localAccount.folders[0];
+      targetFolder = await messenger.folders.create(rootFolder, "AI Filtered Spam");
+=======
 function findInboxFolder(folders) {
   for (let f of folders) {
     if (
@@ -323,7 +488,11 @@ function findInboxFolder(folders) {
     if (f.subFolders && f.subFolders.length > 0) {
       const found = findInboxFolder(f.subFolders);
       if (found) return found;
+>>>>>>> origin/main
     }
+    return targetFolder;
+  } catch (err) {
+    console.error("[Thunderbird OpenAI Spam Detector] Could not find or create Local Folders / AI Filtered Spam:", err);
+    return null;
   }
-  return null;
 }

@@ -30,7 +30,7 @@
           <label for="apiKey">OpenAI API Key</label>
           <div class="input-with-button">
             <input type="password" id="apiKey" placeholder="sk-..." autocomplete="off">
-            <button id="testKey" class="btn btn-secondary" title="Test Key Connection">
+            <button id="testKey" class="btn btn-green" title="Test Key Connection">
               <span>Test Key</span>
               <span class="btn-spinner hidden"></span>
             </button>
@@ -47,11 +47,43 @@
         </div>
 
         <div class="form-group">
+          <label for="targetFolder">Spam Action Destination</label>
+          <select id="targetFolder">
+            <option value="trash">Trash / Bin (Default)</option>
+            <option value="junk">Account Junk / Spam Folder</option>
+            <option value="local_ai_spam">Local Folders / AI Filtered Spam</option>
+          </select>
+          <span class="field-hint">Choose where emails identified as spam should be moved.</span>
+        </div>
+
+        <!-- Domain Whitelist -->
+        <div class="form-group">
+          <label for="whitelist">Domain Whitelist (Always Safe / Skip AI)</label>
+          <input type="text" id="whitelist" placeholder="e.g., company.com, *.stripe.com, vip-*.org">
+          <span class="field-hint">Comma-separated domains or wildcard patterns (e.g., <code>*.gov</code>, <code>mail.*.com</code>) that always stay in your Inbox.</span>
+        </div>
+
+        <!-- Domain Blacklist -->
+        <div class="form-group">
+          <label for="blacklist">Domain Blacklist (Always Spam / Skip AI)</label>
+          <input type="text" id="blacklist" placeholder="e.g., *.top, badsite.*, *@cheapleads.biz">
+          <span class="field-hint">Comma-separated domains or wildcard patterns automatically moved to Spam without using API tokens.</span>
+        </div>
+
+        <div class="form-group">
           <label for="customPrompt">Custom Classification Prompt Rules</label>
           <textarea id="customPrompt" rows="4" placeholder="e.g., Always treat emails containing invoices from 'acme.com' as HAM. Mark newsletters with 'unsubscribe' links as SPAM."></textarea>
           <span class="field-hint">Add specific rules for the AI to follow during analysis.</span>
         </div>
 
+<<<<<<< HEAD
+        <!-- Export/Import Buttons Row -->
+        <div style="display: flex; gap: 10px; margin-top: 16px; margin-bottom: 12px;">
+          <button id="exportRulesKey" type="button" class="btn btn-dark-outline" style="flex: 1;">Export Rules & Key</button>
+          <label for="importRulesKeyInput" class="btn btn-dark-outline" style="flex: 1; text-align: center; margin: 0; cursor: pointer;">
+            Import Rules & Key
+            <input type="file" id="importRulesKeyInput" accept=".json,application/json" style="display: none;">
+=======
         <!-- Dedicated Left Pane Config Backup Bar -->
         <div class="config-backup-actions" style="display: flex; gap: 8px; margin-bottom: 15px;">
           <button id="exportConfigBtn" type="button" class="btn btn-slate btn-sm" style="flex: 1;">Export Rules & Key</button>
@@ -59,11 +91,12 @@
           <label for="importConfigFile" class="btn btn-slate btn-sm" style="flex: 1; cursor: pointer; text-align: center; margin: 0;">
             Import Rules & Key
             <input type="file" id="importConfigFile" accept=".json,application/json" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0;">
+>>>>>>> origin/main
           </label>
         </div>
 
         <div class="form-actions">
-          <button id="save" class="btn btn-primary">Save Settings</button>
+          <button id="save" class="btn btn-green">Save Settings</button>
         </div>
       </section>
 
@@ -74,12 +107,19 @@
           <h2>Detected Spam Log</h2>
           <div class="header-actions">
             <button id="exportBackup" type="button" class="btn btn-green-outline btn-sm">Export Full Backup</button>
+<<<<<<< HEAD
+            <label for="importFileInput" class="btn btn-green-outline btn-sm" style="cursor: pointer; margin: 0;">
+              Import Full Backup
+              <input type="file" id="importFileInput" accept=".json,application/json" style="display: none;">
+            </label>
+=======
             
             <label for="importFileInput" class="btn btn-green-outline btn-sm" style="cursor: pointer; margin: 0;">
               Import Full Backup
               <input type="file" id="importFileInput" accept=".json,application/json" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0;">
             </label>
 
+>>>>>>> origin/main
             <button id="clearSpamLog" type="button" class="btn btn-orange-outline btn-sm">Clear Log</button>
           </div>
         </div>
