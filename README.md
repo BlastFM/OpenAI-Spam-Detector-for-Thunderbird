@@ -151,11 +151,11 @@ Privacy Note: Transmitted email content includes the sender address, subject lin
 ### [v1.3.1] - 2026-09-04
 
 #### Added
-* **Dedicated Config Export/Import:** Added independent export/import buttons in the Configuration panel to backup or migrate API keys and custom prompt rules separately from log data.
+* **Dedicated Configuration Export/Import:** Introduced independent configuration backup and restore controls within the left-hand Configuration panel to back up API keys, model selections, and custom prompt rules separately from log data.
 
 #### Changed
-* **Action Styling:** Applied a custom slate/navy blue theme to Configuration panel controls to visually distinguish setting actions from log actions.
-* **Hover Interaction:** Improved button focus and hover feedback across the extension settings interface with enhanced contrast and elevation shadows.
+* **Action Styling:** Applied a dedicated slate/navy blue theme (`.btn-slate`) to Configuration panel backup controls to visually distinguish setting actions from log management.
+* **Hover Interaction:** Enhanced hover feedback across configuration buttons with a higher-contrast steel-blue shade and subtle elevation shadows.
 
 📄 License
 Distributed under the MIT License. See LICENSE for more information.
