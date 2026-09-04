@@ -324,3 +324,22 @@ textarea {
 .hidden {
   display: none !important;
 }
+/* Ensure both <button> and <label> elements render identically */
+.btn,
+label.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  text-decoration: none;
+  white-space: nowrap;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased; /* Prevents labels from rendering chunkier font weights */
+  -moz-osx-font-smoothing: grayscale;
+}
