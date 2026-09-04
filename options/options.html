@@ -24,7 +24,7 @@
         <label for="api-key">OpenAI API Key</label>
         <div class="input-inline">
           <input type="password" id="api-key" placeholder="sk-...">
-          <button id="test-key-btn" class="btn btn-secondary">Test Key</button>
+          <button id="test-key-btn" class="btn btn-green-solid">Test Key</button>
         </div>
       </div>
 
@@ -48,7 +48,7 @@
       <div class="form-group">
         <label for="whitelist">Domain Whitelist (Always Safe / Skip AI)</label>
         <input type="text" id="whitelist" placeholder="e.g., company.com, *.stripe.com, vip-*.org">
-        <span class="help-text">Comma-separated domains or wildcard patterns that always stay in your Inbox.</span>
+        <span class="help-text">Comma-separated domains or wildcard patterns (e.g., *.gov, mail.*.com) that always stay in your Inbox.</span>
       </div>
 
       <div class="form-group">
@@ -63,12 +63,16 @@
         <span class="help-text">Add specific rules for the AI to follow during analysis.</span>
       </div>
 
-      <!-- Settings Backup & Actions -->
+      <!-- Backup Rules & Key Row -->
+      <div class="backup-row">
+        <button id="export-rules-btn" class="btn btn-gray">Export Rules & Key</button>
+        <button id="import-rules-btn" class="btn btn-gray">Import Rules & Key</button>
+        <input type="file" id="import-rules-input" accept=".json" style="display: none;">
+      </div>
+
+      <!-- Footer Action -->
       <div class="actions-footer">
-        <button id="save-btn" class="btn btn-primary">Save Settings</button>
-        <button id="export-settings-btn" class="btn btn-outline">Export Settings</button>
-        <button id="import-settings-btn" class="btn btn-outline">Import Settings</button>
-        <input type="file" id="import-settings-file" accept=".json" style="display: none;">
+        <button id="save-btn" class="btn btn-green-solid btn-large">Save Settings</button>
         <span id="status-message" class="status-msg"></span>
       </div>
     </div>
@@ -78,8 +82,9 @@
       <div class="panel-header">
         <h2>Detected Spam Log</h2>
         <div class="button-group">
-          <button id="export-log-btn" class="btn btn-outline">Export Log</button>
-
+          <button id="export-backup-btn" class="btn btn-green-outline">Export Full Backup</button>
+          <button id="import-backup-btn" class="btn btn-green-outline">Import Full Backup</button>
+          <input type="file" id="import-file-input" accept=".json" style="display: none;">
           <button id="clear-log-btn" class="btn btn-danger-outline">Clear Log</button>
         </div>
       </div>
@@ -90,8 +95,8 @@
 
       <hr class="divider">
 
-      <h2>Active AI Training Memory (Not Spam)</h2>
-      <div class="memory-actions">
+      <div class="panel-header">
+        <h2>Active AI Training Memory (Not Spam)</h2>
         <button id="clear-memory-btn" class="btn btn-danger-outline">Clear Memory</button>
       </div>
 
