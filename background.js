@@ -42,25 +42,16 @@ async function processInBatches(items, limit, fn) {
   return results;
 }
 
-<<<<<<< HEAD
 messenger.menus.onClicked.addListener(async (info, tab) => {
-=======
-// Context Menu Click Listener
-messenger.menus.onClicked.addListener(async (info) => {
->>>>>>> origin/main
   if (!info.selectedMessages || info.selectedMessages.messages.length === 0) return;
 
   await processInBatches(info.selectedMessages.messages, 3, async (message) => {
     if (info.menuItemId === "mark-as-spam") {
       const fullMessage = await messenger.messages.get(message.id);
       const messageBody = await messenger.messages.getFull(message.id);
-<<<<<<< HEAD
       let bodyText = extractTextFromParts(messageBody.parts || []);
       if (!bodyText && messageBody.body) bodyText = messageBody.body;
       bodyText = stripHtmlTags(bodyText);
-=======
-      let bodyText = stripHtmlTags(extractTextFromParts(messageBody.parts || []));
->>>>>>> origin/main
       await handleSpamMessage(fullMessage, bodyText);
     } else if (info.menuItemId === "mark-as-not-spam") {
       await manualMarkAsNotSpam(message.id);
@@ -68,10 +59,7 @@ messenger.menus.onClicked.addListener(async (info) => {
   });
 });
 
-<<<<<<< HEAD
-=======
 // Automatic New Mail Classifier (Throttled Concurrency)
->>>>>>> origin/main
 messenger.messages.onNewMailReceived.addListener(async (folder, messages) => {
   await processIncomingMessages(messages.messages || []);
 });
@@ -130,11 +118,7 @@ async function processIncomingMessages(messageList) {
   const { falsePositives } = await messenger.storage.local.get({ falsePositives: [] });
   const messageList = messages.messages || [];
 
-<<<<<<< HEAD
   for (let message of messageList) {
-=======
-  await processInBatches(messageList, 3, async (message) => {
->>>>>>> origin/main
     try {
       const fullMessage = await messenger.messages.get(message.id);
       const senderEmail = getSenderEmail(fullMessage.author);
@@ -159,19 +143,10 @@ async function processIncomingMessages(messageList) {
       }
 
       const messageBody = await messenger.messages.getFull(message.id);
-<<<<<<< HEAD
       let bodyText = extractTextFromParts(messageBody.parts || []);
       if (!bodyText.trim() && messageBody.body) {
         bodyText = messageBody.body;
       }
-=======
-      
-      let bodyText = messageBody.parts && messageBody.parts.length > 0 
-        ? extractTextFromParts(messageBody.parts)
-        : (messageBody.body || "");
-
-      bodyText = stripHtmlTags(bodyText);
->>>>>>> origin/main
 
       bodyText = stripHtmlTags(bodyText);
 
@@ -192,13 +167,8 @@ async function processIncomingMessages(messageList) {
     } catch (err) {
       console.error("[Thunderbird OpenAI Spam Detector] Error processing message:", err);
     }
-<<<<<<< HEAD
   }
 }
-=======
-  });
-});
->>>>>>> origin/main
 
 function stripHtmlTags(str) {
   return (str || "")
@@ -214,17 +184,11 @@ function extractTextFromParts(parts) {
 
   for (let part of parts) {
     if (part.contentType === "text/plain" && part.body) {
-<<<<<<< HEAD
       text += part.body + "\n";
     } else if (part.contentType === "text/html" && part.body) {
       if (!text.trim()) {
         text += part.body + "\n";
       }
-=======
-      plainText += part.body + "\n";
-    } else if (part.contentType === "text/html" && part.body) {
-      htmlText += part.body + "\n";
->>>>>>> origin/main
     } else if (part.parts) {
       const nested = extractTextFromParts(part.parts);
       if (nested) return nested;
@@ -325,45 +289,8 @@ async function getAccountFoldersCached(accountId) {
 
 async function handleSpamMessage(messageHeader, fullBody) {
   const { spamLog } = await messenger.storage.local.get({ spamLog: [] });
-<<<<<<< HEAD
   const { targetFolder } = await messenger.storage.sync.get({ targetFolder: 'trash' });
 
-=======
->>>>>>> origin/main
-  const originFolderId = messageHeader.folder ? messageHeader.folder.id : null;
-  const accountId = messageHeader.folder ? messageHeader.folder.accountId : null;
-
-  const newEntry = {
-    id: messageHeader.id,
-    author: messageHeader.author,
-    subject: messageHeader.subject,
-    bodySnippet: (fullBody || "").substring(0, 120).replace(/\s+/g, ' '),
-    dateAdded: new Date().toISOString(),
-    originFolderId: originFolderId
-  };
-
-  const updatedLog = [newEntry, ...spamLog].slice(0, 50);
-  await messenger.storage.local.set({ spamLog: updatedLog });
-
-  if (!accountId) {
-    console.error("[Thunderbird OpenAI Spam Detector] Cannot move email: Account ID missing.");
-    return;
-  }
-
-  try {
-<<<<<<< HEAD
-    const account = await messenger.accounts.get(messageHeader.folder.accountId);
-    let destinationFolder = null;
-
-    if (targetFolder === 'junk') {
-      destinationFolder = findFolderByType(account.folders, 'junk');
-    } else if (targetFolder === 'local_ai_spam') {
-      destinationFolder = await getOrCreateLocalAISpamFolder();
-    }
-=======
-    const folders = await getAccountFoldersCached(accountId);
-    const trashFolder = findTrashFolder(folders);
->>>>>>> origin/main
     
     if (!destinationFolder) {
       destinationFolder = findFolderByType(account.folders, 'trash');
@@ -381,13 +308,9 @@ async function manualMarkAsNotSpam(messageId) {
   try {
     const messageHeader = await messenger.messages.get(messageId);
     const messageBody = await messenger.messages.getFull(messageId);
-<<<<<<< HEAD
     let bodyText = extractTextFromParts(messageBody.parts || []);
     if (!bodyText && messageBody.body) bodyText = messageBody.body;
     bodyText = stripHtmlTags(bodyText);
-=======
-    let bodyText = stripHtmlTags(extractTextFromParts(messageBody.parts || []));
->>>>>>> origin/main
 
     const { spamLog } = await messenger.storage.local.get({ spamLog: [] });
     const { falsePositives } = await messenger.storage.local.get({ falsePositives: [] });
@@ -403,19 +326,9 @@ async function manualMarkAsNotSpam(messageId) {
       }
     }
 
-<<<<<<< HEAD
     if (!targetFolder) {
       const account = await messenger.accounts.get(messageHeader.folder.accountId);
       targetFolder = findFolderByType(account.folders, 'inbox');
-=======
-    if (!targetFolder && messageHeader.folder) {
-      const folders = await getAccountFoldersCached(messageHeader.folder.accountId);
-      targetFolder = findInboxFolder(folders);
-
-      if (!targetFolder && folders) {
-        targetFolder = folders.find(f => f.type === 'inbox' || f.name.toUpperCase() === 'INBOX');
-      }
->>>>>>> origin/main
     }
 
     const newFP = {
@@ -461,7 +374,6 @@ function findFolderByType(folders, typeName) {
   return null;
 }
 
-<<<<<<< HEAD
 async function getOrCreateLocalAISpamFolder() {
   try {
     const accounts = await messenger.accounts.list();
@@ -474,21 +386,6 @@ async function getOrCreateLocalAISpamFolder() {
     if (!targetFolder && localAccount.folders.length > 0) {
       const rootFolder = localAccount.folders[0];
       targetFolder = await messenger.folders.create(rootFolder, "AI Filtered Spam");
-=======
-function findInboxFolder(folders) {
-  for (let f of folders) {
-    if (
-      f.type === 'inbox' || 
-      f.name.toLowerCase() === 'inbox' || 
-      f.name.toUpperCase() === 'INBOX' ||
-      (f.path && f.path.toLowerCase().endsWith('/inbox'))
-    ) {
-      return f;
-    }
-    if (f.subFolders && f.subFolders.length > 0) {
-      const found = findInboxFolder(f.subFolders);
-      if (found) return found;
->>>>>>> origin/main
     }
     return targetFolder;
   } catch (err) {

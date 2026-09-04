@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', async () => {
   const api = typeof messenger !== 'undefined' ? messenger : browser;
 
-<<<<<<< HEAD
   // 1. Load saved settings (including whitelist and blacklist)
   const { apiKey, model, targetFolder, customPrompt, whitelist, blacklist } = 
     await api.storage.sync.get(['apiKey', 'model', 'targetFolder', 'customPrompt', 'whitelist', 'blacklist']);
@@ -11,12 +10,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (targetFolder) document.getElementById('targetFolder').value = targetFolder || 'trash';
   if (whitelist) document.getElementById('whitelist').value = whitelist || '';
   if (blacklist) document.getElementById('blacklist').value = blacklist || '';
-=======
-  // 1. Load saved settings
-  const { apiKey, model, customPrompt } = await api.storage.sync.get(['apiKey', 'model', 'customPrompt']);
-  if (apiKey) document.getElementById('apiKey').value = apiKey || '';
-  if (model) document.getElementById('model').value = model || 'gpt-4o-mini';
->>>>>>> origin/main
   if (customPrompt) document.getElementById('customPrompt').value = customPrompt || '';
 
   // 2. Initial logs render
@@ -33,10 +26,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // 4. Attach Backup & Restore handlers
   setupBackupHandlers();
-<<<<<<< HEAD
-=======
   setupConfigBackupHandlers();
->>>>>>> origin/main
 });
 
 // --- LOG LOADING & RENDERING ---
@@ -199,11 +189,7 @@ document.getElementById('save').addEventListener('click', async () => {
     return;
   }
 
-<<<<<<< HEAD
   await api.storage.sync.set({ apiKey, model, targetFolder, whitelist, blacklist, customPrompt });
-=======
-  await api.storage.sync.set({ apiKey, model, customPrompt });
->>>>>>> origin/main
   showStatus('Saved successfully!', 'success');
 });
 
@@ -260,7 +246,6 @@ document.getElementById('clearFPLog').addEventListener('click', async () => {
   showStatus('AI training memory cleared successfully!', 'success');
 });
 
-<<<<<<< HEAD
 // --- BACKUP & RESTORE MODULE ---
 
 function populateFormFields(settings) {
@@ -296,45 +281,10 @@ function setupBackupHandlers() {
         showStatus("Rules & API key exported successfully!", "success");
       } catch (err) {
         showStatus("Export failed: " + err.message, "error");
-=======
-// --- LEFT PANE CONFIGURATION BACKUP & RESTORE ---
-
-function setupConfigBackupHandlers() {
-  const exportConfigBtn = document.getElementById('exportConfigBtn');
-  const importConfigFile = document.getElementById('importConfigFile');
-
-  if (exportConfigBtn) {
-    exportConfigBtn.addEventListener('click', async () => {
-      try {
-        const api = typeof messenger !== 'undefined' ? messenger : browser;
-        const configData = await api.storage.sync.get(['apiKey', 'model', 'customPrompt']);
-        
-        const jsonStr = JSON.stringify(configData, null, 2);
-        const blob = new Blob([jsonStr], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const fileName = `openai_rules_backup_${new Date().toISOString().slice(0, 10)}.json`;
-
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = fileName;
-        document.body.appendChild(a);
-        a.click();
-
-        setTimeout(() => {
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-        }, 150);
-
-        showStatus("Rules & API Key exported successfully!", "success");
-      } catch (err) {
-        console.error("Config Export error:", err);
-        showStatus("Config Export failed: " + err.message, "error");
->>>>>>> origin/main
       }
     });
   }
 
-<<<<<<< HEAD
   if (importRulesKeyInput) {
     importRulesKeyInput.addEventListener('change', (e) => {
       handleImportFile(e, async (importedData, api) => {
@@ -346,58 +296,11 @@ function setupConfigBackupHandlers() {
       });
     });
   }
-=======
-  if (importConfigFile) {
-    importConfigFile.addEventListener('change', (e) => {
-      const api = typeof messenger !== 'undefined' ? messenger : browser;
-      const file = e.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = async (uploadEvent) => {
-        try {
-          const importedData = JSON.parse(uploadEvent.target.result);
-
-          if (typeof importedData !== "object" || importedData === null) {
-            throw new Error("Invalid JSON structure");
-          }
-
-          const apiKey = importedData.apiKey || importedData.syncSettings?.apiKey || '';
-          const model = importedData.model || importedData.syncSettings?.model || 'gpt-4o-mini';
-          const customPrompt = importedData.customPrompt || importedData.syncSettings?.customPrompt || '';
-
-          await api.storage.sync.set({ apiKey, model, customPrompt });
-
-          document.getElementById('apiKey').value = apiKey;
-          document.getElementById('model').value = model;
-          document.getElementById('customPrompt').value = customPrompt;
-
-          showStatus("Rules & API Key imported successfully!", "success");
-          e.target.value = '';
-        } catch (err) {
-          console.error("Config Import error:", err);
-          showStatus("Config Import failed: " + err.message, "error");
-          e.target.value = '';
-        }
-      };
-
-      reader.readAsText(file);
-    });
-  }
-}
-
-// --- FULL BACKUP & RESTORE MODULE ---
-
-function setupBackupHandlers() {
-  const exportBtn = document.getElementById('exportBackup');
-  const importFileInput = document.getElementById('importFileInput');
->>>>>>> origin/main
 
   if (exportBtn) {
     exportBtn.addEventListener('click', async () => {
       try {
         const api = typeof messenger !== 'undefined' ? messenger : browser;
-<<<<<<< HEAD
         const syncData = await api.storage.sync.get(null);
         const localData = await api.storage.local.get(null);
 
@@ -412,36 +315,6 @@ function setupBackupHandlers() {
         downloadJson(fullBackup, `openai_spam_detector_backup_${new Date().toISOString().slice(0, 10)}.json`);
         showStatus("Full backup exported successfully!", "success");
       } catch (err) {
-=======
-        
-        const localData = await api.storage.local.get(null);
-        const syncData = await api.storage.sync.get(['apiKey', 'model', 'customPrompt']);
-        
-        const fullBackup = {
-          syncSettings: syncData,
-          localData: localData
-        };
-
-        const jsonStr = JSON.stringify(fullBackup, null, 2);
-        const blob = new Blob([jsonStr], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const fileName = `spam_detector_backup_${new Date().toISOString().slice(0, 10)}.json`;
-
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = fileName;
-        document.body.appendChild(a);
-        a.click();
-
-        setTimeout(() => {
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-        }, 150);
-
-        showStatus("Backup exported successfully!", "success");
-      } catch (err) {
-        console.error("Export error:", err);
->>>>>>> origin/main
         showStatus("Export failed: " + err.message, "error");
       }
     });
@@ -449,7 +322,6 @@ function setupBackupHandlers() {
 
   if (importFileInput) {
     importFileInput.addEventListener('change', (e) => {
-<<<<<<< HEAD
       handleImportFile(e, async (importedData, api) => {
         if (importedData.settings) {
           await api.storage.sync.set(importedData.settings);
@@ -464,56 +336,10 @@ function setupBackupHandlers() {
         showStatus("Full backup restored successfully!", "success");
         await loadLogs();
       });
-=======
-      const api = typeof messenger !== 'undefined' ? messenger : browser;
-      const file = e.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = async (uploadEvent) => {
-        try {
-          const importedData = JSON.parse(uploadEvent.target.result);
-
-          if (typeof importedData !== "object" || importedData === null) {
-            throw new Error("Invalid JSON structure");
-          }
-
-          if (importedData.syncSettings || importedData.localData) {
-            if (importedData.syncSettings) {
-              await api.storage.sync.set(importedData.syncSettings);
-            }
-            if (importedData.localData) {
-              await api.storage.local.clear();
-              await api.storage.local.set(importedData.localData);
-            }
-          } else {
-            await api.storage.local.clear();
-            await api.storage.local.set(importedData);
-          }
-
-          showStatus("Backup restored successfully!", "success");
-
-          const { apiKey, model, customPrompt } = await api.storage.sync.get(['apiKey', 'model', 'customPrompt']);
-          if (apiKey) document.getElementById('apiKey').value = apiKey;
-          if (model) document.getElementById('model').value = model;
-          if (customPrompt) document.getElementById('customPrompt').value = customPrompt;
-
-          e.target.value = '';
-          await loadLogs();
-        } catch (err) {
-          console.error("Import error:", err);
-          showStatus("Import failed: " + err.message, "error");
-          e.target.value = '';
-        }
-      };
-
-      reader.readAsText(file);
->>>>>>> origin/main
     });
   }
 }
 
-<<<<<<< HEAD
 function handleImportFile(event, restoreCallback) {
   const api = typeof messenger !== 'undefined' ? messenger : browser;
   const file = event.target.files[0];
@@ -551,9 +377,6 @@ function downloadJson(dataObject, filename) {
     URL.revokeObjectURL(url);
   }, 150);
 }
-=======
-// --- UTILITY FUNCTIONS ---
->>>>>>> origin/main
 
 function escapeHtml(str) {
   return String(str || '')
