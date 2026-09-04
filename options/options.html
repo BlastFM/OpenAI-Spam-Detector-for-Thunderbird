@@ -3,36 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Thunderbird OpenAI Spam Detector Settings</title>
+  <title>Thunderbird OpenAI Spam Detector - Options</title>
   <link rel="stylesheet" href="options.css">
-  <script src="options.js" defer></script>
 </head>
 <body>
   <div class="app-container">
-    <!-- Header -->
+    <!-- App Header -->
     <header class="app-header">
       <div class="brand">
-        <img src="../icons/icon-48.png" alt="Logo" class="logo-icon">
+        <img src="../icons/icon-48.png" alt="Logo" class="logo-icon" />
         <div>
           <h1>Thunderbird OpenAI Spam Detector</h1>
           <p class="subtitle">AI-powered email filtering & custom training</p>
         </div>
       </div>
-      <div id="status" class="status-badge hidden"></div>
     </header>
 
+    <!-- Main Grid Layout -->
     <main class="app-main">
-      <!-- Left Column: Configuration Settings -->
-      <section class="card settings-card">
+      
+      <!-- Left Panel: Configuration -->
+      <section class="card">
         <h2>Configuration</h2>
         
         <div class="form-group">
           <label for="apiKey">OpenAI API Key</label>
           <div class="input-with-button">
-            <input type="password" id="apiKey" placeholder="sk-..." autocomplete="off">
-            <button id="testKey" class="btn btn-green" title="Test Key Connection">
+            <input type="password" id="apiKey" placeholder="sk-...">
+            <button type="button" id="testKey" class="btn btn-green">
               <span>Test Key</span>
-              <span class="btn-spinner hidden"></span>
+              <span class="btn-spinner hidden" style="margin-left: 6px;">...</span>
             </button>
           </div>
         </div>
@@ -41,8 +41,7 @@
           <label for="model">OpenAI Model</label>
           <select id="model">
             <option value="gpt-4o-mini">gpt-4o-mini (Recommended - Fast & Cheap)</option>
-            <option value="gpt-4o">gpt-4o (High Accuracy)</option>
-            <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
+            <option value="gpt-4o">gpt-4o (Higher Accuracy)</option>
           </select>
         </div>
 
@@ -50,20 +49,18 @@
           <label for="targetFolder">Spam Action Destination</label>
           <select id="targetFolder">
             <option value="trash">Trash / Bin (Default)</option>
-            <option value="junk">Account Junk / Spam Folder</option>
             <option value="local_ai_spam">Local Folders / AI Filtered Spam</option>
+            <option value="junk">Junk Folder</option>
           </select>
           <span class="field-hint">Choose where emails identified as spam should be moved.</span>
         </div>
 
-        <!-- Domain Whitelist -->
         <div class="form-group">
           <label for="whitelist">Domain Whitelist (Always Safe / Skip AI)</label>
           <input type="text" id="whitelist" placeholder="e.g., company.com, *.stripe.com, vip-*.org">
-          <span class="field-hint">Comma-separated domains or wildcard patterns (e.g., <code>*.gov</code>, <code>mail.*.com</code>) that always stay in your Inbox.</span>
+          <span class="field-hint">Comma-separated domains or wildcard patterns (e.g., *.gov, mail.*.com) that always stay in your Inbox.</span>
         </div>
 
-        <!-- Domain Blacklist -->
         <div class="form-group">
           <label for="blacklist">Domain Blacklist (Always Spam / Skip AI)</label>
           <input type="text" id="blacklist" placeholder="e.g., *.top, badsite.*, *@cheapleads.biz">
@@ -72,56 +69,55 @@
 
         <div class="form-group">
           <label for="customPrompt">Custom Classification Prompt Rules</label>
-          <textarea id="customPrompt" rows="4" placeholder="e.g., Always treat emails containing invoices from 'acme.com' as HAM. Mark newsletters with 'unsubscribe' links as SPAM."></textarea>
+          <textarea id="customPrompt" rows="5" placeholder="Add specific rules for the AI to follow during analysis."></textarea>
           <span class="field-hint">Add specific rules for the AI to follow during analysis.</span>
         </div>
 
-        <!-- Export/Import Buttons Row -->
-        <div style="display: flex; gap: 10px; margin-top: 16px; margin-bottom: 12px;">
-          <button id="exportRulesKey" type="button" class="btn btn-dark-outline" style="flex: 1;">Export Rules & Key</button>
-          <label for="importRulesKeyInput" class="btn btn-dark-outline" style="flex: 1; text-align: center; margin: 0; cursor: pointer;">
-            Import Rules & Key
-            <input type="file" id="importRulesKeyInput" accept=".json,application/json" style="display: none;">
-          </label>
+        <div class="header-actions" style="margin-top: 16px;">
+          <button type="button" id="exportRulesKey" class="btn btn-dark-outline" style="flex: 1;">Export Rules & Key</button>
+          <button type="button" id="importRulesBtn" class="btn btn-dark-outline" style="flex: 1;">Import Rules & Key</button>
+          <input type="file" id="importRulesKeyInput" accept=".json" class="hidden">
         </div>
 
-        <div class="form-actions">
-          <button id="save" class="btn btn-green">Save Settings</button>
+        <div class="form-actions" style="margin-top: 16px;">
+          <span id="status" class="status-badge hidden"></span>
+          <button type="button" id="save" class="btn btn-green">Save Settings</button>
         </div>
       </section>
 
-      <!-- Right Column: Logs & Training Memory -->
-      <section class="card logs-card">
-        <!-- Top Section: Detected Spam Log -->
+      <!-- Right Panel: Logs & AI Memory -->
+      <section class="card">
         <div class="logs-header">
           <h2>Detected Spam Log</h2>
           <div class="header-actions">
-            <button id="exportBackup" type="button" class="btn btn-green-outline btn-sm">Export Full Backup</button>
-            <label for="importFileInput" class="btn btn-green-outline btn-sm" style="cursor: pointer; margin: 0;">
-              Import Full Backup
-              <input type="file" id="importFileInput" accept=".json,application/json" style="display: none;">
-            </label>
-            <button id="clearSpamLog" type="button" class="btn btn-orange-outline btn-sm">Clear Log</button>
+            <button type="button" id="exportBackup" class="btn btn-sm btn-green-outline">Export Full Backup</button>
+            <button type="button" id="importBackupBtn" class="btn btn-sm btn-green-outline">Import Full Backup</button>
+            <input type="file" id="importFileInput" accept=".json" class="hidden">
+            <button type="button" id="clearSpamLog" class="btn btn-sm btn-orange-outline">Clear Log</button>
           </div>
         </div>
+
+        <div id="right-panel-status" class="status-msg-banner hidden"></div>
+
         <div id="spamLogContainer" class="log-container">
-          <div class="empty-state">No spam detected yet.</div>
+          <p class="empty-state">No spam detected yet.</p>
         </div>
 
         <hr class="divider">
 
-        <!-- Bottom Section: Active AI Training Memory -->
         <div class="logs-header">
           <h2>Active AI Training Memory (Not Spam)</h2>
-          <div class="header-actions">
-            <button id="clearFPLog" type="button" class="btn btn-orange-outline btn-sm">Clear Memory</button>
-          </div>
+          <button type="button" id="clearFPLog" class="btn btn-sm btn-orange-outline">Clear Memory</button>
         </div>
+
         <div id="falsePositivesContainer" class="log-container">
-          <div class="empty-state">No false positives recorded.</div>
+          <p class="empty-state">No false positives recorded.</p>
         </div>
       </section>
+
     </main>
   </div>
+
+  <script src="options.js"></script>
 </body>
 </html>

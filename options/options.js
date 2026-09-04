@@ -402,3 +402,13 @@ function showStatus(text, type) {
     status.style.display = 'none';
   }, type === 'error' ? 5000 : 3000);
 }
+const importRulesBtn = document.getElementById('importRulesBtn');
+  const importBackupBtn = document.getElementById('importBackupBtn');
+
+  if (importRulesBtn && importRulesKeyInput) {
+    importRulesBtn.addEventListener('click', () => importRulesKeyInput.click());
+  }
+
+  if (importBackupBtn && importFileInput) {
+    importBackupBtn.addEventListener('click', () => importFileInput.click());
+  }

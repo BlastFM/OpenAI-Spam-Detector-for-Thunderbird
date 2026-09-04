@@ -306,21 +306,38 @@ textarea {
 }
 
 /* Header Status Text (Inline, Clean Text Indicator) */
-.status-badge {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--primary-green);
-  background: transparent;
-  border: none;
-  padding: 0;
-  box-shadow: none;
+/* Floating Top-Right Toast Status Indicator */
+.status-badge,
+.status-msg-banner {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.status-badge.success {
+  background-color: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
 }
 
 .status-badge.error {
-  color: var(--danger-orange);
-  background: transparent;
+  background-color: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
 }
 
+.status-badge.info {
+  background-color: #f0f9ff;
+  color: #075985;
+  border: 1px solid #bae6fd;
+}
 .hidden {
   display: none !important;
 }
