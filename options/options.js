@@ -262,6 +262,16 @@ function setupBackupHandlers() {
   const importFileInput = document.getElementById('importFileInput');
   const exportRulesKeyBtn = document.getElementById('exportRulesKey');
   const importRulesKeyInput = document.getElementById('importRulesKeyInput');
+  const importRulesBtn = document.getElementById('importRulesBtn');
+  const importBackupBtn = document.getElementById('importBackupBtn');
+
+  if (importRulesBtn && importRulesKeyInput) {
+    importRulesBtn.addEventListener('click', () => importRulesKeyInput.click());
+  }
+
+  if (importBackupBtn && importFileInput) {
+    importBackupBtn.addEventListener('click', () => importFileInput.click());
+  }
 
   if (exportRulesKeyBtn) {
     exportRulesKeyBtn.addEventListener('click', async () => {
@@ -395,20 +405,10 @@ function showStatus(text, type) {
 
   status.textContent = text;
   status.className = `status-badge ${type}`;
-  status.style.display = 'inline-block';
+  status.style.display = 'block';
 
   statusTimeout = setTimeout(() => {
     status.className = 'status-badge hidden';
     status.style.display = 'none';
   }, type === 'error' ? 5000 : 3000);
 }
-const importRulesBtn = document.getElementById('importRulesBtn');
-  const importBackupBtn = document.getElementById('importBackupBtn');
-
-  if (importRulesBtn && importRulesKeyInput) {
-    importRulesBtn.addEventListener('click', () => importRulesKeyInput.click());
-  }
-
-  if (importBackupBtn && importFileInput) {
-    importBackupBtn.addEventListener('click', () => importFileInput.click());
-  }
