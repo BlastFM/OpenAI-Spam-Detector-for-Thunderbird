@@ -125,6 +125,12 @@ textarea {
   font-family: inherit;
 }
 
+#customPrompt {
+  min-height: 160px;
+  max-height: 520px;
+  overflow-y: auto;
+}
+
 .field-hint {
   display: block;
   font-size: 0.75rem;
