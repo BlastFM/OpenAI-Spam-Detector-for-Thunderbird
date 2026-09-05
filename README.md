@@ -26,15 +26,6 @@ Options UI & Scope Fixes: Resolved duplicate DOM element ID conflicts and variab
 🔒 Data Backup & Portability
 Verified export and import handling for rules, custom OpenAI API prompts, blacklists, and full training logs (.json format).
 
-📦 Installation
-Download openai-spam-detector-v1.3.2.xpi from the Assets section below.
-
-Open Thunderbird and press Ctrl + Shift + A to open Add-ons and Themes.
-
-Click the gear icon at the top right and select Install Add-on From File...
-
-Select openai-spam-detector-v1.3.2.xpi and click Add.
-
 🔍 Checksum (Integrity Verification)
 Filename: openai-spam-detector-v1.3.2.xpi
 
