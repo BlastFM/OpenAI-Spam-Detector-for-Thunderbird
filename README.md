@@ -31,7 +31,7 @@ The options page now provides clearer progress, validation, success, and error m
 
 🔍 Checksum (Integrity Verification)
 Filename: openai-spam-detector-v1.3.4.xpi
-### SHA-256: `FEE61AE8690766FAD014D76802CFEAE7B090D6C08000827D5429302A60D147C2`
+### SHA-256: `0FCB707D01EC953ADE5CFF80B0B2C8C3C8786FC2280F2C1F8C50B67C9029D7D9`
 
 ### Configuration Options
 
@@ -207,6 +207,7 @@ Privacy Note: Transmitted email content includes the sender address, subject lin
 * Full backup and restore controls are centralized in the Detected Spam Log panel; duplicate left-pane rules/key controls were removed.
 * Options-page confirmation, progress, validation, and error messages were improved, with accessible live-region announcements for status feedback.
 * The newest Detected Spam Log entry now has a green Latest marker and a subtle highlighted card treatment.
+* Long sender addresses and timestamps now use a responsive layout to keep log entries readable without cramped text.
 
 #### Compatibility
 * Existing JSON backup files remain importable.

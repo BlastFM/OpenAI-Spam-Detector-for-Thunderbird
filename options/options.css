@@ -240,24 +240,32 @@ textarea {
 }
 
 .log-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  column-gap: 14px;
   margin-bottom: 6px;
 }
 
 .log-author-wrap {
   display: flex;
   align-items: center;
+  min-width: 0;
   gap: 8px;
   font-weight: 600;
   font-size: 0.85rem;
   color: var(--text-dark);
 }
 
+.log-author {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .entry-badge {
   display: inline-flex;
   align-items: center;
+  flex: 0 0 auto;
   gap: 5px;
   padding: 3px 8px;
   border: 1px solid rgba(32, 139, 58, 0.25);
@@ -287,8 +295,12 @@ textarea {
 }
 
 .log-date {
+  flex: 0 0 auto;
+  min-width: 106px;
   font-size: 0.78rem;
+  line-height: 1.35;
   color: var(--text-muted);
+  text-align: right;
 }
 
 .log-subject {
@@ -309,6 +321,18 @@ textarea {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+@media (max-width: 560px) {
+  .log-card-header {
+    grid-template-columns: 1fr;
+    row-gap: 6px;
+  }
+
+  .log-date {
+    min-width: 0;
+    text-align: left;
+  }
 }
 
 .empty-state {
