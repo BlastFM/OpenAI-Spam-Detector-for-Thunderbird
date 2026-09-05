@@ -295,8 +295,12 @@ function setupBackupHandlers() {
           const credentials = importedData.credentials || { apiKey: legacyApiKey };
 
           await api.storage.sync.set(syncSettings);
-          if (credentials.apiKey) {
-            await api.storage.local.set({ apiKey: credentials.apiKey });
+          if (credentials && Object.prototype.hasOwnProperty.call(credentials, 'apiKey')) {
+            if (credentials.apiKey) {
+              await api.storage.local.set({ apiKey: credentials.apiKey });
+            } else {
+              await api.storage.local.remove('apiKey');
+            }
           }
           if (importedData.logsAndTraining) {
             await api.storage.local.set(importedData.logsAndTraining);
