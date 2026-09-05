@@ -277,6 +277,13 @@ textarea {
   transform: translateY(0);
 }
 
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
 .btn-pill {
   border-radius: 999px;
   padding-inline: 19px;

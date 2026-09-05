@@ -75,6 +75,21 @@ async function loadLogs() {
 
   renderLog('spamLogContainer', spamLog, 'No spam detected yet.');
   renderLog('falsePositivesContainer', falsePositives, 'No false positives recorded.');
+  updateExportBackupState(spamLog, falsePositives);
+}
+
+// Exporting a backup with no spam log and no training memory would only
+// contain settings and (optionally) the API key, so disable the button
+// until there's actually something worth backing up.
+function updateExportBackupState(spamLog, falsePositives) {
+  const exportBtn = document.getElementById('exportBackup');
+  if (!exportBtn) return;
+
+  const hasLogs = (spamLog && spamLog.length > 0) || (falsePositives && falsePositives.length > 0);
+  exportBtn.disabled = !hasLogs;
+  exportBtn.title = hasLogs
+    ? ''
+    : 'No spam log or training memory entries to back up yet';
 }
 
 function renderLog(containerId, list, emptyMessage) {
