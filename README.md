@@ -1,6 +1,6 @@
 # OpenAI Spam Detector for Thunderbird
 
-![Extension Version](https://img.shields.io/badge/version-1.3.5-blue.svg)
+![Extension Version](https://img.shields.io/badge/version-1.3.6-blue.svg)
 ![Thunderbird](https://img.shields.io/badge/Thunderbird-115.0%2B-58A6FF.svg?logo=thunderbird&logoColor=white)
 ![Manifest Version](https://img.shields.io/badge/manifest-v3-green.svg)
 ![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)
@@ -30,8 +30,8 @@ Full backup and restore controls are provided in the Detected Spam Log panel. A 
 The options page now provides clearer progress, validation, success, and error messages for settings, OpenAI connection tests, spam logs, AI training memory, and backup actions. Status and error announcements use accessible live-region behavior for assistive technology.
 
 🔍 Checksum (Integrity Verification)  
-Filename: openai-spam-detector-v1.3.5.xpi
-### SHA-256: `7F04602F2FF5DB03C42AABE4B89C249DF1CC733D174517C66017364633E9C2E3`
+Filename: openai-spam-detector-v1.3.6.xpi
+### SHA-256: `3601D9DF1BBECCD2F52D18A6803BFDEFF3E7E5E869DDFC06FF1891E1C6F5F3FE`
 
 ### Configuration Options
 
@@ -84,22 +84,22 @@ Restore success is reported only after storage writes and the log refresh comple
 
 Install [Mozilla Thunderbird](https://www.thunderbird.net/) first, then install the OpenAI Spam Detector extension from the release asset below.
 
-[![Download Release](https://img.shields.io/badge/Download-v1.3.5_.XPI-blue?style=for-the-badge&logo=thunderbird&logoColor=white)](https://github.com/BlastFM/ThunderbirdPersonalSpamFilter/releases/download/v1.3.5/openai-spam-detector-v1.3.5.xpi)
+[![Download Release](https://img.shields.io/badge/Download-v1.3.6_.XPI-blue?style=for-the-badge&logo=thunderbird&logoColor=white)](https://github.com/BlastFM/ThunderbirdPersonalSpamFilter/releases/download/v1.3.6/openai-spam-detector-v1.3.6.xpi)
 [![Get Latest Release](https://img.shields.io/github/v/release/BlastFM/ThunderbirdPersonalSpamFilter?color=green&label=Latest%20Release&style=for-the-badge)](https://github.com/BlastFM/ThunderbirdPersonalSpamFilter/releases/latest)
 
 ### Direct Downloads
 
 | Asset | Description | Download Link |
 | :--- | :--- | :--- |
-| **Extension Binary** | Ready-to-install Thunderbird Add-on | [`openai-spam-detector-v1.3.5.xpi`](https://github.com/BlastFM/ThunderbirdPersonalSpamFilter/releases/download/v1.3.5/openai-spam-detector-v1.3.5.xpi) |
-| **Source Code** | Compressed source files (`.zip`) | [`Source code (zip)`](https://github.com/BlastFM/ThunderbirdPersonalSpamFilter/archive/refs/tags/v1.3.5.zip) |
+| **Extension Binary** | Ready-to-install Thunderbird Add-on | [`openai-spam-detector-v1.3.6.xpi`](https://github.com/BlastFM/ThunderbirdPersonalSpamFilter/releases/download/v1.3.6/openai-spam-detector-v1.3.6.xpi) |
+| **Source Code** | Compressed source files (`.zip`) | [`Source code (zip)`](https://github.com/BlastFM/ThunderbirdPersonalSpamFilter/archive/refs/tags/v1.3.6.zip) |
 
 ---
 
 ### How to Install in Thunderbird
 
 1. Download and install [Mozilla Thunderbird](https://www.thunderbird.net/) if it is not already installed.
-2. Click the extension download button above to save **`openai-spam-detector-v1.3.5.xpi`**.
+2. Click the extension download button above to save **`openai-spam-detector-v1.3.6.xpi`**.
 3. Open Thunderbird and navigate to **Add-ons and Themes** (`Ctrl+Shift+A` or `Cmd+Shift+A`).
 4. Click the gear icon (**Tools for all add-ons**) in the top-right corner.
 5. Select **Install Add-on From File...** and choose the downloaded `.xpi` file.
@@ -118,7 +118,7 @@ ThunderbirdPersonalSpamFilter/
 ├── manifest.json
 ├── background.js
 ├── README.md
-├── openai-spam-detector-v1.3.5.xpi
+├── openai-spam-detector-v1.3.6.xpi
 ├── icons/
 │   ├── icon-48.png
 │   ├── icon.png
@@ -214,6 +214,17 @@ Host Permission (https://api.openai.com/*): Required to transmit snippet data to
 Privacy Note: Transmitted email content includes the sender address, subject line, and up to the first 1,500 characters of the body text. Data is processed according to OpenAI's Data Usage Policies. No data is sent to intermediate third-party servers.
 
 ## Release History
+
+### [v1.3.6] - 2026-09-05
+
+#### Changed
+* Promoted the redesigned options interface to the next release version with the new teal header, readiness indicator, purpose-based sections, and responsive layout.
+* Distinguished backup actions from destructive actions with blue and orange visual treatments, pill-shaped controls, and action icons.
+* Updated the in-page confirmation dialog to use the same refreshed destructive-action styling.
+* Updated release links, package naming, and documentation references for v1.3.6.
+
+#### Compatibility
+* Existing settings, logs, training memory, and plaintext JSON backups remain compatible.
 
 ### [v1.3.5] - 2026-09-05
 
