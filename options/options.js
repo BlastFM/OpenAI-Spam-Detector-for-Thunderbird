@@ -68,9 +68,11 @@ function renderLog(containerId, list, emptyMessage) {
           <div class="log-author-wrap">
             <img src="${iconPath}" alt="Status" style="width:14px; height:14px; flex-shrink:0;">
             <span class="log-author">${escapeHtml(author)}</span>
-            ${isNewest ? '<span class="entry-badge">Latest</span>' : ''}
           </div>
-          <span class="log-date">${formattedDate}</span>
+          <div class="log-meta">
+            ${isNewest ? '<span class="entry-badge">Latest</span>' : ''}
+            <span class="log-date">${formattedDate}</span>
+          </div>
         </div>
         <div class="log-subject">${escapeHtml(subject)}</div>
         <div class="log-snippet">${escapeHtml(item.bodySnippet || '')}</div>
