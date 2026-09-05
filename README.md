@@ -69,6 +69,18 @@ To keep AI-detected spam isolated from server-synced folders:
 
 ---
 
+## ✨ Options Page Preview
+
+The options page uses a compact two-pane layout with a branded header, grouped configuration controls, clear backup actions, and a unified dynamic status indicator.
+
+![Options page preview](docs/options-page-preview.svg)
+
+The status indicator communicates unsaved changes, save progress, and successful saves without interrupting the page with separate floating notifications.
+
+![Dynamic options status preview](docs/options-page-status-preview.svg)
+
+---
+
 ## 💾 Backup & Restore
 
 Storage backups can be exported or imported from the **Detected Spam Log** panel on the Settings Page. The full backup includes synced settings, the local API key, spam history, and AI training memory.
@@ -122,6 +134,9 @@ ThunderbirdPersonalSpamFilter/
 ├── LICENSE
 ├── manifest.json
 ├── background.js
+├── docs/
+│   ├── options-page-preview.svg
+│   └── options-page-status-preview.svg
 ├── README.md
 ├── openai-spam-detector-v1.3.6.xpi
 ├── icons/
