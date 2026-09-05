@@ -75,7 +75,7 @@
         </div>
 
         <div class="form-actions" style="margin-top: 16px;">
-          <span id="status" class="status-badge hidden"></span>
+          <span id="status" class="status-badge hidden" role="status" aria-live="polite"></span>
           <button type="button" id="save" class="btn btn-green">Save Settings</button>
         </div>
       </section>
@@ -91,8 +91,6 @@
             <button type="button" id="clearSpamLog" class="btn btn-sm btn-orange-outline">Clear Log</button>
           </div>
         </div>
-
-        <div id="right-panel-status" class="status-msg-banner hidden"></div>
 
         <div id="spamLogContainer" class="log-container">
           <p class="empty-state">No spam detected yet.</p>

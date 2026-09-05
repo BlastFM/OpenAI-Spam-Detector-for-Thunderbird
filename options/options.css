@@ -293,10 +293,8 @@ textarea {
   margin: 20px 0;
 }
 
-/* Header Status Text (Inline, Clean Text Indicator) */
 /* Floating Top-Right Toast Status Indicator */
-.status-badge,
-.status-msg-banner {
+.status-badge {
   position: fixed;
   top: 20px;
   right: 20px;
