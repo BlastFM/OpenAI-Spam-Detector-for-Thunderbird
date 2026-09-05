@@ -48,6 +48,47 @@ Open the Extension Options page (`Tools > Add-ons & Themes > Options`) to config
 | **Spam Action Destination** | Target folder where flagged spam is routed (`Trash`, `Account Junk`, or `Local Folders / AI Filtered Spam`). |
 | **Custom Rules** | Text prompt to add strict user rules (e.g., *Always mark newsletters from domain.com as HAM*). |
 
+### Suggested Custom Classification Prompt Rules
+
+The following rules can be pasted into **Custom Rules** to provide a consistent, conservative classification policy:
+
+```text
+Classify each email as exactly one of: SPAM or HAM.
+
+Follow these rules in order:
+
+1. Return SPAM for unsolicited bulk email, phishing, scams, fraud, malware, malicious attachments, or deceptive messages.
+2. Return SPAM for messages impersonating banks, payment providers, government agencies, delivery companies, employers, online services or other trusted organisations when the message appears suspicious.
+3. Return SPAM for requests to provide passwords, verification codes, security answers, payment details, banking information, cryptocurrency, gift cards, or remote computer access when the request is unexpected or suspicious.
+4. Return SPAM for fake invoices, fake receipts, fraudulent subscriptions, renewal scams, refund scams, prize notifications, casinos, investment scams, employment scams, romance scams, and similar social-engineering attempts.
+5. Return SPAM when the message uses urgent pressure, threats, fear, secrecy, unusually attractive rewards, account suspension warnings, or deadlines to force the recipient to act.
+6. Return SPAM when links appear misleading, shortened, unrelated to the claimed sender, misspelled, suspicious, or designed to imitate a legitimate domain.
+7. Return SPAM when the sender address, reply-to address, display name, domain, or message content suggests spoofing or impersonation.
+8. Return SPAM when an attachment is unexpected, suspicious, executable, macro-enabled, password-protected without a clear reason, or likely to contain malware.
+9. Return SPAM when the message is clearly unsolicited advertising, mass promotion, or bulk marketing that the recipient did not request.
+10. Return SPAM when the message contains highly repetitive, nonsensical, automatically generated, or irrelevant content typical of bulk spam.
+11. Return HAM for legitimate personal correspondence and expected messages from known contacts.
+12. Return HAM for legitimate receipts, invoices, order confirmations, shipping notices, appointment reminders, account notifications, and service updates that match the recipient's normal activity.
+13. Return HAM for newsletters, mailing lists, promotions, and advertisements when they appear legitimate, are relevant, and include normal unsubscribe or preference-management options.
+14. Do not classify a message as SPAM solely because it is an advertisement, newsletter, HTML email, contains tracking links, includes an unsubscribe link, comes from an unfamiliar sender, or uses promotional language.
+15. Do not classify a message as SPAM solely because the sender uses a free email provider or because the message contains spelling or formatting mistakes.
+16. Consider the sender, reply-to address, recipient, subject, body, links, attachments, branding, timing, and overall context together.
+17. Give greater weight to clear evidence of deception, credential theft, fraud, malware, or impersonation than to appearance, formatting, or unfamiliarity alone.
+18. If the message is ambiguous and there is no strong evidence of spam, classify it as HAM to reduce false positives.
+19. Never reveal or explain the classification reasoning in the result.
+20. Return only the single uppercase label SPAM or HAM.
+21. Treat visible sender names, logos, signatures, and branding as weak evidence unless they match the actual sender domain and reply-to address.
+22. Treat a message as SPAM when the sender domain, reply-to domain, link destination, or attachment source conflicts with the organisation being claimed, unless the mismatch is clearly explained by a known legitimate service provider.
+23. Treat messages using lookalike characters, excessive spacing, unusual punctuation, deliberate misspellings, hidden text, or image-only content to evade filtering as SPAM when they also contain a suspicious offer, request, or link.
+24. Treat unsolicited messages offering remote technical support, refunds, account recovery, investment opportunities, debt relief, employment, prizes, or cryptocurrency services as SPAM when the recipient did not recently request that service.
+25. Treat unsolicited bulk messages as SPAM even when they include an unsubscribe link if the sender identity, offer, link destination, or recipient context appears deceptive.
+26. Do not classify a legitimate recurring notification as SPAM solely because it contains a login link, tracking link, automated wording, or a third-party delivery provider, provided the sender, domain, recipient context, and request are consistent.
+27. When a message matches a known false-positive example, prefer HAM unless there is new, specific evidence of phishing, fraud, malware, impersonation, or another serious threat.
+28. Do not treat a message as SPAM solely because it was delivered to the Junk folder; classify its contents and context independently.
+29. If the message contains no meaningful content or the available content is insufficient to assess it reliably, return HAM unless the sender or subject provides clear evidence of spam.
+30. Always return exactly one uppercase label: SPAM or HAM. Do not include explanations, confidence scores, JSON, or additional text.
+```
+
 #### Using the Dedicated Local Spam Folder
 To keep AI-detected spam isolated from server-synced folders:
 1. Open Extension Settings and set **Spam Action Destination** to `Local Folders / AI Filtered Spam`.
