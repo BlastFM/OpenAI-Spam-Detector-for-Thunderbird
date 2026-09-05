@@ -255,6 +255,37 @@ textarea {
   color: var(--text-dark);
 }
 
+.entry-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border: 1px solid rgba(32, 139, 58, 0.25);
+  border-radius: 999px;
+  background: linear-gradient(135deg, #e9f8ed, #d8f1df);
+  color: var(--primary-green);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-transform: uppercase;
+  box-shadow: 0 1px 2px rgba(32, 139, 58, 0.12);
+}
+
+.entry-badge::before {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #2eaa4f;
+  box-shadow: 0 0 0 3px rgba(46, 170, 79, 0.14);
+  content: "";
+}
+
+.newest-entry {
+  border-color: rgba(32, 139, 58, 0.3);
+  box-shadow: 0 2px 8px rgba(32, 139, 58, 0.08);
+}
+
 .log-date {
   font-size: 0.78rem;
   color: var(--text-muted);
