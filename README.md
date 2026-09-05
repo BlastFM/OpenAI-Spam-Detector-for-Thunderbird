@@ -29,11 +29,11 @@ Options UI & Scope Fixes: Resolved duplicate DOM element ID conflicts and variab
 Full backup and restore controls are provided in the Detected Spam Log panel. A full JSON backup contains synced settings, the API key, spam history, and AI training memory. Separate rules/key backup controls were removed from the Configuration panel to avoid duplicate backup paths. Backup and restore status is shown only after the corresponding download, storage writes, and log refresh complete successfully. Backups remain compatible with the existing plain-text JSON format and warn users before exporting API credentials.
 
 ✅ Options Feedback  
-The options page now provides clearer progress, validation, success, and error messages for settings, OpenAI connection tests, spam logs, AI training memory, and backup actions. Status and error announcements use accessible live-region behavior for assistive technology.
+The options page now provides clearer progress, validation, success, and error messages for settings, OpenAI connection tests, spam logs, AI training memory, and backup actions. All of these messages use the dynamic header status indicator rather than a separate floating confirmation. Status and error announcements use accessible live-region behavior for assistive technology.
 
 🔍 Checksum (Integrity Verification)  
 Filename: openai-spam-detector-v1.3.6.xpi
-### SHA-256: `685A2A332CCBB6891BB250D23DBF49BE52D1E8ED22F500B6298141BED619965D`
+### SHA-256: `E250CA5614B45EA807E88487E6B4D32AE3E9E43CE0882E705BD46D34E220D53B`
 
 ### Configuration Options
 
@@ -231,6 +231,7 @@ Privacy Note: Transmitted email content includes the sender address, subject lin
 * Added the finalized Thunderbird spam-filter shield image as the options-page header logo while retaining the BlastFM Limited name and FREE availability notice.
 * Added a bottom-of-page publisher footer identifying BlastFM Limited and the add-on's current free availability.
 * Replaced the static “Ready to save” label with dynamic `Unsaved changes`, `Saving...`, `Saved`, `Needs attention`, and `Save failed` states.
+* Routed all options-page success, error, and informational messages through the dynamic header status indicator and removed the old floating confirmation messages.
 * Updated release links, package naming, and documentation references for v1.3.6.
 
 #### Compatibility

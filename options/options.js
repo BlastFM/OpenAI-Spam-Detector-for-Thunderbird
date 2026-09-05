@@ -53,6 +53,7 @@ function setHeaderStatus(text, state = 'ready') {
   if (!textElement || !status) return;
   textElement.textContent = text;
   status.className = `header-status ${state}`;
+  status.setAttribute('aria-live', state === 'error' ? 'assertive' : 'polite');
 }
 
 // --- LOG LOADING & RENDERING ---
@@ -181,7 +182,6 @@ document.getElementById('save').addEventListener('click', async () => {
 
   if (!apiKey) {
     showStatus('Enter an OpenAI API key before saving settings.', 'error');
-    setHeaderStatus('Needs attention', 'error');
     return;
   }
 
@@ -191,10 +191,8 @@ document.getElementById('save').addEventListener('click', async () => {
     await api.storage.local.set({ apiKey });
     await api.storage.sync.set({ model, targetFolder, whitelist, blacklist, customPrompt });
     settingsDirty = false;
-    setHeaderStatus('Saved', 'saved');
     showStatus('Settings saved. New messages will use these rules.', 'success');
   } catch (err) {
-    setHeaderStatus('Save failed', 'error');
     showStatus('Settings could not be saved. ' + getErrorMessage(err), 'error');
   }
 });
@@ -221,16 +219,13 @@ document.getElementById('testKey').addEventListener('click', async () => {
     });
 
     if (response.ok) {
-      setHeaderStatus(settingsDirty ? 'Unsaved changes' : 'Ready to save', settingsDirty ? 'dirty' : 'ready');
       showStatus('OpenAI connection successful. The API key is valid.', 'success');
     } else {
-      setHeaderStatus('Needs attention', 'error');
       const errData = await response.json().catch(() => ({}));
       const msg = errData.error?.message || `HTTP ${response.status}`;
       showStatus(`OpenAI rejected the request: ${msg}`, 'error');
     }
   } catch (err) {
-    setHeaderStatus('Needs attention', 'error');
     showStatus('Could not reach OpenAI. Check your network connection and try again.', 'error');
   } finally {
     testBtn.disabled = false;
@@ -446,21 +441,7 @@ function getErrorMessage(error) {
   return message || 'Please try again.';
 }
 
-let statusTimeout = null;
 function showStatus(text, type) {
-  const status = document.getElementById('status');
-  if (!status) return;
-
-  if (statusTimeout) clearTimeout(statusTimeout);
-
-  status.textContent = text;
-  status.className = `status-badge ${type}`;
-  status.style.display = 'block';
-  status.setAttribute('role', type === 'error' ? 'alert' : 'status');
-  status.setAttribute('aria-live', type === 'error' ? 'assertive' : 'polite');
-
-  statusTimeout = setTimeout(() => {
-    status.className = 'status-badge hidden';
-    status.style.display = 'none';
-  }, type === 'error' ? 5000 : 3000);
+  const state = type === 'success' ? 'success' : type === 'error' ? 'error' : 'info';
+  setHeaderStatus(text, state);
 }
