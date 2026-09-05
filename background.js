@@ -82,10 +82,32 @@ messenger.runtime.onMessage.addListener((request) => {
   }
 });
 
+// Surfaces a failure to the user via a system notification. Background
+// context-menu actions have no popup/status bar to report to, so without
+// this a failed move/log (e.g. no destination folder could be found) was
+// previously visible only in the Error Console, making it look like the
+// button silently did nothing.
+async function notifyActionFailure(title, err) {
+  try {
+    await messenger.notifications.create({
+      type: "basic",
+      iconUrl: "icons/ThunderbirdPersonalSpamFilter.png",
+      title,
+      message: (err && err.message) || "An unknown error occurred. See the Error Console for details"
+    });
+  } catch (notifyErr) {
+    console.error("[Thunderbird OpenAI Spam Detector] Could not show failure notification:", notifyErr);
+  }
+}
+
 messenger.menus.onClicked.addListener(async (info, tab) => {
   const selectedMessages = info.selectedMessages && info.selectedMessages.messages;
   if (!selectedMessages || selectedMessages.length === 0) {
     console.warn("[Thunderbird OpenAI Spam Detector] No message was selected for the context-menu action.");
+    await notifyActionFailure(
+      "Spam Detector: Action Failed",
+      new Error("No message was selected. Select a message in the list, then try again")
+    );
     return;
   }
 
@@ -103,6 +125,7 @@ messenger.menus.onClicked.addListener(async (info, tab) => {
         `[Thunderbird OpenAI Spam Detector] Context-menu action failed for message ${message.id}:`,
         err
       );
+      await notifyActionFailure("Spam Detector: Action Failed", err);
     }
   }
 });
@@ -243,23 +266,22 @@ async function processIncomingMessages(messageList) {
 
 // Resolves (and caches, per batch) the MailFolder that a given account's
 // spam should currently land in for the configured destination setting.
-// For 'local_ai_spam' the destination is a single shared folder regardless
-// of account, so it is only resolved once per batch under the 'local_ai_spam'
-// cache key instead of once per account.
+// 'local_ai_spam' is still cached per-account (not globally) because the
+// actual destination can differ per account: profiles with a Local Folders
+// account share one folder there, but accounts on a profile without Local
+// Folders instead fall back to a folder created under that same account.
 async function resolveSpamDestinationFolder(accountId, resolvedTargetFolder, cache) {
-  if (resolvedTargetFolder === 'local_ai_spam') {
-    if (!cache.has('local_ai_spam')) {
-      cache.set('local_ai_spam', await getOrCreateLocalAISpamFolder());
-    }
-    return cache.get('local_ai_spam');
-  }
-
   if (!cache.has(accountId)) {
     try {
-      const account = await messenger.accounts.get(accountId);
-      const folder = resolvedTargetFolder === 'junk'
-        ? findFolderByType(account.folders, 'junk')
-        : findFolderByType(account.folders, 'trash');
+      let folder;
+      if (resolvedTargetFolder === 'local_ai_spam') {
+        folder = await getOrCreateAISpamFolder(accountId);
+      } else {
+        const account = await messenger.accounts.get(accountId);
+        folder = resolvedTargetFolder === 'junk'
+          ? findFolderByType(account.folders, 'junk')
+          : findFolderByType(account.folders, 'trash');
+      }
       cache.set(accountId, folder);
     } catch (err) {
       cache.set(accountId, null);
@@ -386,7 +408,7 @@ async function handleSpamMessage(messageHeader, fullBody, destinationOverride = 
     if (selectedTargetFolder === 'junk') {
       destinationFolder = findFolderByType(account.folders, 'junk');
     } else if (selectedTargetFolder === 'local_ai_spam') {
-      destinationFolder = await getOrCreateLocalAISpamFolder();
+      destinationFolder = await getOrCreateAISpamFolder(account.id);
     } else {
       destinationFolder = findFolderByType(account.folders, 'trash');
     }
@@ -513,25 +535,41 @@ function findFolderByType(folders, typeName) {
   return null;
 }
 
-async function getOrCreateLocalAISpamFolder() {
+// Resolves the "AI Filtered Spam" destination folder. Prefers a single
+// shared folder under the Local Folders account (so all accounts land in
+// one place); if no Local Folders account exists on this profile (common
+// on pure-IMAP setups with no local storage configured), falls back to a
+// top-level "AI Filtered Spam" folder created directly under the message's
+// own account so the feature still works instead of silently doing nothing.
+async function getOrCreateAISpamFolder(fallbackAccountId) {
   try {
     const accounts = await messenger.accounts.list();
     const localAccount = accounts.find(a => a.type === "none" || a.name === "Local Folders");
 
-    if (!localAccount) return null;
+    if (localAccount) {
+      let targetFolder = findFolderByName(localAccount.folders, "AI Filtered Spam");
+      if (!targetFolder) {
+        // Passing the account (rather than one of its folders) as the parent
+        // creates "AI Filtered Spam" as a top-level folder of Local Folders.
+        // Passing an arbitrary existing folder here would instead nest it as
+        // a subfolder of whichever folder happened to be first in the list.
+        targetFolder = await messenger.folders.create(localAccount, "AI Filtered Spam");
+      }
+      return targetFolder;
+    }
 
-    let targetFolder = findFolderByName(localAccount.folders, "AI Filtered Spam");
+    if (!fallbackAccountId) return null;
 
+    const account = accounts.find(a => a.id === fallbackAccountId) || await messenger.accounts.get(fallbackAccountId);
+    if (!account) return null;
+
+    let targetFolder = findFolderByName(account.folders, "AI Filtered Spam");
     if (!targetFolder) {
-      // Passing the account (rather than one of its folders) as the parent
-      // creates "AI Filtered Spam" as a top-level folder of Local Folders.
-      // Passing an arbitrary existing folder here would instead nest it as
-      // a subfolder of whichever folder happened to be first in the list.
-      targetFolder = await messenger.folders.create(localAccount, "AI Filtered Spam");
+      targetFolder = await messenger.folders.create(account, "AI Filtered Spam");
     }
     return targetFolder;
   } catch (err) {
-    console.error("[Thunderbird OpenAI Spam Detector] Could not find or create Local Folders / AI Filtered Spam:", err);
+    console.error("[Thunderbird OpenAI Spam Detector] Could not find or create the AI Filtered Spam folder:", err);
     return null;
   }
 }

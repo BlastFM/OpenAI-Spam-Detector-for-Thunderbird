@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Thunderbird OpenAI Spam Detector",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "AI-powered email filtering & custom training for Mozilla Thunderbird.",
   "permissions": [
     "accountsRead",
@@ -10,6 +10,7 @@
     "messagesRead",
     "messagesMove",
     "menus",
+    "notifications",
     "tabs"
   ],
   "host_permissions": [
