@@ -111,7 +111,7 @@ function renderLog(containerId, list, emptyMessage) {
         </div>
         <div class="log-subject">${escapeHtml(subject)}</div>
         <div class="log-snippet">${escapeHtml(item.bodySnippet || '')}</div>
-        <div class="log-footer">
+        <div class="log-footer${isSpamLog ? ' log-footer-end' : ''}">
           ${isSpamLog ? `
             <button class="btn btn-green-outline btn-sm mark-not-spam-btn" data-index="${index}">Mark as Not Spam</button>
           ` : ''}
