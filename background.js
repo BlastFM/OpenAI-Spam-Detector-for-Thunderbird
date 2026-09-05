@@ -1,5 +1,26 @@
 console.log("[Thunderbird OpenAI Spam Detector] Background service worker initialized.");
 
+// Message IDs we are moving ourselves. Used to stop our own moves from
+// re-triggering messages.onUpdated -> processIncomingMessages, which
+// previously caused every spam-classified (or restored) email to be
+// reclassified a second time.
+// NOTE: on some account types (notably IMAP) a message can be assigned a
+// new id after being moved, so this guard is a best-effort de-duplication,
+// not a hard guarantee. It eliminates the common case (local folders/POP,
+// and the immediate re-fire that IMAP servers also usually produce).
+const pendingProgrammaticMoves = new Set();
+
+async function moveMessageTracked(messageId, destinationFolder) {
+  pendingProgrammaticMoves.add(messageId);
+  try {
+    await messenger.messages.move([messageId], destinationFolder);
+  } finally {
+    // Safety net: if onUpdated never fires (or fires with a different id),
+    // don't let the Set grow forever.
+    setTimeout(() => pendingProgrammaticMoves.delete(messageId), 5000);
+  }
+}
+
 function setupContextMenus() {
   messenger.menus.removeAll().then(() => {
     messenger.menus.create({
@@ -24,12 +45,41 @@ function setupContextMenus() {
   }).catch(err => console.error("[Thunderbird OpenAI Spam Detector] Context Menu error:", err));
 }
 
+// One-time migration: the API key used to live in storage.sync, which
+// syncs to every Thunderbird profile signed into the same account. Move
+// it to storage.local so the secret stays on this machine only.
+async function migrateApiKeyToLocalStorage() {
+  try {
+    const syncData = await messenger.storage.sync.get(['apiKey']);
+    if (!syncData.apiKey) return;
+
+    const localData = await messenger.storage.local.get(['apiKey']);
+    if (!localData.apiKey) {
+      await messenger.storage.local.set({ apiKey: syncData.apiKey });
+    }
+    await messenger.storage.sync.remove('apiKey');
+    console.log("[Thunderbird OpenAI Spam Detector] Migrated API key from sync to local storage.");
+  } catch (err) {
+    console.error("[Thunderbird OpenAI Spam Detector] API key migration failed:", err);
+  }
+}
+
 messenger.runtime.onInstalled.addListener(() => {
   setupContextMenus();
+  migrateApiKeyToLocalStorage();
 });
 
 messenger.runtime.onStartup.addListener(() => {
   setupContextMenus();
+  migrateApiKeyToLocalStorage();
+});
+
+// Lets the options page's "Mark as Not Spam" log button reuse this file's
+// folder-resolution + tracked-move logic instead of re-implementing it.
+messenger.runtime.onMessage.addListener((request) => {
+  if (request && request.action === 'restoreMessage' && request.messageId) {
+    return manualMarkAsNotSpam(request.messageId);
+  }
 });
 
 messenger.menus.onClicked.addListener(async (info, tab) => {
@@ -38,10 +88,7 @@ messenger.menus.onClicked.addListener(async (info, tab) => {
   for (let message of info.selectedMessages.messages) {
     if (info.menuItemId === "mark-as-spam") {
       const fullMessage = await messenger.messages.get(message.id);
-      const messageBody = await messenger.messages.getFull(message.id);
-      let bodyText = extractTextFromParts(messageBody.parts || []);
-      if (!bodyText && messageBody.body) bodyText = messageBody.body;
-      bodyText = stripHtmlTags(bodyText);
+      const bodyText = await getPlainTextBody(message.id);
       await handleSpamMessage(fullMessage, bodyText);
     } else if (info.menuItemId === "mark-as-not-spam") {
       await manualMarkAsNotSpam(message.id);
@@ -55,9 +102,17 @@ messenger.messages.onNewMailReceived.addListener(async (folder, messages) => {
 
 if (messenger.messages.onUpdated) {
   messenger.messages.onUpdated.addListener(async (message, changedProperties) => {
-    if (changedProperties.folder) {
-      await processIncomingMessages([message]);
+    if (!changedProperties.folder) return;
+
+    // Skip re-classification for moves we triggered ourselves (spam moves
+    // and "not spam" restores both change the folder and would otherwise
+    // cause this listener to fire again immediately).
+    if (pendingProgrammaticMoves.has(message.id)) {
+      pendingProgrammaticMoves.delete(message.id);
+      return;
     }
+
+    await processIncomingMessages([message]);
   });
 }
 
@@ -97,8 +152,9 @@ function matchesDomainPattern(senderEmail, patternList) {
 }
 
 async function processIncomingMessages(messageList) {
-  const { apiKey, model, customPrompt, whitelist = '', blacklist = '' } = 
-    await messenger.storage.sync.get(['apiKey', 'model', 'customPrompt', 'whitelist', 'blacklist']);
+  const { model, customPrompt, whitelist = '', blacklist = '' } =
+    await messenger.storage.sync.get(['model', 'customPrompt', 'whitelist', 'blacklist']);
+  const { apiKey } = await messenger.storage.local.get(['apiKey']);
 
   const safePatterns = whitelist.split(',').map(d => d.trim()).filter(Boolean);
   const blockedPatterns = blacklist.split(',').map(d => d.trim()).filter(Boolean);
@@ -127,16 +183,10 @@ async function processIncomingMessages(messageList) {
       // AI Analysis Path
       if (!apiKey) {
         console.warn("[Thunderbird OpenAI Spam Detector] Skipping classification: No API key configured.");
-        return;
+        continue; // was `return` - that aborted the whole batch, not just this message
       }
 
-      const messageBody = await messenger.messages.getFull(message.id);
-      let bodyText = extractTextFromParts(messageBody.parts || []);
-      if (!bodyText.trim() && messageBody.body) {
-        bodyText = messageBody.body;
-      }
-
-      bodyText = stripHtmlTags(bodyText);
+      const bodyText = await getPlainTextBody(message.id);
 
       const isSpam = await classifyEmailWithOpenAI({
         author: fullMessage.author,
@@ -158,20 +208,40 @@ async function processIncomingMessages(messageList) {
   }
 }
 
+// Shared helper: fetch a message's body and return plain, HTML-stripped text.
+// Centralizes logic that was previously duplicated in three places.
+async function getPlainTextBody(messageId) {
+  const messageBody = await messenger.messages.getFull(messageId);
+  let bodyText = extractTextFromParts(messageBody.parts || []);
+  if (!bodyText.trim() && messageBody.body) {
+    bodyText = messageBody.body;
+  }
+  return stripHtmlTags(bodyText);
+}
+
+// Prefers the first text/plain part found anywhere in the MIME tree; only
+// falls back to text/html if no plain-text part exists at all. (Previously
+// a text/html part appearing before a text/plain part in the tree would
+// get concatenated with the plain-text part instead of being skipped.)
 function extractTextFromParts(parts) {
-  let text = "";
+  const plain = findPartBody(parts, "text/plain");
+  if (plain && plain.trim()) return plain;
+
+  const html = findPartBody(parts, "text/html");
+  return html || "";
+}
+
+function findPartBody(parts, contentType) {
   for (let part of parts) {
-    if (part.contentType === "text/plain" && part.body) {
-      text += part.body + "\n";
-    } else if (part.contentType === "text/html" && part.body) {
-      if (!text.trim()) {
-        text += part.body + "\n";
-      }
-    } else if (part.parts) {
-      text += extractTextFromParts(part.parts);
+    if (part.contentType === contentType && part.body) {
+      return part.body;
+    }
+    if (part.parts) {
+      const nested = findPartBody(part.parts, contentType);
+      if (nested) return nested;
     }
   }
-  return text;
+  return "";
 }
 
 function stripHtmlTags(str) {
@@ -253,13 +323,13 @@ async function handleSpamMessage(messageHeader, fullBody) {
     } else if (targetFolder === 'local_ai_spam') {
       destinationFolder = await getOrCreateLocalAISpamFolder();
     }
-    
+
     if (!destinationFolder) {
       destinationFolder = findFolderByType(account.folders, 'trash');
     }
 
     if (destinationFolder) {
-      await messenger.messages.move([messageHeader.id], destinationFolder);
+      await moveMessageTracked(messageHeader.id, destinationFolder);
     }
   } catch (err) {
     console.error("[Thunderbird OpenAI Spam Detector] Could not move email to target spam folder:", err);
@@ -269,10 +339,7 @@ async function handleSpamMessage(messageHeader, fullBody) {
 async function manualMarkAsNotSpam(messageId) {
   try {
     const messageHeader = await messenger.messages.get(messageId);
-    const messageBody = await messenger.messages.getFull(messageId);
-    let bodyText = extractTextFromParts(messageBody.parts || []);
-    if (!bodyText && messageBody.body) bodyText = messageBody.body;
-    bodyText = stripHtmlTags(bodyText);
+    const bodyText = await getPlainTextBody(messageId);
 
     const { spamLog } = await messenger.storage.local.get({ spamLog: [] });
     const { falsePositives } = await messenger.storage.local.get({ falsePositives: [] });
@@ -310,7 +377,7 @@ async function manualMarkAsNotSpam(messageId) {
     });
 
     if (targetFolder) {
-      await messenger.messages.move([messageId], targetFolder);
+      await moveMessageTracked(messageId, targetFolder);
     }
   } catch (err) {
     console.error("[Thunderbird OpenAI Spam Detector] Error marking message as not spam:", err);
@@ -337,11 +404,11 @@ async function getOrCreateLocalAISpamFolder() {
   try {
     const accounts = await messenger.accounts.list();
     const localAccount = accounts.find(a => a.type === "none" || a.name === "Local Folders");
-    
+
     if (!localAccount) return null;
 
     let targetFolder = localAccount.folders.find(f => f.name === "AI Filtered Spam");
-    
+
     if (!targetFolder && localAccount.folders.length > 0) {
       const rootFolder = localAccount.folders[0];
       targetFolder = await messenger.folders.create(rootFolder, "AI Filtered Spam");

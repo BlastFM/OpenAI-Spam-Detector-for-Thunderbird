@@ -1,9 +1,12 @@
 document.addEventListener('DOMContentLoaded', async () => {
   const api = typeof messenger !== 'undefined' ? messenger : browser;
 
-  // 1. Load saved settings (including whitelist and blacklist)
-  const { apiKey, model, targetFolder, customPrompt, whitelist, blacklist } = 
-    await api.storage.sync.get(['apiKey', 'model', 'targetFolder', 'customPrompt', 'whitelist', 'blacklist']);
+  // Non-secret settings live in storage.sync (so they roam with the
+  // profile); the API key lives in storage.local only, so it never leaves
+  // this machine.
+  const { model, targetFolder, customPrompt, whitelist, blacklist } =
+    await api.storage.sync.get(['model', 'targetFolder', 'customPrompt', 'whitelist', 'blacklist']);
+  const { apiKey } = await api.storage.local.get(['apiKey']);
 
   if (apiKey) document.getElementById('apiKey').value = apiKey || '';
   if (model) document.getElementById('model').value = model || 'gpt-4o-mini';
@@ -111,57 +114,20 @@ async function markLogItemAsNotSpam(index) {
   const api = typeof messenger !== 'undefined' ? messenger : browser;
   const { spamLog } = await api.storage.local.get({ spamLog: [] });
   const item = spamLog[index];
-  if (!item) return;
+  if (!item || !item.id) return;
 
-  const { falsePositives } = await api.storage.local.get({ falsePositives: [] });
-  const updatedFP = [item, ...falsePositives].slice(0, 20);
-  
-  spamLog.splice(index, 1);
-
-  await api.storage.local.set({
-    spamLog: spamLog,
-    falsePositives: updatedFP
-  });
-
-  if (item.id && typeof messenger !== 'undefined') {
-    try {
-      const messageHeader = await messenger.messages.get(item.id);
-      if (messageHeader) {
-        let targetFolder = null;
-
-        if (item.originFolderId) {
-          try {
-            targetFolder = await messenger.folders.get(item.originFolderId);
-          } catch (e) {
-            console.warn("Origin folder no longer exists, using Inbox fallback.");
-          }
-        }
-
-        if (!targetFolder) {
-          const account = await messenger.accounts.get(messageHeader.folder.accountId);
-          function findInbox(folders) {
-            for (let f of folders) {
-              if (f.type === 'inbox' || f.name.toLowerCase() === 'inbox') return f;
-              if (f.subFolders && f.subFolders.length > 0) {
-                const found = findInbox(f.subFolders);
-                if (found) return found;
-              }
-            }
-            return null;
-          }
-          targetFolder = findInbox(account.folders);
-        }
-
-        if (targetFolder) {
-          await messenger.messages.move([item.id], targetFolder);
-        }
-      }
-    } catch (err) {
-      console.warn('Could not move physical message:', err);
-    }
+  // Delegate entirely to the background script's manualMarkAsNotSpam: it
+  // already updates falsePositives/spamLog AND moves the message with the
+  // tracked-move guard that prevents an immediate reclassification once it
+  // lands back in the origin folder. Duplicating that bookkeeping here
+  // previously caused the log entry to be recorded twice.
+  try {
+    await api.runtime.sendMessage({ action: 'restoreMessage', messageId: item.id });
+    showStatus('Moved to Not Spam training & restored to original folder!', 'success');
+  } catch (err) {
+    console.warn('Could not move physical message:', err);
+    showStatus('Could not restore message: ' + err.message, 'error');
   }
-
-  showStatus('Moved to Not Spam training & restored to original folder!', 'success');
 }
 
 async function removeFalsePositive(index) {
@@ -188,7 +154,9 @@ document.getElementById('save').addEventListener('click', async () => {
     return;
   }
 
-  await api.storage.sync.set({ apiKey, model, targetFolder, whitelist, blacklist, customPrompt });
+  // Secret stays local-only; everything else can roam via sync.
+  await api.storage.local.set({ apiKey });
+  await api.storage.sync.set({ model, targetFolder, whitelist, blacklist, customPrompt });
   showStatus('Saved successfully!', 'success');
 });
 
@@ -247,14 +215,17 @@ document.getElementById('clearFPLog').addEventListener('click', async () => {
 
 // --- BACKUP & RESTORE MODULE ---
 
-function populateFormFields(settings) {
-  if (!settings) return;
-  document.getElementById('apiKey').value = settings.apiKey || '';
-  document.getElementById('model').value = settings.model || 'gpt-4o-mini';
-  document.getElementById('targetFolder').value = settings.targetFolder || 'trash';
-  document.getElementById('whitelist').value = settings.whitelist || '';
-  document.getElementById('blacklist').value = settings.blacklist || '';
-  document.getElementById('customPrompt').value = settings.customPrompt || '';
+function populateFormFields(settings, credentials) {
+  if (settings) {
+    document.getElementById('model').value = settings.model || 'gpt-4o-mini';
+    document.getElementById('targetFolder').value = settings.targetFolder || 'trash';
+    document.getElementById('whitelist').value = settings.whitelist || '';
+    document.getElementById('blacklist').value = settings.blacklist || '';
+    document.getElementById('customPrompt').value = settings.customPrompt || '';
+  }
+  if (credentials && credentials.apiKey) {
+    document.getElementById('apiKey').value = credentials.apiKey;
+  }
 }
 
 function setupBackupHandlers() {
@@ -275,15 +246,23 @@ function setupBackupHandlers() {
 
   if (exportRulesKeyBtn) {
     exportRulesKeyBtn.addEventListener('click', async () => {
+      const confirmed = confirm(
+        "This file will contain your OpenAI API key in PLAIN TEXT. " +
+        "Anyone who gets a copy of it can use your key. Continue?"
+      );
+      if (!confirmed) return;
+
       try {
         const api = typeof messenger !== 'undefined' ? messenger : browser;
         const syncData = await api.storage.sync.get(null);
+        const { apiKey } = await api.storage.local.get(['apiKey']);
 
         const rulesBackup = {
-          version: "1.3.2",
+          version: "1.3.3",
           exportedAt: new Date().toISOString(),
           type: "rules_and_key",
-          settings: syncData
+          settings: syncData,
+          credentials: { apiKey: apiKey || '' }
         };
 
         downloadJson(rulesBackup, `openai_spam_rules_key_${new Date().toISOString().slice(0, 10)}.json`);
@@ -297,10 +276,17 @@ function setupBackupHandlers() {
   if (importRulesKeyInput) {
     importRulesKeyInput.addEventListener('change', (e) => {
       handleImportFile(e, async (importedData, api) => {
-        const settingsToRestore = importedData.settings || importedData;
-        await api.storage.sync.set(settingsToRestore);
-        
-        populateFormFields(settingsToRestore);
+        // Back-compat: older backups (pre-1.3.3) put apiKey inside "settings".
+        const settings = importedData.settings || importedData;
+        const credentials = importedData.credentials || { apiKey: settings.apiKey };
+        const { apiKey, ...syncSettings } = settings;
+
+        await api.storage.sync.set(syncSettings);
+        if (credentials.apiKey) {
+          await api.storage.local.set({ apiKey: credentials.apiKey });
+        }
+
+        populateFormFields(syncSettings, credentials);
         showStatus("Rules & Key imported successfully!", "success");
       });
     });
@@ -308,17 +294,25 @@ function setupBackupHandlers() {
 
   if (exportBtn) {
     exportBtn.addEventListener('click', async () => {
+      const confirmed = confirm(
+        "This backup will contain your OpenAI API key in PLAIN TEXT, " +
+        "along with your rules, spam log, and training data. Continue?"
+      );
+      if (!confirmed) return;
+
       try {
         const api = typeof messenger !== 'undefined' ? messenger : browser;
         const syncData = await api.storage.sync.get(null);
         const localData = await api.storage.local.get(null);
+        const { apiKey, ...logsAndTraining } = localData;
 
         const fullBackup = {
-          version: "1.3.2",
+          version: "1.3.3",
           exportedAt: new Date().toISOString(),
           type: "full_backup",
           settings: syncData,
-          logsAndTraining: localData
+          credentials: { apiKey: apiKey || '' },
+          logsAndTraining
         };
 
         downloadJson(fullBackup, `openai_spam_detector_backup_${new Date().toISOString().slice(0, 10)}.json`);
@@ -333,11 +327,18 @@ function setupBackupHandlers() {
     importFileInput.addEventListener('change', (e) => {
       handleImportFile(e, async (importedData, api) => {
         if (importedData.settings) {
-          await api.storage.sync.set(importedData.settings);
+          // Back-compat: older backups put apiKey inside "settings".
+          const { apiKey: legacyApiKey, ...syncSettings } = importedData.settings;
+          const credentials = importedData.credentials || { apiKey: legacyApiKey };
+
+          await api.storage.sync.set(syncSettings);
+          if (credentials.apiKey) {
+            await api.storage.local.set({ apiKey: credentials.apiKey });
+          }
           if (importedData.logsAndTraining) {
             await api.storage.local.set(importedData.logsAndTraining);
           }
-          populateFormFields(importedData.settings);
+          populateFormFields(syncSettings, credentials);
         } else {
           await api.storage.local.set(importedData);
         }
