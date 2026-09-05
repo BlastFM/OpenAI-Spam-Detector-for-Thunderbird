@@ -33,7 +33,7 @@ The options page now provides clearer progress, validation, success, and error m
 
 🔍 Checksum (Integrity Verification)  
 Filename: openai-spam-detector-v1.3.6.xpi
-### SHA-256: `CE591B175C423B693CBDEA5B6B7A1930D06EB931B99E2411963A19038218D546`
+### SHA-256: `CC09A5863E3DB6C1FFDEDB68E002E84AD4AA6FBEA42400F3B5F1827E68781F24`
 
 ### Configuration Options
 
@@ -64,7 +64,7 @@ To keep AI-detected spam isolated from server-synced folders:
 - **Scrollable Log Views**: Vertical overflow containers prevent layout disruption regardless of log entry volume.
 - **JSON Backup & Restore**: Export and import your storage configuration and logs at any time.
 - **Dynamic Save Status**: The options header shows whether settings are ready to save, have unsaved changes, are being saved, or were saved successfully.
-- **BlastFM Limited Branding**: The options page identifies the publisher and states the current free availability.
+- **Header Branding**: The options page uses the bundled spam-shield logo, identifies BlastFM Limited as the publisher, and states the current free availability.
 
 ---
 
@@ -126,6 +126,7 @@ ThunderbirdPersonalSpamFilter/
 ├── icons/
 │   ├── icon-48.png
 │   ├── icon.png
+│   ├── spam-detector-header.png
 │   ├── not-spam-green.png
 │   ├── not-spam-green.svg
 │   ├── spam-red.png
@@ -226,7 +227,7 @@ Privacy Note: Transmitted email content includes the sender address, subject lin
 * Distinguished backup actions from destructive actions with blue and orange visual treatments, pill-shaped controls, and action icons.
 * Updated the in-page confirmation dialog to use the same refreshed destructive-action styling.
 * Added BlastFM Limited branding and a clear FREE availability notice to the options-page header.
-* Reverted the supplied image logo from the options-page header and retained the lightweight text-based BlastFM Limited header mark.
+* Added the supplied spam-shield image as the options-page header logo while retaining the BlastFM Limited name and FREE availability notice.
 * Replaced the static “Ready to save” label with dynamic `Unsaved changes`, `Saving...`, `Saved`, `Needs attention`, and `Save failed` states.
 * Updated release links, package naming, and documentation references for v1.3.6.
 

@@ -53,38 +53,12 @@ body {
 }
 
 .blastfm-logo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 112px;
-  color: #ffffff;
-}
-
-.blastfm-mark {
-  display: grid;
-  width: 48px;
-  height: 48px;
-  place-items: center;
+  width: 58px;
+  height: 58px;
+  object-fit: contain;
+  flex: 0 0 auto;
   border-radius: 14px;
-  background: linear-gradient(135deg, #80e1bd, #2cae83);
-  color: #123b56;
-  font-size: 1.05rem;
-  font-weight: 900;
-  letter-spacing: -0.08em;
-  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.22);
-}
-
-.blastfm-name {
-  font-size: 0.88rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  line-height: 1.05;
-}
-
-.blastfm-name small {
-  font-size: 0.49rem;
-  letter-spacing: 0.18em;
-  opacity: 0.8;
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .app-header h1 {
