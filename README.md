@@ -27,7 +27,8 @@ Options UI & Scope Fixes: Resolved duplicate DOM element ID conflicts and variab
 Verified export and import handling for rules, custom OpenAI API prompts, blacklists, and full training logs (.json format).
 
 🔍 Checksum (Integrity Verification)
-Filename: openai-spam-detector-v1.3.2.xpi ### Hash: 7475FE5FB0100505DF3CF1D8B2CCAD57EBABD09802359084298B961F76FD929B
+Filename: openai-spam-detector-v1.3.2.xpi
+### Hash: 7475FE5FB0100505DF3CF1D8B2CCAD57EBABD09802359084298B961F76FD929B
 
 ### Configuration Options
 
