@@ -1,6 +1,6 @@
 # OpenAI Spam Detector for Thunderbird
 
-![Extension Version](https://img.shields.io/badge/version-1.4.3-blue.svg)
+![Extension Version](https://img.shields.io/badge/version-1.4.4-blue.svg)
 ![Thunderbird](https://img.shields.io/badge/Thunderbird-115.0%2B-58A6FF.svg?logo=thunderbird&logoColor=white)
 ![Manifest Version](https://img.shields.io/badge/manifest-v3-green.svg)
 ![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)
@@ -32,8 +32,8 @@ Full backup and restore controls are provided in the Detected Spam Log panel. A 
 The options page now provides clearer progress, validation, success, and error messages for settings, OpenAI connection tests, spam logs, AI training memory, and backup actions. All of these messages use the dynamic header status indicator rather than a separate floating confirmation. Status and error announcements use accessible live-region behavior for assistive technology.
 
 🔍 Checksum (Integrity Verification)  
-Filename: openai-spam-detector-v1.4.3.xpi
-### SHA-256: `BAD4B3D3DF4B12D66AAEEE94874A657C1D22B8ABC944A06458BF4DE99DF71E9C`
+Filename: openai-spam-detector-v1.4.4.xpi
+### SHA-256: `D12FFAAF0F4E986E97B9FBD2DC0F0D9D8CFA170F071070E82F2BEA310219A92F`
 
 ### Configuration Options
 
@@ -102,22 +102,22 @@ Restore success is reported only after storage writes and the log refresh comple
 
 Install [Mozilla Thunderbird](https://www.thunderbird.net/) first, then install the OpenAI Spam Detector extension from the release asset below.
 
-[![Download Release](https://img.shields.io/badge/Download-v1.4.3_.XPI-blue?style=for-the-badge&logo=thunderbird&logoColor=white)](https://github.com/BlastFM/ThunderbirdPersonalSpamFilter/releases/download/v1.4.3/openai-spam-detector-v1.4.3.xpi)
+[![Download Release](https://img.shields.io/badge/Download-v1.4.4_.XPI-blue?style=for-the-badge&logo=thunderbird&logoColor=white)](https://github.com/BlastFM/ThunderbirdPersonalSpamFilter/releases/download/v1.4.4/openai-spam-detector-v1.4.4.xpi)
 [![Get Latest Release](https://img.shields.io/github/v/release/BlastFM/ThunderbirdPersonalSpamFilter?color=green&label=Latest%20Release&style=for-the-badge)](https://github.com/BlastFM/ThunderbirdPersonalSpamFilter/releases/latest)
 
 ### Direct Downloads
 
 | Asset | Description | Download Link |
 | :--- | :--- | :--- |
-| **Extension Binary** | Ready-to-install Thunderbird Add-on | [`openai-spam-detector-v1.4.3.xpi`](https://github.com/BlastFM/ThunderbirdPersonalSpamFilter/releases/download/v1.4.3/openai-spam-detector-v1.4.3.xpi) |
-| **Source Code** | Compressed source files (`.zip`) | [`Source code (zip)`](https://github.com/BlastFM/ThunderbirdPersonalSpamFilter/archive/refs/tags/v1.4.3.zip) |
+| **Extension Binary** | Ready-to-install Thunderbird Add-on | [`openai-spam-detector-v1.4.4.xpi`](https://github.com/BlastFM/ThunderbirdPersonalSpamFilter/releases/download/v1.4.4/openai-spam-detector-v1.4.4.xpi) |
+| **Source Code** | Compressed source files (`.zip`) | [`Source code (zip)`](https://github.com/BlastFM/ThunderbirdPersonalSpamFilter/archive/refs/tags/v1.4.4.zip) |
 
 ---
 
 ### How to Install in Thunderbird
 
 1. Download and install [Mozilla Thunderbird](https://www.thunderbird.net/) if it is not already installed.
-2. Click the extension download button above to save **`openai-spam-detector-v1.4.3.xpi`**.
+2. Click the extension download button above to save **`openai-spam-detector-v1.4.4.xpi`**.
 3. Open Thunderbird and navigate to **Add-ons and Themes** (`Ctrl+Shift+A` or `Cmd+Shift+A`).
 4. Click the gear icon (**Tools for all add-ons**) in the top-right corner.
 5. Select **Install Add-on From File...** and choose the downloaded `.xpi` file.
@@ -139,7 +139,7 @@ ThunderbirdPersonalSpamFilter/
 │   ├── options-page-preview.svg
 │   └── options-page-status-preview.svg
 ├── README.md
-├── openai-spam-detector-v1.4.3.xpi
+├── openai-spam-detector-v1.4.4.xpi
 ├── icons/
 │   ├── icon-48.png
 │   ├── icon.png
@@ -240,7 +240,15 @@ Privacy Note: Transmitted email content includes the sender address, subject lin
 
 ## Release History
 
-### [v1.4.3] - 2026-09-05
+### [v1.4.4] - 2026-09-06
+
+* Fixed message move and folder creation calls to pass folder IDs instead of folder/account objects, matching current Thunderbird MV3 API schemas.
+* Fixed folder discovery to use `MailAccount.rootFolder.subFolders` (with `includeSubFolders`) instead of the removed `MailAccount.folders` flat array.
+* Fixed special-folder detection (Junk/Trash/Inbox) to check the current `MailFolder.specialUse` array instead of the removed `MailFolder.type` string.
+* Updated local-account detection to accept both the current `"local"` and legacy `"none"` `MailAccount.type` values.
+* Raised the minimum supported Thunderbird version to 128.0, the first release with official Manifest V3 support.
+
+### [v1.4.4] - 2026-09-05
 
 * Fixed a silent failure where "Mark as Spam (Train AI)" appeared to do nothing on profiles without a Local Folders account: the AI Filtered Spam folder now falls back to being created directly under the message's own account instead of only under Local Folders.
 * Context-menu "Mark as Spam" / "Mark as Not Spam" failures now show a system notification instead of only logging to the Error Console, so a failed move is no longer invisible to the user.

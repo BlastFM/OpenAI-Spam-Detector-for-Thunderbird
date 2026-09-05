@@ -13,7 +13,9 @@ const pendingProgrammaticMoves = new Set();
 async function moveMessageTracked(messageId, destinationFolder) {
   pendingProgrammaticMoves.add(messageId);
   try {
-    await messenger.messages.move([messageId], destinationFolder);
+    // messages.move expects a MailFolderId (string), not a MailFolder
+    // object, in current Thunderbird MV3 schemas.
+    await messenger.messages.move([messageId], destinationFolder.id);
   } finally {
     // Safety net: if onUpdated never fires (or fires with a different id),
     // don't let the Set grow forever.
@@ -270,6 +272,18 @@ async function processIncomingMessages(messageList) {
 // actual destination can differ per account: profiles with a Local Folders
 // account share one folder there, but accounts on a profile without Local
 // Folders instead fall back to a folder created under that same account.
+// Thunderbird MV3 replaced MailAccount.folders (a flat array of top-level
+// folders) with MailAccount.rootFolder, whose .subFolders must be
+// explicitly requested via includeSubFolders, and only then contains the
+// (recursively nested) folder tree. This helper fetches an account with
+// that flag set and returns the equivalent top-level folder array so the
+// rest of this file (findFolderByType/findFolderByName, which both expect
+// an array and recurse via .subFolders) doesn't need to change.
+async function getAccountFolders(accountId) {
+  const account = await messenger.accounts.get(accountId, true);
+  return account && account.rootFolder ? account.rootFolder.subFolders : [];
+}
+
 async function resolveSpamDestinationFolder(accountId, resolvedTargetFolder, cache) {
   if (!cache.has(accountId)) {
     try {
@@ -277,10 +291,10 @@ async function resolveSpamDestinationFolder(accountId, resolvedTargetFolder, cac
       if (resolvedTargetFolder === 'local_ai_spam') {
         folder = await getOrCreateAISpamFolder(accountId);
       } else {
-        const account = await messenger.accounts.get(accountId);
+        const accountFolders = await getAccountFolders(accountId);
         folder = resolvedTargetFolder === 'junk'
-          ? findFolderByType(account.folders, 'junk')
-          : findFolderByType(account.folders, 'trash');
+          ? findFolderByType(accountFolders, 'junk')
+          : findFolderByType(accountFolders, 'trash');
       }
       cache.set(accountId, folder);
     } catch (err) {
@@ -402,15 +416,15 @@ async function handleSpamMessage(messageHeader, fullBody, destinationOverride = 
       throw new Error("The message has no source folder.");
     }
 
-    const account = await messenger.accounts.get(messageHeader.folder.accountId);
+    const accountId = messageHeader.folder.accountId;
     let destinationFolder = null;
 
     if (selectedTargetFolder === 'junk') {
-      destinationFolder = findFolderByType(account.folders, 'junk');
+      destinationFolder = findFolderByType(await getAccountFolders(accountId), 'junk');
     } else if (selectedTargetFolder === 'local_ai_spam') {
-      destinationFolder = await getOrCreateAISpamFolder(account.id);
+      destinationFolder = await getOrCreateAISpamFolder(accountId);
     } else {
-      destinationFolder = findFolderByType(account.folders, 'trash');
+      destinationFolder = findFolderByType(await getAccountFolders(accountId), 'trash');
     }
 
     const alreadyInDestination = destinationFolder && destinationFolder.id === messageHeader.folder.id;
@@ -480,8 +494,7 @@ async function manualMarkAsNotSpam(messageId) {
     }
 
     if (!targetFolder) {
-      const account = await messenger.accounts.get(messageHeader.folder.accountId);
-      targetFolder = findFolderByType(account.folders, 'inbox');
+      targetFolder = findFolderByType(await getAccountFolders(messageHeader.folder.accountId), 'inbox');
     }
 
     const newFP = {
@@ -520,8 +533,13 @@ async function manualMarkAsNotSpam(messageId) {
 }
 
 function findFolderByType(folders, typeName) {
-  for (let f of folders) {
-    if (f.type === typeName) return f;
+  for (let f of folders || []) {
+    // Thunderbird MV3 replaced MailFolder.type (a single string) with
+    // specialUse (an array of strings, e.g. a folder can be both "trash"
+    // and "junk" in unusual configurations), so check membership instead
+    // of equality. f.type is still checked for older Thunderbird releases
+    // that predate this rename.
+    if ((f.specialUse && f.specialUse.includes(typeName)) || f.type === typeName) return f;
     const lowerName = (f.name || "").toLowerCase();
     if (typeName === 'trash' && (lowerName === 'trash' || lowerName === 'deleted' || lowerName === 'deleted items' || lowerName === 'bin')) return f;
     if (typeName === 'junk' && (lowerName === 'junk' || lowerName === 'spam' || lowerName === 'bulk')) return f;
@@ -543,29 +561,37 @@ function findFolderByType(folders, typeName) {
 // own account so the feature still works instead of silently doing nothing.
 async function getOrCreateAISpamFolder(fallbackAccountId) {
   try {
-    const accounts = await messenger.accounts.list();
-    const localAccount = accounts.find(a => a.type === "none" || a.name === "Local Folders");
+    // includeSubFolders is required in current Thunderbird MV3 schemas;
+    // without it, accounts.list() returns MailAccounts whose rootFolder
+    // has no populated subFolders and every folder lookup below would
+    // silently find nothing.
+    const accounts = await messenger.accounts.list(true);
+    // Thunderbird MV3 renamed the local-account MailAccount.type value
+    // from "none" to "local"; accept both for compatibility across
+    // Thunderbird versions.
+    const localAccount = accounts.find(a => a.type === "local" || a.type === "none" || a.name === "Local Folders");
 
     if (localAccount) {
-      let targetFolder = findFolderByName(localAccount.folders, "AI Filtered Spam");
+      let targetFolder = findFolderByName(localAccount.rootFolder.subFolders, "AI Filtered Spam");
       if (!targetFolder) {
-        // Passing the account (rather than one of its folders) as the parent
-        // creates "AI Filtered Spam" as a top-level folder of Local Folders.
-        // Passing an arbitrary existing folder here would instead nest it as
-        // a subfolder of whichever folder happened to be first in the list.
-        targetFolder = await messenger.folders.create(localAccount, "AI Filtered Spam");
+        // folders.create expects the parent folder's id (a MailFolderId),
+        // not a MailFolder/MailAccount object. Passing the account's root
+        // folder id creates "AI Filtered Spam" as a top-level folder of
+        // Local Folders, rather than nesting it under an arbitrary
+        // existing folder.
+        targetFolder = await messenger.folders.create(localAccount.rootFolder.id, "AI Filtered Spam");
       }
       return targetFolder;
     }
 
     if (!fallbackAccountId) return null;
 
-    const account = accounts.find(a => a.id === fallbackAccountId) || await messenger.accounts.get(fallbackAccountId);
+    const account = accounts.find(a => a.id === fallbackAccountId) || await messenger.accounts.get(fallbackAccountId, true);
     if (!account) return null;
 
-    let targetFolder = findFolderByName(account.folders, "AI Filtered Spam");
+    let targetFolder = findFolderByName(account.rootFolder.subFolders, "AI Filtered Spam");
     if (!targetFolder) {
-      targetFolder = await messenger.folders.create(account, "AI Filtered Spam");
+      targetFolder = await messenger.folders.create(account.rootFolder.id, "AI Filtered Spam");
     }
     return targetFolder;
   } catch (err) {
