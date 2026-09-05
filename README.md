@@ -77,15 +77,15 @@ Restore success is reported only after storage writes and the log refresh comple
 
 ## Download & Installation
 
-[![Download Release](https://img.shields.io/badge/Download-v1.3.4_.XPI-blue?style=for-the-badge&logo=thunderbird&logoColor=white)](https://github.com/BlastFM/OpenAI-Spam-Detector-for-Thunderbird/releases/download/v1.3.4/openai-spam-detector-v1.3.4.xpi)
-[![Get Latest Release](https://img.shields.io/github/v/release/BlastFM/OpenAI-Spam-Detector-for-Thunderbird?color=green&label=Latest%20Release&style=for-the-badge)](https://github.com/BlastFM/OpenAI-Spam-Detector-for-Thunderbird/releases/latest)
+[![Download Release](https://img.shields.io/badge/Download-v1.3.4_.XPI-blue?style=for-the-badge&logo=thunderbird&logoColor=white)](https://github.com/BlastFM/ThunderbirdPersonalSpamFilter/releases/download/v1.3.4/openai-spam-detector-v1.3.4.xpi)
+[![Get Latest Release](https://img.shields.io/github/v/release/BlastFM/ThunderbirdPersonalSpamFilter?color=green&label=Latest%20Release&style=for-the-badge)](https://github.com/BlastFM/ThunderbirdPersonalSpamFilter/releases/latest)
 
 ### Direct Downloads
 
 | Asset | Description | Download Link |
 | :--- | :--- | :--- |
-| **Extension Binary** | Ready-to-install Thunderbird Add-on | [`openai-spam-detector-v1.3.4.xpi`](https://github.com/BlastFM/OpenAI-Spam-Detector-for-Thunderbird/releases/download/v1.3.4/openai-spam-detector-v1.3.4.xpi) |
-| **Source Code** | Compressed source files (`.zip`) | [`Source code (zip)`](https://github.com/BlastFM/OpenAI-Spam-Detector-for-Thunderbird/archive/refs/tags/v1.3.4.zip) |
+| **Extension Binary** | Ready-to-install Thunderbird Add-on | [`openai-spam-detector-v1.3.4.xpi`](https://github.com/BlastFM/ThunderbirdPersonalSpamFilter/releases/download/v1.3.4/openai-spam-detector-v1.3.4.xpi) |
+| **Source Code** | Compressed source files (`.zip`) | [`Source code (zip)`](https://github.com/BlastFM/ThunderbirdPersonalSpamFilter/archive/refs/tags/v1.3.4.zip) |
 
 ---
 
@@ -101,7 +101,7 @@ Restore success is reported only after storage writes and the log refresh comple
 ## 📁 Repository Structure
 
 ```text
-OpenAI-Spam-Detector-for-Thunderbird/
+ThunderbirdPersonalSpamFilter/
 ├── manifest.json
 ├── background.js
 ├── README.md
@@ -121,7 +121,7 @@ Manual Installation in Thunderbird
 Download or clone this repository to your local machine:
 
 Bash
-git clone [https://github.com/your-username/openai-spam-detector.git](https://github.com/your-username/openai-spam-detector.git)
+git clone https://github.com/BlastFM/ThunderbirdPersonalSpamFilter.git
 Zip the contents of the root folder (or compile into a .xpi file).
 
 Open Mozilla Thunderbird.
