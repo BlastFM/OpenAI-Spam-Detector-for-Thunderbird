@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Thunderbird OpenAI Spam Detector",
-  "version": "1.3.7",
+  "version": "1.3.8",
   "description": "AI-powered email filtering & custom training for Mozilla Thunderbird.",
   "permissions": [
     "accountsRead",
@@ -28,9 +28,9 @@
     "default_title": "OpenAI Spam Detector",
     "default_popup": "options/popup.html",
     "default_icon": {
-      "16": "icons/icon-48.png",
-      "32": "icons/icon-48.png",
-      "48": "icons/icon-48.png"
+      "16": "icons/ThunderbirdPersonalSpamFilter.png",
+      "32": "icons/ThunderbirdPersonalSpamFilter.png",
+      "48": "icons/ThunderbirdPersonalSpamFilter.png"
     }
   },
   "options_ui": {
@@ -38,9 +38,9 @@
     "open_in_tab": true
   },
   "icons": {
-    "16": "icons/icon-48.png",
-    "32": "icons/icon-48.png",
-    "48": "icons/icon-48.png",
-    "128": "icons/icon-48.png"
+    "16": "icons/ThunderbirdPersonalSpamFilter.png",
+    "32": "icons/ThunderbirdPersonalSpamFilter.png",
+    "48": "icons/ThunderbirdPersonalSpamFilter.png",
+    "128": "icons/ThunderbirdPersonalSpamFilter.png"
   }
 }
