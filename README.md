@@ -1,105 +1,48 @@
 # OpenAI Spam Detector for Thunderbird
 
-![Extension Version](https://img.shields.io/badge/version-1.3-blue.svg)
-![Thunderbird](https://img.shields.io/badge/Thunderbird-115.0%2B-58A6FF.svg?logo=thunderbird&logoColor=white)
+![Extension Version](https://img.shields.io/badge/version-1.3.2-blue.svg)
+![Thunderbird](https://img.shields.io/badge/Thunderbird-102.0%2B-58A6FF.svg?logo=thunderbird&logoColor=white)
 ![Manifest Version](https://img.shields.io/badge/manifest-v3-green.svg)
 ![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)
 
-An AI-powered spam detection and training extension for Mozilla Thunderbird. **OpenAI Spam Detector** utilizes OpenAI's Chat Completions API (such as `gpt-4o-mini` and `gpt-4o`) to classify incoming emails, move unwanted messages to your deleted folder automatically, and continuously adapt to your preferences via few-shot context learning.
+An AI-powered spam detection and continuous-training extension for Mozilla Thunderbird. **OpenAI Spam Detector** utilizes OpenAI's Chat Completions API (`gpt-4o-mini`, `gpt-4o`) to automatically classify incoming emails, move unwanted messages to designated spam folders, and continuously adapt to your preferences through few-shot context learning.
 
 ---
-
-Release Date: September 5, 2026
-
-Compatibility: Thunderbird 102.0+ (Manifest V3)
-
-This patch release resolves critical UI rendering issues, fixes archive packaging bugs on Windows, and ensures full compatibility with Thunderbird's Manifest V3 WebExtension standard.
-
-🌟 What's Changed
-🐛 Bug Fixes & Stability Improvements
-Archive Path Resolution (/ Normalization): Switched the XPI build process to .NET archive compilation to enforce forward-slash path separators. This resolves the persistent "Page Not Found" errors on the Options page and missing toolbar icons on Windows installations.
-
-Manifest V3 Permission Mapping: Updated manifest.json with complete relative icon sizing declarations across icons and action.default_icon, alongside updated permissions (accountsRead, accountsFolders, messagesRead, messagesMove, storage, downloads, tabs, menus).
-
-Options UI & Scope Fixes: Resolved duplicate DOM element ID conflicts and variable scoping errors in options.js and options.html.
-
-🔒 Data Backup & Portability
-Verified export and import handling for rules, custom OpenAI API prompts, blacklists, and full training logs (.json format).
-
-🔍 Checksum (Integrity Verification)
-Filename: openai-spam-detector-v1.3.2.xpi
-### Hash: 7475FE5FB0100505DF3CF1D8B2CCAD57EBABD09802359084298B961F76FD929B
-
-### Configuration Options
-
-Open the Extension Options page (`Tools > Add-ons & Themes > Options`) to configure the following settings:
-
-| Setting | Description |
-| :--- | :--- |
-| **OpenAI API Key** | Your OpenAI secret key (`sk-...`) used to authenticate requests. |
-| **OpenAI Model** | Select your preferred classification model (`gpt-4o-mini`, `gpt-4o`, `gpt-3.5-turbo`). |
-| **Spam Action Destination** | Target folder where flagged spam is routed (`Trash`, `Account Junk`, or `Local Folders / AI Filtered Spam`). |
-| **Custom Rules** | Text prompt to add strict user rules (e.g., *Always mark newsletters from domain.com as HAM*). |
-
-#### Using the Dedicated Local Spam Folder
-To keep AI-detected spam isolated from server-synced folders:
-1. Open Extension Settings and set **Spam Action Destination** to `Local Folders / AI Filtered Spam`.
-2. When the AI detects a spam email, it automatically creates and routes the message to `Local Folders > AI Filtered Spam` inside Thunderbird.
-3. You can set a custom local retention policy on this folder (e.g., auto-delete after 14 days) by right-clicking the folder in Thunderbird and selecting **Properties > Retention Policy**.
 
 ## 🌟 Key Features
 
-- **Automated Spam Detection**: Leverages OpenAI models (`gpt-4o-mini`, `gpt-4o`) to classify incoming messages.
-- **Two-Pane History Dashboard**:
-  - **Detected Spam Log**: Keeps track of flagged spam items.
-  - **AI Training Memory**: Stores non-spam classifications to refine filter accuracy.
-- **Scrollable Log Views**: Vertical overflow containers prevent layout disruption regardless of log entry volume.
-- **JSON Backup & Restore**: Export and import your storage configuration and logs at any time.
+* **Automated AI Email Filtering**: Real-time evaluation of incoming emails using customized OpenAI prompts and user-defined rules.
+* **Continuous Context Training**: Right-click context menus allow one-click training (*Mark as Spam* / *Mark as Not Spam*) to feed few-shot examples back into the AI engine.
+* **Flexible Action Routing**: Automatically route detected spam to `Trash`, `Account Junk`, or an isolated `Local Folders / AI Filtered Spam` folder.
+* **Two-Pane History Dashboard**: Scrollable, non-disruptive logs tracking *Detected Spam* and *AI Training Memory*.
+* **Full Data Portability**: Instant JSON backup and restore for configurations, custom prompt rules, and training memory.
 
 ---
 
-## ⌨️ Backup & Restore (Settings Shortcuts)
+## 💡 How It Works
 
-To maintain UI performance and prevent layout reflows in Thunderbird, storage backups can be exported or imported directly from the **Settings Page** using native keyboard shortcuts:
+### Context Menu Training
+* **Mark as Spam**: Right-click any email and select **Train AI: Mark as Spam**. The message is moved to your designated spam folder, logged in training memory, and appended as a negative example in future API payloads.
+* **Mark as Not Spam**: Right-click a misclassified message and select **Train AI: Mark as Not Spam**. The email is returned to your Inbox and added as a positive example to prevent similar false positives.
 
-| Action | Shortcut (Windows/Linux) | Shortcut (Mac) | Description |
-| :--- | :--- | :--- | :--- |
-| **Export Backup** | `Ctrl` + `Shift` + `E` | `Cmd` + `Shift` + `E` | Downloads a `.json` backup file containing all local logs and API configurations. |
-| **Import Backup** | `Ctrl` + `Shift` + `I` | `Cmd` + `Shift` + `I` | Opens a file picker to restore extension storage from a previously exported `.json` file. |
+### Message Processing Pipeline
 
-> **Note**: These shortcuts must be pressed while active on the **OpenAI Spam Detector Settings** tab.
+```mermaid
+graph TD
+    A[New Email Received] --> B{API Key Configured?}
+    B -- No --> C[Notify User & Prompt Options]
+    B -- Yes --> D[Extract Email Headers & Body Snippet]
+    D --> E[Fetch Custom Rules + Training Memory]
+    E --> F[Send Request to OpenAI API]
+    F --> G{Verdict: SPAM or HAM?}
+    G -- SPAM --> H[Move Email to Spam Destination]
+    H --> I[Log Event & Show Notification]
+    G -- HAM --> J[Retain Email in Inbox]
 
----
+### 🚀 Installation
+Direct DownloadsAssetDescriptionDownload LinkExtension BinaryReady-to-install Thunderbird Add-onopenai-spam-detector-v1.3.2.xpiSource CodeCompressed repository sourceSource code (zip)Installation StepsDownload openai-spam-detector-v1.3.2.xpi using the button or link above.Open Thunderbird and navigate to Add-ons and Themes (Ctrl + Shift + A or Cmd + Shift + A).Click the Gear Icon (⚙️) at the top right of the tab.Select Install Add-on From File... and pick the downloaded .xpi file.Click Add when prompted to grant required permissions.⚙️ Configuration OptionsAccess settings via Add-ons and Themes $\rightarrow$ Thunderbird OpenAI Spam Detector $\rightarrow$ Options.SettingDescriptionOpenAI API KeySecret key (sk-...) used to authenticate with OpenAI API endpoints.OpenAI ModelChoose from gpt-4o-mini (fast & cost-effective, recommended), gpt-4o (highest precision), or gpt-3.5-turbo.Spam Action DestinationDestination folder for spam: Trash, Account Junk, or Local Folders / AI Filtered Spam.Custom RulesUser-defined prompt instructions (e.g., "Always mark messages containing order confirmations from domain.com as HAM").Using the Dedicated Local Spam FolderTo keep AI-filtered spam isolated from server-synced IMAP accounts:Set Spam Action Destination to Local Folders / AI Filtered Spam.When spam is detected, the extension creates and routes messages to Local Folders > AI Filtered Spam.Configure a custom retention policy (e.g., auto-delete after 14 days) by right-clicking the folder in Thunderbird and choosing Properties $\rightarrow$ Retention Policy.⌨️ Backup & Restore ShortcutsManage extension data directly from the Settings Page using native keyboard shortcuts:ActionShortcut (Windows/Linux)Shortcut (Mac)DescriptionExport BackupCtrl + Shift + ECmd + Shift + EDownloads a .json file containing all API keys, rules, and logs.Import BackupCtrl + Shift + ICmd + Shift + IRestores settings and training logs from an exported .json file.Note: These shortcuts are active while focused on the OpenAI Spam Detector Settings tab.
 
-## 🚀 Installation & Release Packaging
-
-## Download & Installation
-
-[![Download Release](https://img.shields.io/badge/Download-v1.3.2_.XPI-blue?style=for-the-badge&logo=thunderbird&logoColor=white)](https://github.com/BlastFM/OpenAI-Spam-Detector-for-Thunderbird/releases/download/v1.3.2/openai-spam-detector-v1.3.2.xpi)
-[![Get Latest Release](https://img.shields.io/github/v/release/BlastFM/OpenAI-Spam-Detector-for-Thunderbird?color=green&label=Latest%20Release&style=for-the-badge)](https://github.com/BlastFM/OpenAI-Spam-Detector-for-Thunderbird/releases/latest)
-
-### Direct Downloads
-
-| Asset | Description | Download Link |
-| :--- | :--- | :--- |
-| **Extension Binary** | Ready-to-install Thunderbird Add-on | [`openai-spam-detector-v1.3.2.xpi`](https://github.com/YOUR_USERNAME/YOUR_REPO/releases/download/v1.3.2/openai-spam-detector-v1.3.2.xpi) |
-| **Source Code** | Compressed source files (`.zip`) | [`Source code (zip)`](https://github.com/YOUR_USERNAME/YOUR_REPO/archive/refs/tags/v1.3.2.zip) |
-
----
-
-### How to Install in Thunderbird
-
-1. Click the download button above to save **`openai-spam-detector-v1.3.2.xpi`** to your computer.
-2. Open Thunderbird and navigate to **Add-ons and Themes** (`Ctrl+Shift+A` or `Cmd+Shift+A`).
-3. Click the gear icon (**Tools for all add-ons**) in the top-right corner.
-4. Select **Install Add-on From File...** and choose the downloaded `.xpi` file.
-
----
-
-## 📁 Repository Structure
-
-```text
-OpenAI-Spam-Detector-for-Thunderbird/
+### 📁 Repository StructurePlaintextOpenAI-Spam-Detector-for-Thunderbird/
 ├── manifest.json
 ├── background.js
 ├── README.md
@@ -114,87 +57,5 @@ OpenAI-Spam-Detector-for-Thunderbird/
     ├── popup.html
     └── popup.js
 
-🚀 Installation & Setup
-Manual Installation in Thunderbird
-Download or clone this repository to your local machine:
-
-Bash
-git clone [https://github.com/your-username/openai-spam-detector.git](https://github.com/your-username/openai-spam-detector.git)
-Zip the contents of the root folder (or compile into a .xpi file).
-
-Open Mozilla Thunderbird.
-
-Go to Settings > Add-ons and Themes (or press Ctrl + Shift + A / Cmd + Shift + A).
-
-Click the gear icon (⚙️) in the top-right corner and select Install Add-on From File....
-
-Select your zipped file or .xpi package to complete installation.
-
-⚙️ Configuration
-Right-click the extension in your Thunderbird Add-ons Manager and select Options (or open the settings page from the notification prompt).
-
-Enter your OpenAI API Key (sk-...).
-
-Click Test Key to verify connection and key validity.
-
-Select your preferred OpenAI Model:
-
-gpt-4o-mini (Recommended): Fast, lightweight, and cost-effective for high-volume email processing.
-
-gpt-4o: Maximum classification accuracy for complex edge cases.
-
-gpt-3.5-turbo: Legacy support.
-
-(Optional) Add Custom Classification Prompt Rules to refine how the AI handles specific email patterns.
-
-Click Save Settings.
-
-💡 How It Works
-Context Menu Training
-Mark as Spam: Right-click any email in your message list, choose Train AI: Mark as Spam. The add-on logs a snippet to spamExamples, moves the email to the Deleted folder, and includes it as a negative example in future OpenAI API payloads.
-
-Mark as Not Spam: Right-click an email and choose Train AI: Mark as Not Spam. The add-on restores the message to your Inbox, saves a snippet to falsePositives, and instructs OpenAI to prioritize similar emails as HAM.
-
-Message Processing Pipeline
-graph TD
-    A[New Email Received] --> B{API Key Set?}
-    B -- No --> C[Notify User & Prompt Options]
-    B -- Yes --> D[Extract Email Headers & Body Snippet]
-    D --> E[Fetch User Custom Rules + Training Memory]
-    E --> F[Send Request to OpenAI API]
-    F --> G{Verdict: SPAM or HAM?}
-    G -- SPAM --> H[Move Email to Deleted / Trash]
-    H --> I[Log Event & Show Restore Notification]
-    G -- HAM --> J[Retain Email in Inbox]
-
-🛡️ Permissions & Privacy
-This add-on requires the following WebExtension permissions:
-
-messagesRead & messagesMove: To inspect incoming email headers/bodies and move spam to your trash folder.
-
-accountsRead: To locate the target Inbox and Deleted folders across configured email accounts.
-
-menus: To inject AI training options into the message list context menu.
-
-storage: To save configuration keys, logs, and user training memory locally.
-
-notifications: To alert you when spam is intercepted or when setup errors occur.
-
-Host Permission (https://api.openai.com/*): Required to transmit snippet data to OpenAI endpoints for evaluation.
-
-Privacy Note: Transmitted email content includes the sender address, subject line, and the first 1,000 characters of the body text. Data is processed according to OpenAI's Data Usage Policies. No data is sent to intermediate third-party servers.
-
-## Release History
-
-### [v1.3.1] - 2026-09-04
-
-#### Added
-* **Dedicated Configuration Export/Import:** Introduced independent configuration backup and restore controls within the left-hand Configuration panel to back up API keys, model selections, and custom prompt rules separately from log data.
-
-#### Changed
-* **Action Styling:** Applied a dedicated slate/navy blue theme (`.btn-slate`) to Configuration panel backup controls to visually distinguish setting actions from log management.
-* **Hover Interaction:** Enhanced hover feedback across configuration buttons with a higher-contrast steel-blue shade and subtle elevation shadows.
-
-📄 License
-Distributed under the MIT License. See LICENSE for more information.
-
+### 🛡️ Permissions & Privacy
+This extension operates strictly as a local Thunderbird WebExtension using standard permissions:messagesRead & messagesMove: Inspect incoming message headers/snippets and move flagged messages.accountsRead & accountsFolders: Resolve folder structures across configured email accounts.menus: Add training controls to message list context menus.storage: Persist local API keys, settings, custom prompt rules, and classification memory.downloads & tabs: Handle configuration export files and UI navigation.Host Permission (https://api.openai.com/*): Transmit snippet payloads to OpenAI endpoints.Privacy Notice: Transmitted data includes email sender headers, subject line, and the first 1,000 characters of the body text. Data is sent directly to OpenAI's API according to their Data Usage Policies. No intermediate third-party servers are used.📄 LicenseDistributed under the MIT License. See LICENSE for details.
