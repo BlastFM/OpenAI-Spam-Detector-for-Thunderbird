@@ -54,7 +54,6 @@ To keep AI-detected spam isolated from server-synced folders:
 1. Open Extension Settings and set **Spam Action Destination** to `Local Folders / AI Filtered Spam`.
 2. When the AI detects a spam email, it automatically creates and routes the message to `Local Folders > AI Filtered Spam` inside Thunderbird.
 3. You can set a custom local retention policy on this folder (e.g., auto-delete after 14 days) by right-clicking the folder in Thunderbird and selecting **Properties > Retention Policy**.
->>>>>>> origin/main
 
 ## 🌟 Key Features
 
