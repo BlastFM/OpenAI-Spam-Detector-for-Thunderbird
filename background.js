@@ -371,7 +371,7 @@ async function handleSpamMessage(messageHeader, fullBody) {
 async function manualMarkAsNotSpam(messageId) {
   try {
     const messageHeader = await messenger.messages.get(messageId);
-    const bodyText = await getPlainTextBody(messageId);
+    const bodyText = await getPlainTextBodyForAction(messageId);
 
     const { spamLog } = await messenger.storage.local.get({ spamLog: [] });
     const { falsePositives } = await messenger.storage.local.get({ falsePositives: [] });
