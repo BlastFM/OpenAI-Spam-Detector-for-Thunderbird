@@ -70,15 +70,15 @@ To keep AI-detected spam isolated from server-synced folders:
 
 ---
 
-## ✨ Options Page Preview
+## ✨ Current Options Page Screenshots
 
-The options page uses a compact two-pane layout with a branded header, grouped configuration controls, clear backup actions, and a unified dynamic status indicator.
+The current options page uses a compact two-pane layout with the Thunderbird spam-filter branding, grouped configuration controls, clear backup actions, and a unified dynamic status indicator.
 
-![Options page preview](docs/options-page-preview.svg)
+![Current Thunderbird OpenAI Spam Detector options page](docs/options-page-preview.svg)
 
-The status indicator communicates unsaved changes, save progress, and successful saves without interrupting the page with separate floating notifications.
+The companion screenshot highlights the live status states, including `Ready to protect`, unsaved changes, save progress, and successful saves, without interrupting the page with separate floating notifications.
 
-![Dynamic options status preview](docs/options-page-status-preview.svg)
+![Current options page status states](docs/options-page-status-preview.svg)
 
 ---
 
