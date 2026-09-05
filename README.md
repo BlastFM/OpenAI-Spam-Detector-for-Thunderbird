@@ -13,7 +13,9 @@ This add-on is offered **FREE by BlastFM Limited at this time**. OpenAI API usag
 
 Release Date: September 5, 2026
 
-Compatibility: Thunderbird 102.0+ (Manifest V3)
+Compatibility: Thunderbird 128.0+ (Manifest V3)
+
+**v1.4.4 is the current stable release**, verified to automatically scan and correctly route new messages (including those arriving in the Junk folder) and to restore manual "Mark as Spam (Train AI)" / "Mark as Not Spam" actions on current Thunderbird MV3 builds.
 
 This release adds a redesigned options interface with clearer action grouping, stronger status cues, and more distinct backup and destructive controls. The header now identifies BlastFM Limited, states that the add-on is currently free, and dynamically reports save status. It also includes the reliability and packaging fixes from v1.3.4.
 
@@ -240,14 +242,14 @@ Privacy Note: Transmitted email content includes the sender address, subject lin
 
 ## Release History
 
-### [v1.4.4] - 2026-09-06
+### [v1.4.4] - 2026-09-06 (Stable)
 
 * Fixed message move and folder creation calls to pass folder IDs instead of folder/account objects, matching current Thunderbird MV3 API schemas.
 * Fixed folder discovery to use `MailAccount.rootFolder.subFolders` (with `includeSubFolders`) instead of the removed `MailAccount.folders` flat array.
 * Fixed special-folder detection (Junk/Trash/Inbox) to check the current `MailFolder.specialUse` array instead of the removed `MailFolder.type` string.
 * Updated local-account detection to accept both the current `"local"` and legacy `"none"` `MailAccount.type` values.
 * Raised the minimum supported Thunderbird version to 128.0, the first release with official Manifest V3 support.
-* Confirmed fix: resolves "Mark as Spam (Train AI)" silently failing to move or log messages on current Thunderbird releases.
+* Confirmed fix: resolves "Mark as Spam (Train AI)" silently failing to move or log messages on current Thunderbird releases, and automatic new-message scanning/routing (including for mail arriving in the Junk folder).
 
 ### [v1.4.3] - 2026-09-05
 
