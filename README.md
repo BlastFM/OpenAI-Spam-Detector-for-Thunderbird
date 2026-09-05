@@ -33,7 +33,7 @@ The options page now provides clearer progress, validation, success, and error m
 
 🔍 Checksum (Integrity Verification)  
 Filename: openai-spam-detector-v1.3.6.xpi
-### SHA-256: `E250CA5614B45EA807E88487E6B4D32AE3E9E43CE0882E705BD46D34E220D53B`
+### SHA-256: `63ED11D23CBE2E0BF0BF31D8F1D01B2C335D2962BA67A192DA5CD1775F7639C1`
 
 ### Configuration Options
 
@@ -63,7 +63,7 @@ To keep AI-detected spam isolated from server-synced folders:
 - **Move-Before-Log Guarantees**: Training and classification logs are updated only after Thunderbird confirms the requested message move.
 - **Scrollable Log Views**: Vertical overflow containers prevent layout disruption regardless of log entry volume.
 - **JSON Backup & Restore**: Export and import your storage configuration and logs at any time.
-- **Dynamic Save Status**: The options header shows whether settings are ready to save, have unsaved changes, are being saved, or were saved successfully.
+- **Dynamic Save Status**: The options header shows whether settings are ready to save, have unsaved changes, are being saved, or were saved successfully. Transient status messages automatically reset after five seconds.
 - **Header Branding**: The options page uses the bundled spam-shield logo, identifies BlastFM Limited as the publisher, and states the current free availability.
 - **Publisher Footer**: A footer at the bottom of the options page identifies BlastFM Limited and the add-on's current free availability.
 
@@ -232,6 +232,7 @@ Privacy Note: Transmitted email content includes the sender address, subject lin
 * Added a bottom-of-page publisher footer identifying BlastFM Limited and the add-on's current free availability.
 * Replaced the static “Ready to save” label with dynamic `Unsaved changes`, `Saving...`, `Saved`, `Needs attention`, and `Save failed` states.
 * Routed all options-page success, error, and informational messages through the dynamic header status indicator and removed the old floating confirmation messages.
+* Added a five-second reset for transient header messages; the indicator returns to `Unsaved changes` when edits remain or `Ready to save` otherwise.
 * Updated release links, package naming, and documentation references for v1.3.6.
 
 #### Compatibility

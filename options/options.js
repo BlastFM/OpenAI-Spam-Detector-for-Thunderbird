@@ -41,6 +41,7 @@ function setupDynamicSaveStatus() {
 }
 
 let settingsDirty = false;
+let headerStatusTimeout = null;
 
 function markSettingsDirty() {
   settingsDirty = true;
@@ -51,9 +52,18 @@ function setHeaderStatus(text, state = 'ready') {
   const textElement = document.getElementById('headerStatusText');
   const status = document.querySelector('.header-status');
   if (!textElement || !status) return;
+  if (headerStatusTimeout) clearTimeout(headerStatusTimeout);
   textElement.textContent = text;
   status.className = `header-status ${state}`;
   status.setAttribute('aria-live', state === 'error' ? 'assertive' : 'polite');
+
+  if (state !== 'dirty' && state !== 'ready') {
+    headerStatusTimeout = setTimeout(() => {
+      const resetState = settingsDirty ? 'dirty' : 'ready';
+      const resetText = settingsDirty ? 'Unsaved changes' : 'Ready to save';
+      setHeaderStatus(resetText, resetState);
+    }, 5000);
+  }
 }
 
 // --- LOG LOADING & RENDERING ---
