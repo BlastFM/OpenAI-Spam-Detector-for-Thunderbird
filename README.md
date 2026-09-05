@@ -7,13 +7,15 @@
 
 An AI-powered spam detection and training extension for Mozilla Thunderbird. **OpenAI Spam Detector** utilizes OpenAI's Chat Completions API (such as `gpt-4o-mini` and `gpt-4o`) to classify incoming emails, move unwanted messages to your deleted folder automatically, and continuously adapt to your preferences via few-shot context learning.
 
+This add-on is offered **FREE by BlastFM Limited at this time**. OpenAI API usage may incur separate charges from OpenAI.
+
 ---
 
 Release Date: September 5, 2026
 
 Compatibility: Thunderbird 102.0+ (Manifest V3)
 
-This release adds a redesigned options interface with clearer action grouping, stronger status cues, and more distinct backup and destructive controls. It also includes the reliability and packaging fixes from v1.3.4.
+This release adds a redesigned options interface with clearer action grouping, stronger status cues, and more distinct backup and destructive controls. The header now identifies BlastFM Limited, states that the add-on is currently free, and dynamically reports save status. It also includes the reliability and packaging fixes from v1.3.4.
 
 🌟 What's Changed  
 🐛 Bug Fixes & Stability Improvements
@@ -31,7 +33,7 @@ The options page now provides clearer progress, validation, success, and error m
 
 🔍 Checksum (Integrity Verification)  
 Filename: openai-spam-detector-v1.3.6.xpi
-### SHA-256: `3601D9DF1BBECCD2F52D18A6803BFDEFF3E7E5E869DDFC06FF1891E1C6F5F3FE`
+### SHA-256: `29BC0C95F312CD0812A1AE01B18CD0FF9583A8ECB7FA080EA4F2B240A56C627A`
 
 ### Configuration Options
 
@@ -61,6 +63,8 @@ To keep AI-detected spam isolated from server-synced folders:
 - **Move-Before-Log Guarantees**: Training and classification logs are updated only after Thunderbird confirms the requested message move.
 - **Scrollable Log Views**: Vertical overflow containers prevent layout disruption regardless of log entry volume.
 - **JSON Backup & Restore**: Export and import your storage configuration and logs at any time.
+- **Dynamic Save Status**: The options header shows whether settings are ready to save, have unsaved changes, are being saved, or were saved successfully.
+- **BlastFM Limited Branding**: The options page identifies the publisher and current free availability.
 
 ---
 
@@ -221,6 +225,8 @@ Privacy Note: Transmitted email content includes the sender address, subject lin
 * Promoted the redesigned options interface to the next release version with the new teal header, readiness indicator, purpose-based sections, and responsive layout.
 * Distinguished backup actions from destructive actions with blue and orange visual treatments, pill-shaped controls, and action icons.
 * Updated the in-page confirmation dialog to use the same refreshed destructive-action styling.
+* Added BlastFM Limited branding and a clear FREE availability notice to the options-page header.
+* Replaced the static “Ready to save” label with dynamic `Unsaved changes`, `Saving...`, `Saved`, `Needs attention`, and `Save failed` states.
 * Updated release links, package naming, and documentation references for v1.3.6.
 
 #### Compatibility

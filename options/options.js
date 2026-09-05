@@ -29,7 +29,31 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // 4. Attach Backup & Restore handlers
   setupBackupHandlers();
+  setupDynamicSaveStatus();
 });
+
+function setupDynamicSaveStatus() {
+  const fields = ['apiKey', 'model', 'targetFolder', 'whitelist', 'blacklist', 'customPrompt'];
+  fields.forEach((id) => {
+    document.getElementById(id).addEventListener('input', markSettingsDirty);
+    document.getElementById(id).addEventListener('change', markSettingsDirty);
+  });
+}
+
+let settingsDirty = false;
+
+function markSettingsDirty() {
+  settingsDirty = true;
+  setHeaderStatus('Unsaved changes', 'dirty');
+}
+
+function setHeaderStatus(text, state = 'ready') {
+  const textElement = document.getElementById('headerStatusText');
+  const status = document.querySelector('.header-status');
+  if (!textElement || !status) return;
+  textElement.textContent = text;
+  status.className = `header-status ${state}`;
+}
 
 // --- LOG LOADING & RENDERING ---
 
@@ -157,15 +181,20 @@ document.getElementById('save').addEventListener('click', async () => {
 
   if (!apiKey) {
     showStatus('Enter an OpenAI API key before saving settings.', 'error');
+    setHeaderStatus('Needs attention', 'error');
     return;
   }
 
   try {
+    setHeaderStatus('Saving...', 'saving');
     // Secret stays local-only; everything else can roam via sync.
     await api.storage.local.set({ apiKey });
     await api.storage.sync.set({ model, targetFolder, whitelist, blacklist, customPrompt });
+    settingsDirty = false;
+    setHeaderStatus('Saved', 'saved');
     showStatus('Settings saved. New messages will use these rules.', 'success');
   } catch (err) {
+    setHeaderStatus('Save failed', 'error');
     showStatus('Settings could not be saved. ' + getErrorMessage(err), 'error');
   }
 });
@@ -182,6 +211,7 @@ document.getElementById('testKey').addEventListener('click', async () => {
 
   testBtn.disabled = true;
   spinner.classList.remove('hidden');
+  setHeaderStatus('Testing connection...', 'saving');
   showStatus('Testing the OpenAI connection...', 'info');
 
   try {
@@ -191,13 +221,16 @@ document.getElementById('testKey').addEventListener('click', async () => {
     });
 
     if (response.ok) {
+      setHeaderStatus(settingsDirty ? 'Unsaved changes' : 'Ready to save', settingsDirty ? 'dirty' : 'ready');
       showStatus('OpenAI connection successful. The API key is valid.', 'success');
     } else {
+      setHeaderStatus('Needs attention', 'error');
       const errData = await response.json().catch(() => ({}));
       const msg = errData.error?.message || `HTTP ${response.status}`;
       showStatus(`OpenAI rejected the request: ${msg}`, 'error');
     }
   } catch (err) {
+    setHeaderStatus('Needs attention', 'error');
     showStatus('Could not reach OpenAI. Check your network connection and try again.', 'error');
   } finally {
     testBtn.disabled = false;
