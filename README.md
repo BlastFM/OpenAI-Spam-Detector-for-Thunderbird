@@ -33,7 +33,7 @@ The options page now provides clearer progress, validation, success, and error m
 
 🔍 Checksum (Integrity Verification)  
 Filename: openai-spam-detector-v1.3.6.xpi
-### SHA-256: `8134C570E62DD7CEE0180B4223BBFF4F39460074C5B1757573D77DC3A353A510`
+### SHA-256: `685A2A332CCBB6891BB250D23DBF49BE52D1E8ED22F500B6298141BED619965D`
 
 ### Configuration Options
 
@@ -65,6 +65,7 @@ To keep AI-detected spam isolated from server-synced folders:
 - **JSON Backup & Restore**: Export and import your storage configuration and logs at any time.
 - **Dynamic Save Status**: The options header shows whether settings are ready to save, have unsaved changes, are being saved, or were saved successfully.
 - **Header Branding**: The options page uses the bundled spam-shield logo, identifies BlastFM Limited as the publisher, and states the current free availability.
+- **Publisher Footer**: A footer at the bottom of the options page identifies BlastFM Limited and the add-on's current free availability.
 
 ---
 
@@ -228,6 +229,7 @@ Privacy Note: Transmitted email content includes the sender address, subject lin
 * Updated the in-page confirmation dialog to use the same refreshed destructive-action styling.
 * Added BlastFM Limited branding and a clear FREE availability notice to the options-page header.
 * Added the finalized Thunderbird spam-filter shield image as the options-page header logo while retaining the BlastFM Limited name and FREE availability notice.
+* Added a bottom-of-page publisher footer identifying BlastFM Limited and the add-on's current free availability.
 * Replaced the static “Ready to save” label with dynamic `Unsaved changes`, `Saving...`, `Saved`, `Needs attention`, and `Save failed` states.
 * Updated release links, package naming, and documentation references for v1.3.6.
 

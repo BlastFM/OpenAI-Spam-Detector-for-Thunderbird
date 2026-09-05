@@ -496,6 +496,18 @@ textarea {
   margin: 20px 0;
 }
 
+.app-footer {
+  margin: 18px 4px 2px;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.app-footer strong {
+  color: var(--text-dark);
+  font-weight: 700;
+}
+
 /* Floating Top-Right Toast Status Indicator */
 .status-badge {
   position: fixed;
