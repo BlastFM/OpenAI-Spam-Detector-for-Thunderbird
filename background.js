@@ -322,7 +322,7 @@ async function classifyEmailWithOpenAI({ author, subject, body, apiKey, model, c
 }
 
 async function handleSpamMessage(messageHeader, fullBody) {
-  const { spamLog } = await messenger.storage.local.get({ spamLog: [] });
+  const { spamLog = [] } = await messenger.storage.local.get(['spamLog']);
   const { targetFolder } = await messenger.storage.sync.get({ targetFolder: 'trash' });
 
   const originFolderId = messageHeader.folder ? messageHeader.folder.id : null;
@@ -373,8 +373,8 @@ async function manualMarkAsNotSpam(messageId) {
     const messageHeader = await messenger.messages.get(messageId);
     const bodyText = await getPlainTextBodyForAction(messageId);
 
-    const { spamLog } = await messenger.storage.local.get({ spamLog: [] });
-    const { falsePositives } = await messenger.storage.local.get({ falsePositives: [] });
+    const { spamLog = [], falsePositives = [] } =
+      await messenger.storage.local.get(['spamLog', 'falsePositives']);
 
     const logItem = spamLog.find(item =>
       item.id === messageId ||

@@ -70,8 +70,8 @@ function setHeaderStatus(text, state = 'ready') {
 
 async function loadLogs() {
   const api = typeof messenger !== 'undefined' ? messenger : browser;
-  const { spamLog } = await api.storage.local.get({ spamLog: [] });
-  const { falsePositives } = await api.storage.local.get({ falsePositives: [] });
+  const { spamLog = [], falsePositives = [] } =
+    await api.storage.local.get(['spamLog', 'falsePositives']);
 
   renderLog('spamLogContainer', spamLog, 'No spam detected yet.');
   renderLog('falsePositivesContainer', falsePositives, 'No false positives recorded.');
@@ -320,8 +320,8 @@ function populateFormFields(settings, credentials) {
     document.getElementById('blacklist').value = settings.blacklist || '';
     document.getElementById('customPrompt').value = settings.customPrompt || '';
   }
-  if (credentials && credentials.apiKey) {
-    document.getElementById('apiKey').value = credentials.apiKey;
+  if (credentials && Object.prototype.hasOwnProperty.call(credentials, 'apiKey')) {
+    document.getElementById('apiKey').value = credentials.apiKey || '';
   }
 }
 
@@ -370,8 +370,10 @@ function setupBackupHandlers() {
       handleImportFile(e, async (importedData, api) => {
         if (importedData.settings) {
           // Back-compat: older backups put apiKey inside "settings".
+          const hasLegacyApiKey = Object.prototype.hasOwnProperty.call(importedData.settings, 'apiKey');
           const { apiKey: legacyApiKey, ...syncSettings } = importedData.settings;
-          const credentials = importedData.credentials || { apiKey: legacyApiKey };
+          const credentials = importedData.credentials ||
+            (hasLegacyApiKey ? { apiKey: legacyApiKey } : null);
 
           await api.storage.sync.set(syncSettings);
           if (credentials && Object.prototype.hasOwnProperty.call(credentials, 'apiKey')) {
