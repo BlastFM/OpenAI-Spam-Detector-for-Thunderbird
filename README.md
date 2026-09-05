@@ -33,7 +33,7 @@ The options page now provides clearer progress, validation, success, and error m
 
 🔍 Checksum (Integrity Verification)  
 Filename: openai-spam-detector-v1.3.7.xpi
-### SHA-256: `1F87211A564ABA4467E6CED5B7E46E4CB4BCF556AABFCC20846F931CEFFA1C93`
+### SHA-256: `325DC574BBCFDD692BE6EA63920DD001E8036097624521AB4AF5604D46465F3E`
 
 ### Configuration Options
 
@@ -252,9 +252,9 @@ Privacy Note: Transmitted email content includes the sender address, subject lin
 * Added BlastFM Limited branding and a clear FREE availability notice to the options-page header.
 * Added the finalized Thunderbird spam-filter shield image as the options-page header logo while retaining the BlastFM Limited name and FREE availability notice.
 * Added a bottom-of-page publisher footer identifying BlastFM Limited and the add-on's current free availability.
-* Replaced the static “Ready to save” label with dynamic `Unsaved changes`, `Saving...`, `Saved`, `Needs attention`, and `Save failed` states.
+* Replaced the static “Ready to protect” label with dynamic `Unsaved changes`, `Saving...`, `Saved`, `Needs attention`, and `Save failed` states.
 * Routed all options-page success, error, and informational messages through the dynamic header status indicator and removed the old floating confirmation messages.
-* Added a five-second reset for transient header messages; the indicator returns to `Unsaved changes` when edits remain or `Ready to save` otherwise.
+* Added a five-second reset for transient header messages; the indicator returns to `Unsaved changes` when edits remain or `Ready to protect` otherwise.
 * Updated release links, package naming, and documentation references for v1.3.6.
 
 #### Compatibility

@@ -60,7 +60,7 @@ function setHeaderStatus(text, state = 'ready') {
   if (state !== 'dirty' && state !== 'ready') {
     headerStatusTimeout = setTimeout(() => {
       const resetState = settingsDirty ? 'dirty' : 'ready';
-      const resetText = settingsDirty ? 'Unsaved changes' : 'Ready to save';
+      const resetText = settingsDirty ? 'Unsaved changes' : 'Ready to protect';
       setHeaderStatus(resetText, resetState);
     }, 5000);
   }
