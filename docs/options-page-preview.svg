@@ -8,7 +8,7 @@
   <rect x="35" y="30" width="1210" height="142" rx="20" fill="url(#hero)"/>
   <rect x="35" y="140" width="1210" height="32" fill="url(#hero)"/>
   <rect x="68" y="61" width="58" height="58" rx="14" fill="#fff" opacity=".95"/>
-  <image href="../icons/spam-detector-header.png" x="73" y="66" width="48" height="48" preserveAspectRatio="xMidYMid meet"/>
+  <image href="../icons/ThunderbirdPersonalSpamFilter.png" x="73" y="66" width="48" height="48" preserveAspectRatio="xMidYMid meet"/>
   <text x="145" y="85" font-family="Segoe UI,Arial,sans-serif" font-size="27" font-weight="700" fill="#fff">Thunderbird OpenAI Spam Detector</text>
   <text x="145" y="117" font-family="Segoe UI,Arial,sans-serif" font-size="16" fill="#c7e9e3">AI-powered email filtering &amp; custom training · <tspan font-weight="700">FREE</tspan></text>
   <rect x="1040" y="82" width="155" height="38" rx="19" fill="#fff" fill-opacity=".15" stroke="#b9eee0"/>
