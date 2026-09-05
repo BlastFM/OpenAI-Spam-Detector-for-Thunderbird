@@ -26,14 +26,22 @@
     "scripts": ["background.js"]
   },
   "action": {
+    "default_title": "OpenAI Spam Detector",
     "default_popup": "options/popup.html",
-    "default_icon": "icons/icon-48.png"
+    "default_icon": {
+      "16": "icons/icon-48.png",
+      "32": "icons/icon-48.png",
+      "48": "icons/icon-48.png"
+    }
   },
   "options_ui": {
     "page": "options/options.html",
     "open_in_tab": true
   },
   "icons": {
-    "48": "icons/icon-48.png"
+    "16": "icons/icon-48.png",
+    "32": "icons/icon-48.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-48.png"
   }
 }
