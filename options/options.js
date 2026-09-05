@@ -205,9 +205,47 @@ document.getElementById('testKey').addEventListener('click', async () => {
   }
 });
 
+function requestClearConfirmation(title, message) {
+  const dialog = document.getElementById('confirmDialog');
+  const titleElement = document.getElementById('confirmDialogTitle');
+  const messageElement = document.getElementById('confirmDialogMessage');
+  const confirmButton = document.getElementById('confirmDialogConfirm');
+  const cancelButton = document.getElementById('confirmDialogCancel');
+  const backdrop = dialog.querySelector('[data-confirm-cancel]');
+
+  titleElement.textContent = title;
+  messageElement.textContent = message;
+  dialog.classList.remove('hidden');
+  confirmButton.focus();
+
+  return new Promise(resolve => {
+    const close = confirmed => {
+      dialog.classList.add('hidden');
+      confirmButton.removeEventListener('click', confirmAction);
+      cancelButton.removeEventListener('click', cancelAction);
+      backdrop.removeEventListener('click', cancelAction);
+      dialog.removeEventListener('keydown', keydownAction);
+      resolve(confirmed);
+    };
+    const confirmAction = () => close(true);
+    const cancelAction = () => close(false);
+    const keydownAction = event => {
+      if (event.key === 'Escape') close(false);
+    };
+
+    confirmButton.addEventListener('click', confirmAction);
+    cancelButton.addEventListener('click', cancelAction);
+    backdrop.addEventListener('click', cancelAction);
+    dialog.addEventListener('keydown', keydownAction);
+  });
+}
+
 document.getElementById('clearSpamLog').addEventListener('click', async () => {
   const api = typeof messenger !== 'undefined' ? messenger : browser;
-  const confirmed = confirm("Clear all entries from the Detected Spam Log? This cannot be undone.");
+  const confirmed = await requestClearConfirmation(
+    'Clear Detected Spam Log?',
+    'All recorded spam entries will be permanently removed. This action cannot be undone.'
+  );
   if (!confirmed) return;
 
   try {
@@ -220,7 +258,10 @@ document.getElementById('clearSpamLog').addEventListener('click', async () => {
 
 document.getElementById('clearFPLog').addEventListener('click', async () => {
   const api = typeof messenger !== 'undefined' ? messenger : browser;
-  const confirmed = confirm("Clear all entries from AI Training Memory? This cannot be undone.");
+  const confirmed = await requestClearConfirmation(
+    'Clear AI Training Memory?',
+    'All learned not-spam examples will be permanently removed. This action cannot be undone.'
+  );
   if (!confirmed) return;
 
   try {

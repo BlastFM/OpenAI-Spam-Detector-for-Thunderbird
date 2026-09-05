@@ -31,7 +31,7 @@ The options page now provides clearer progress, validation, success, and error m
 
 🔍 Checksum (Integrity Verification)
 Filename: openai-spam-detector-v1.3.4.xpi
-### SHA-256: `49579AD8CC5A7B9A531625F9FA553A3F04E37C1FA918C9A4CE246B2D8E68FE36`
+### SHA-256: `89893C5392F095414BDD6B38E4B38C3F3739404CBAA6D1E33B51D45A5256FAE2`
 
 ### Configuration Options
 
@@ -110,19 +110,29 @@ Install [Mozilla Thunderbird](https://www.thunderbird.net/) first, then install 
 
 ```text
 ThunderbirdPersonalSpamFilter/
+├── .github/
+│   └── workflows/
+│       └── package.yml
+├── .gitignore
+├── LICENSE
 ├── manifest.json
 ├── background.js
 ├── README.md
+├── openai-spam-detector-v1.3.4.xpi
 ├── icons/
 │   ├── icon-48.png
+│   ├── icon.png
 │   ├── not-spam-green.png
-│   └── spam-red.png
+│   ├── not-spam-green.svg
+│   ├── spam-red.png
+│   └── spam-red.svg
 └── options/
     ├── options.css
     ├── options.html
     ├── options.js
     ├── popup.html
     └── popup.js
+```
 
 🚀 Installation & Setup
 Manual Installation in Thunderbird
@@ -167,17 +177,26 @@ Mark as Not Spam: Right-click an email and choose **Mark as Not Spam (Train AI)*
 
 Both actions leave their logs unchanged if Thunderbird cannot complete the requested move. Message header identifiers are retained to improve restoration matching when Thunderbird assigns a new message ID during an IMAP move.
 
-Message Processing Pipeline
+### Message Processing Pipeline
+
+```mermaid
 graph TD
-    A[New Email Received] --> B{API Key Set?}
-    B -- No --> C[Notify User & Prompt Options]
-    B -- Yes --> D[Extract Email Headers & Body Snippet]
-    D --> E[Fetch User Custom Rules + Training Memory]
-    E --> F[Send Request to OpenAI API]
-    F --> G{Verdict: SPAM or HAM?}
-    G -- SPAM --> H[Move Email to Configured Spam Destination]
-    H --> I[Log Event & Show Restore Notification]
-    G -- HAM --> J[Retain Email in Inbox]
+    A[New email received] --> B[Read sender, subject, and message body]
+    B --> C{Whitelist match?}
+    C -- Yes --> D[Keep in inbox and skip classification]
+    C -- No --> E{Blacklist match?}
+    E -- Yes --> F[Move to configured spam destination]
+    F --> G[Write Detected Spam Log entry]
+    E -- No --> H{API key configured?}
+    H -- No --> I[Keep message unchanged and log a warning]
+    H -- Yes --> J[Load custom rules and AI Training Memory]
+    J --> K[Send up to 1,500 body characters to OpenAI]
+    K --> L{Spam verdict?}
+    L -- Yes --> F
+    L -- No --> M[Keep message in its current folder]
+```
+
+Messages are logged only after a spam move succeeds. A failed move leaves the Detected Spam Log unchanged. Manual **Mark as Spam (Train AI)** and **Mark as Not Spam (Train AI)** actions use the same move-before-log principle; the not-spam action restores the original folder when available and then updates Active AI Training Memory.
 
 🛡️ Permissions & Privacy
 This add-on requires the following WebExtension permissions:
@@ -199,21 +218,19 @@ Privacy Note: Transmitted email content includes the sender address, subject lin
 ### [v1.3.4] - 2026-09-05
 
 #### Changed
-* Spam and not-spam training actions now update their logs only after Thunderbird confirms the corresponding message move.
-* Failed message moves and folder-resolution failures now surface as errors instead of being reported as successful training actions.
+* Whitelist matches now skip AI classification and remain in the inbox; blacklist matches move directly to the configured spam destination.
+* Spam and not-spam training actions update their logs only after Thunderbird confirms the corresponding message move.
+* Failed moves and folder-resolution failures are logged as errors instead of being treated as successful training actions.
 * The `AI Filtered Spam` folder is searched recursively before creation, and selecting the local destination no longer silently falls back to Trash.
 * Message header identifiers are retained to improve restoration matching when Thunderbird changes a message ID during an IMAP move.
-* Backup restore success is reported only after storage writes and log refresh complete; export cleanup is protected against partial DOM cleanup failures.
-* Full backup and restore controls are centralized in the Detected Spam Log panel; duplicate left-pane rules/key controls were removed.
-* Options-page confirmation, progress, validation, and error messages were improved, with accessible live-region announcements for status feedback.
-* The newest Detected Spam Log entry now has a green Latest marker and a subtle highlighted card treatment.
-* Long sender addresses and timestamps now use a responsive layout to keep log entries readable without cramped text.
-* The Latest marker and timestamp now use a separate top-aligned metadata area so they remain stable while sender addresses wrap.
-* Importing a full backup with an explicitly empty API key now clears the existing locally stored key; backups without the field preserve it.
-* Expanded the Custom Classification Prompt Rules field and made it vertically resizable for easier editing of long rule sets.
-* Manual Mark as Spam actions continue when message-body retrieval fails, allowing the message to move and be recorded with an empty snippet.
-* Context-menu actions now handle selected messages independently and report failures in the background log.
-* Manual Mark as Not Spam actions use the same resilient body handling while restoring the original folder and updating Active AI Training Memory.
+* Backup restore success is reported only after storage writes and the log refresh complete.
+* An explicitly empty API key in a full backup clears the existing locally stored key; backups without the field preserve it.
+* Full backup and restore controls are centralized in the Detected Spam Log panel, and duplicate left-pane rules/key controls were removed.
+* Options-page confirmation, progress, validation, and error messages were improved with accessible live-region announcements.
+* The Detected Spam Log now highlights its newest entry with a green Latest marker and responsive top-aligned metadata.
+* The Custom Classification Prompt Rules field is larger and vertically resizable for long rule sets.
+* Manual context-menu actions continue when message-body retrieval fails, allowing moves and log/training updates to complete with an empty snippet.
+* Replaced native clear confirmations with accessible, styled in-page dialogs for the Detected Spam Log and AI Training Memory.
 
 #### Compatibility
 * Existing JSON backup files remain importable.

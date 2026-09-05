@@ -111,6 +111,19 @@
     </main>
   </div>
 
+  <div id="confirmDialog" class="confirm-dialog hidden" role="dialog" aria-modal="true" aria-labelledby="confirmDialogTitle" aria-describedby="confirmDialogMessage">
+    <div class="confirm-dialog-backdrop" data-confirm-cancel></div>
+    <section class="confirm-dialog-card">
+      <div class="confirm-dialog-icon" aria-hidden="true">!</div>
+      <h2 id="confirmDialogTitle">Confirm action</h2>
+      <p id="confirmDialogMessage"></p>
+      <div class="confirm-dialog-actions">
+        <button type="button" id="confirmDialogCancel" class="btn btn-light">Cancel</button>
+        <button type="button" id="confirmDialogConfirm" class="btn btn-orange">Clear entries</button>
+      </div>
+    </section>
+  </div>
+
   <script src="options.js"></script>
 </body>
 </html>
