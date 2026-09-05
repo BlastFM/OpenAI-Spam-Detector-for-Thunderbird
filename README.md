@@ -15,7 +15,7 @@ Compatibility: Thunderbird 102.0+ (Manifest V3)
 
 This release resolves critical UI rendering issues, fixes archive packaging bugs on Windows, and hardens spam training, folder routing, backup/restore completion handling, and the settings layout.
 
-🌟 What's Changed
+🌟 What's Changed  
 🐛 Bug Fixes & Stability Improvements
 Archive Path Resolution (/ Normalization): Switched the XPI build process to .NET archive compilation to enforce forward-slash path separators. This resolves the persistent "Page Not Found" errors on the Options page and missing toolbar icons on Windows installations.
 
