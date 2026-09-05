@@ -163,8 +163,8 @@ function matchesDomainPattern(senderEmail, patternList) {
 }
 
 async function processIncomingMessages(messageList) {
-  const { model, customPrompt, whitelist = '', blacklist = '' } =
-    await messenger.storage.sync.get(['model', 'customPrompt', 'whitelist', 'blacklist']);
+  const { model, customPrompt, whitelist = '', blacklist = '', targetFolder } =
+    await messenger.storage.sync.get(['model', 'customPrompt', 'whitelist', 'blacklist', 'targetFolder']);
   const { apiKey } = await messenger.storage.local.get(['apiKey']);
 
   const safePatterns = whitelist.split(',').map(d => d.trim()).filter(Boolean);
@@ -173,10 +173,32 @@ async function processIncomingMessages(messageList) {
   const activeModel = model || 'gpt-4o-mini';
   const { falsePositives } = await messenger.storage.local.get({ falsePositives: [] });
 
+  const resolvedTargetFolder = targetFolder || 'trash';
+  // Cache the resolved spam destination per account for this batch. This
+  // avoids a redundant accounts.get()/Local Folders lookup per message and,
+  // more importantly, lets us detect messages that are already sitting in
+  // the spam destination (see the guard below).
+  const destinationCache = new Map();
+
   for (let message of messageList) {
     try {
       const fullMessage = await messenger.messages.get(message.id);
       const senderEmail = getSenderEmail(fullMessage.author);
+
+      // Guard against reclassifying messages that are already in the spam
+      // destination. This matters most for the "Local Folders / AI Filtered
+      // Spam" destination: moving a message there from a different account
+      // is a copy+delete under the hood, and Thunderbird can surface the
+      // copy as "new mail", which would otherwise re-trigger the AI call
+      // and append a duplicate log entry for a message we already handled.
+      if (fullMessage.folder) {
+        const currentDestination = await resolveSpamDestinationFolder(
+          fullMessage.folder.accountId, resolvedTargetFolder, destinationCache
+        );
+        if (currentDestination && currentDestination.id === fullMessage.folder.id) {
+          continue;
+        }
+      }
 
       // Fast-Path 1: Whitelist Match (Skip AI & Stay in Inbox)
       if (matchesDomainPattern(senderEmail, safePatterns)) {
@@ -217,6 +239,33 @@ async function processIncomingMessages(messageList) {
       console.error("[Thunderbird OpenAI Spam Detector] Error processing message:", err);
     }
   }
+}
+
+// Resolves (and caches, per batch) the MailFolder that a given account's
+// spam should currently land in for the configured destination setting.
+// For 'local_ai_spam' the destination is a single shared folder regardless
+// of account, so it is only resolved once per batch under the 'local_ai_spam'
+// cache key instead of once per account.
+async function resolveSpamDestinationFolder(accountId, resolvedTargetFolder, cache) {
+  if (resolvedTargetFolder === 'local_ai_spam') {
+    if (!cache.has('local_ai_spam')) {
+      cache.set('local_ai_spam', await getOrCreateLocalAISpamFolder());
+    }
+    return cache.get('local_ai_spam');
+  }
+
+  if (!cache.has(accountId)) {
+    try {
+      const account = await messenger.accounts.get(accountId);
+      const folder = resolvedTargetFolder === 'junk'
+        ? findFolderByType(account.folders, 'junk')
+        : findFolderByType(account.folders, 'trash');
+      cache.set(accountId, folder);
+    } catch (err) {
+      cache.set(accountId, null);
+    }
+  }
+  return cache.get(accountId);
 }
 
 // Shared helper: fetch a message's body and return plain, HTML-stripped text.
@@ -326,18 +375,6 @@ async function handleSpamMessage(messageHeader, fullBody, destinationOverride = 
   const { targetFolder } = await messenger.storage.sync.get({ targetFolder: 'trash' });
   const selectedTargetFolder = destinationOverride || targetFolder;
 
-  const originFolderId = messageHeader.folder ? messageHeader.folder.id : null;
-
-  const newEntry = {
-    id: messageHeader.id,
-    headerMessageId: messageHeader.headerMessageId || null,
-    author: messageHeader.author,
-    subject: messageHeader.subject,
-    bodySnippet: (fullBody || "").substring(0, 120).replace(/\s+/g, ' '),
-    dateAdded: new Date().toISOString(),
-    originFolderId: originFolderId
-  };
-
   try {
     if (!messageHeader.folder) {
       throw new Error("The message has no source folder.");
@@ -354,7 +391,9 @@ async function handleSpamMessage(messageHeader, fullBody, destinationOverride = 
       destinationFolder = findFolderByType(account.folders, 'trash');
     }
 
-    if (destinationFolder && destinationFolder.id === messageHeader.folder.id) {
+    const alreadyInDestination = destinationFolder && destinationFolder.id === messageHeader.folder.id;
+
+    if (alreadyInDestination) {
       console.log("[Thunderbird OpenAI Spam Detector] Message is already in the configured spam folder.");
     } else if (destinationFolder) {
       await moveMessageTracked(messageHeader.id, destinationFolder);
@@ -362,8 +401,32 @@ async function handleSpamMessage(messageHeader, fullBody, destinationOverride = 
       throw new Error("No destination folder was found for the spam action.");
     }
 
+    // If the message was already sitting in the destination folder, its
+    // current folder isn't a meaningful "original" location to restore to
+    // later, so leave originFolderId unset (manualMarkAsNotSpam already
+    // falls back to Inbox when it is missing).
+    const originFolderId = alreadyInDestination ? null : messageHeader.folder.id;
+
+    const newEntry = {
+      id: messageHeader.id,
+      headerMessageId: messageHeader.headerMessageId || null,
+      author: messageHeader.author,
+      subject: messageHeader.subject,
+      bodySnippet: (fullBody || "").substring(0, 120).replace(/\s+/g, ' '),
+      dateAdded: new Date().toISOString(),
+      originFolderId: originFolderId
+    };
+
     // Only record the classification after Thunderbird confirms the move.
-    const updatedLog = [newEntry, ...spamLog].slice(0, 50);
+    // De-dupe against any existing entry for the same message (matched by
+    // id or, as a fallback for IMAP ids that can change after a move, by
+    // headerMessageId) so repeated actions on the same message update its
+    // entry in place instead of growing the log with duplicates.
+    const dedupedLog = spamLog.filter(item =>
+      item.id !== newEntry.id &&
+      !(newEntry.headerMessageId && item.headerMessageId === newEntry.headerMessageId)
+    );
+    const updatedLog = [newEntry, ...dedupedLog].slice(0, 50);
     await messenger.storage.local.set({ spamLog: updatedLog });
   } catch (err) {
     console.error("[Thunderbird OpenAI Spam Detector] Could not move email to target spam folder:", err);
@@ -408,7 +471,13 @@ async function manualMarkAsNotSpam(messageId) {
       dateAdded: new Date().toISOString()
     };
 
-    const updatedFP = [newFP, ...falsePositives].slice(0, 20);
+    // De-dupe the same way handleSpamMessage does, so repeatedly restoring
+    // the same message doesn't grow the training data with duplicates.
+    const dedupedFP = falsePositives.filter(item =>
+      item.id !== newFP.id &&
+      !(newFP.headerMessageId && item.headerMessageId === newFP.headerMessageId)
+    );
+    const updatedFP = [newFP, ...dedupedFP].slice(0, 20);
     const updatedSpamLog = spamLog.filter(item => item !== logItem);
 
     if (!targetFolder) {
@@ -453,9 +522,12 @@ async function getOrCreateLocalAISpamFolder() {
 
     let targetFolder = findFolderByName(localAccount.folders, "AI Filtered Spam");
 
-    if (!targetFolder && localAccount.folders.length > 0) {
-      const rootFolder = localAccount.folders[0];
-      targetFolder = await messenger.folders.create(rootFolder, "AI Filtered Spam");
+    if (!targetFolder) {
+      // Passing the account (rather than one of its folders) as the parent
+      // creates "AI Filtered Spam" as a top-level folder of Local Folders.
+      // Passing an arbitrary existing folder here would instead nest it as
+      // a subfolder of whichever folder happened to be first in the list.
+      targetFolder = await messenger.folders.create(localAccount, "AI Filtered Spam");
     }
     return targetFolder;
   } catch (err) {
