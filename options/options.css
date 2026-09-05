@@ -175,18 +175,6 @@ textarea {
   background-color: var(--primary-green-hover) !important;
 }
 
-/* Light Grey Outline Buttons (Export / Import Rules & Key) */
-.btn-dark-outline, .btn-secondary {
-  background-color: var(--btn-light-bg) !important;
-  color: #334155 !important;
-  border: 1px solid var(--btn-light-border) !important;
-}
-
-.btn-dark-outline:hover, .btn-secondary:hover {
-  background-color: var(--btn-light-hover) !important;
-  border-color: #94a3b8 !important;
-}
-
 /* Green Outlined Buttons (Right Panel Headers) */
 .btn-green-outline {
   background-color: #ffffff !important;
