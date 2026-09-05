@@ -94,7 +94,7 @@ messenger.menus.onClicked.addListener(async (info, tab) => {
       if (info.menuItemId === "mark-as-spam") {
         const fullMessage = await messenger.messages.get(message.id);
         const bodyText = await getPlainTextBodyForAction(message.id);
-        await handleSpamMessage(fullMessage, bodyText);
+        await handleSpamMessage(fullMessage, bodyText, 'local_ai_spam');
       } else if (info.menuItemId === "mark-as-not-spam") {
         await manualMarkAsNotSpam(message.id);
       }
@@ -321,9 +321,10 @@ async function classifyEmailWithOpenAI({ author, subject, body, apiKey, model, c
   }
 }
 
-async function handleSpamMessage(messageHeader, fullBody) {
+async function handleSpamMessage(messageHeader, fullBody, destinationOverride = null) {
   const { spamLog = [] } = await messenger.storage.local.get(['spamLog']);
   const { targetFolder } = await messenger.storage.sync.get({ targetFolder: 'trash' });
+  const selectedTargetFolder = destinationOverride || targetFolder;
 
   const originFolderId = messageHeader.folder ? messageHeader.folder.id : null;
 
@@ -345,9 +346,9 @@ async function handleSpamMessage(messageHeader, fullBody) {
     const account = await messenger.accounts.get(messageHeader.folder.accountId);
     let destinationFolder = null;
 
-    if (targetFolder === 'junk') {
+    if (selectedTargetFolder === 'junk') {
       destinationFolder = findFolderByType(account.folders, 'junk');
-    } else if (targetFolder === 'local_ai_spam') {
+    } else if (selectedTargetFolder === 'local_ai_spam') {
       destinationFolder = await getOrCreateLocalAISpamFolder();
     } else {
       destinationFolder = findFolderByType(account.folders, 'trash');
