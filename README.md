@@ -77,6 +77,10 @@ Restore success is reported only after storage writes and the log refresh comple
 
 ## Download & Installation
 
+[![Download Mozilla Thunderbird](https://img.shields.io/badge/Download-Mozilla%20Thunderbird-0A84FF?style=for-the-badge&logo=thunderbird&logoColor=white)](https://www.thunderbird.net/)
+
+Install [Mozilla Thunderbird](https://www.thunderbird.net/) first, then install the OpenAI Spam Detector extension from the release asset below.
+
 [![Download Release](https://img.shields.io/badge/Download-v1.3.4_.XPI-blue?style=for-the-badge&logo=thunderbird&logoColor=white)](https://github.com/BlastFM/ThunderbirdPersonalSpamFilter/releases/download/v1.3.4/openai-spam-detector-v1.3.4.xpi)
 [![Get Latest Release](https://img.shields.io/github/v/release/BlastFM/ThunderbirdPersonalSpamFilter?color=green&label=Latest%20Release&style=for-the-badge)](https://github.com/BlastFM/ThunderbirdPersonalSpamFilter/releases/latest)
 
@@ -91,10 +95,11 @@ Restore success is reported only after storage writes and the log refresh comple
 
 ### How to Install in Thunderbird
 
-1. Click the download button above to save **`openai-spam-detector-v1.3.4.xpi`** to your computer.
-2. Open Thunderbird and navigate to **Add-ons and Themes** (`Ctrl+Shift+A` or `Cmd+Shift+A`).
-3. Click the gear icon (**Tools for all add-ons**) in the top-right corner.
-4. Select **Install Add-on From File...** and choose the downloaded `.xpi` file.
+1. Download and install [Mozilla Thunderbird](https://www.thunderbird.net/) if it is not already installed.
+2. Click the extension download button above to save **`openai-spam-detector-v1.3.4.xpi`**.
+3. Open Thunderbird and navigate to **Add-ons and Themes** (`Ctrl+Shift+A` or `Cmd+Shift+A`).
+4. Click the gear icon (**Tools for all add-ons**) in the top-right corner.
+5. Select **Install Add-on From File...** and choose the downloaded `.xpi` file.
 
 ---
 
