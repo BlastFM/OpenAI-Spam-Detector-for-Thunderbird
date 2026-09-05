@@ -1,6 +1,6 @@
 # OpenAI Spam Detector for Thunderbird
 
-![Extension Version](https://img.shields.io/badge/version-1.3-blue.svg)
+![Extension Version](https://img.shields.io/badge/version-1.3.4-blue.svg)
 ![Thunderbird](https://img.shields.io/badge/Thunderbird-115.0%2B-58A6FF.svg?logo=thunderbird&logoColor=white)
 ![Manifest Version](https://img.shields.io/badge/manifest-v3-green.svg)
 ![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)
@@ -13,7 +13,7 @@ Release Date: September 5, 2026
 
 Compatibility: Thunderbird 102.0+ (Manifest V3)
 
-This patch release resolves critical UI rendering issues, fixes archive packaging bugs on Windows, and ensures full compatibility with Thunderbird's Manifest V3 WebExtension standard.
+This release resolves critical UI rendering issues, fixes archive packaging bugs on Windows, and hardens spam training, folder routing, backup/restore completion handling, and the settings layout.
 
 🌟 What's Changed
 🐛 Bug Fixes & Stability Improvements
@@ -24,11 +24,11 @@ Manifest V3 Permission Mapping: Updated manifest.json with complete relative ico
 Options UI & Scope Fixes: Resolved duplicate DOM element ID conflicts and variable scoping errors in options.js and options.html.
 
 🔒 Data Backup & Portability
-Verified export and import handling for rules, custom OpenAI API prompts, blacklists, and full training logs (.json format).
+Full backup and restore controls are provided in the Detected Spam Log panel. A full JSON backup contains synced settings, the API key, spam history, and AI training memory. Separate rules/key backup controls were removed from the Configuration panel to avoid duplicate backup paths. Backup and restore status is shown only after the corresponding download, storage writes, and log refresh complete successfully. Backups remain compatible with the existing plain-text JSON format and warn users before exporting API credentials.
 
 🔍 Checksum (Integrity Verification)
-Filename: openai-spam-detector-v1.3.2.xpi
-### Hash: 7475FE5FB0100505DF3CF1D8B2CCAD57EBABD09802359084298B961F76FD929B
+Filename: openai-spam-detector-v1.3.4.xpi
+### SHA-256: Verify the checksum published with the GitHub release asset.
 
 ### Configuration Options
 
@@ -37,7 +37,7 @@ Open the Extension Options page (`Tools > Add-ons & Themes > Options`) to config
 | Setting | Description |
 | :--- | :--- |
 | **OpenAI API Key** | Your OpenAI secret key (`sk-...`) used to authenticate requests. |
-| **OpenAI Model** | Select your preferred classification model (`gpt-4o-mini`, `gpt-4o`, `gpt-3.5-turbo`). |
+| **OpenAI Model** | Select `gpt-4o-mini` or `gpt-4o` for classification. |
 | **Spam Action Destination** | Target folder where flagged spam is routed (`Trash`, `Account Junk`, or `Local Folders / AI Filtered Spam`). |
 | **Custom Rules** | Text prompt to add strict user rules (e.g., *Always mark newsletters from domain.com as HAM*). |
 
@@ -53,21 +53,23 @@ To keep AI-detected spam isolated from server-synced folders:
 - **Two-Pane History Dashboard**:
   - **Detected Spam Log**: Keeps track of flagged spam items.
   - **AI Training Memory**: Stores non-spam classifications to refine filter accuracy.
+- **Context-Menu Training**: Mark messages as spam or not spam directly from the Thunderbird message list.
+- **Reliable Folder Routing**: Spam can be sent to Trash, the account Junk folder, or `Local Folders / AI Filtered Spam`.
+- **Move-Before-Log Guarantees**: Training and classification logs are updated only after Thunderbird confirms the requested message move.
 - **Scrollable Log Views**: Vertical overflow containers prevent layout disruption regardless of log entry volume.
 - **JSON Backup & Restore**: Export and import your storage configuration and logs at any time.
 
 ---
 
-## ⌨️ Backup & Restore (Settings Shortcuts)
+## 💾 Backup & Restore
 
-To maintain UI performance and prevent layout reflows in Thunderbird, storage backups can be exported or imported directly from the **Settings Page** using native keyboard shortcuts:
+Storage backups can be exported or imported from the **Detected Spam Log** panel on the Settings Page. The full backup includes synced settings, the local API key, spam history, and AI training memory.
 
-| Action | Shortcut (Windows/Linux) | Shortcut (Mac) | Description |
-| :--- | :--- | :--- | :--- |
-| **Export Backup** | `Ctrl` + `Shift` + `E` | `Cmd` + `Shift` + `E` | Downloads a `.json` backup file containing all local logs and API configurations. |
-| **Import Backup** | `Ctrl` + `Shift` + `I` | `Cmd` + `Shift` + `I` | Opens a file picker to restore extension storage from a previously exported `.json` file. |
+1. Open the extension Settings page.
+2. Use **Export Full Backup** or **Import Full Backup** in the Detected Spam Log panel.
+3. Confirm the plaintext API-key warning before exporting, and keep exported backup files secure.
 
-> **Note**: These shortcuts must be pressed while active on the **OpenAI Spam Detector Settings** tab.
+Restore success is reported only after storage writes and the log refresh complete. Existing JSON backups remain importable.
 
 ---
 
@@ -75,21 +77,21 @@ To maintain UI performance and prevent layout reflows in Thunderbird, storage ba
 
 ## Download & Installation
 
-[![Download Release](https://img.shields.io/badge/Download-v1.3.2_.XPI-blue?style=for-the-badge&logo=thunderbird&logoColor=white)](https://github.com/BlastFM/OpenAI-Spam-Detector-for-Thunderbird/releases/download/v1.3.2/openai-spam-detector-v1.3.2.xpi)
+[![Download Release](https://img.shields.io/badge/Download-v1.3.4_.XPI-blue?style=for-the-badge&logo=thunderbird&logoColor=white)](https://github.com/BlastFM/OpenAI-Spam-Detector-for-Thunderbird/releases/download/v1.3.4/openai-spam-detector-v1.3.4.xpi)
 [![Get Latest Release](https://img.shields.io/github/v/release/BlastFM/OpenAI-Spam-Detector-for-Thunderbird?color=green&label=Latest%20Release&style=for-the-badge)](https://github.com/BlastFM/OpenAI-Spam-Detector-for-Thunderbird/releases/latest)
 
 ### Direct Downloads
 
 | Asset | Description | Download Link |
 | :--- | :--- | :--- |
-| **Extension Binary** | Ready-to-install Thunderbird Add-on | [`openai-spam-detector-v1.3.2.xpi`](https://github.com/YOUR_USERNAME/YOUR_REPO/releases/download/v1.3.2/openai-spam-detector-v1.3.2.xpi) |
-| **Source Code** | Compressed source files (`.zip`) | [`Source code (zip)`](https://github.com/YOUR_USERNAME/YOUR_REPO/archive/refs/tags/v1.3.2.zip) |
+| **Extension Binary** | Ready-to-install Thunderbird Add-on | [`openai-spam-detector-v1.3.4.xpi`](https://github.com/BlastFM/OpenAI-Spam-Detector-for-Thunderbird/releases/download/v1.3.4/openai-spam-detector-v1.3.4.xpi) |
+| **Source Code** | Compressed source files (`.zip`) | [`Source code (zip)`](https://github.com/BlastFM/OpenAI-Spam-Detector-for-Thunderbird/archive/refs/tags/v1.3.4.zip) |
 
 ---
 
 ### How to Install in Thunderbird
 
-1. Click the download button above to save **`openai-spam-detector-v1.3.2.xpi`** to your computer.
+1. Click the download button above to save **`openai-spam-detector-v1.3.4.xpi`** to your computer.
 2. Open Thunderbird and navigate to **Add-ons and Themes** (`Ctrl+Shift+A` or `Cmd+Shift+A`).
 3. Click the gear icon (**Tools for all add-ons**) in the top-right corner.
 4. Select **Install Add-on From File...** and choose the downloaded `.xpi` file.
@@ -151,9 +153,11 @@ Click Save Settings.
 
 💡 How It Works
 Context Menu Training
-Mark as Spam: Right-click any email in your message list, choose Train AI: Mark as Spam. The add-on logs a snippet to spamExamples, moves the email to the Deleted folder, and includes it as a negative example in future OpenAI API payloads.
+Mark as Spam: Right-click any email in your message list and choose **Mark as Spam (Train AI)**. The add-on moves the email to the configured spam destination first, then records the successful action in the Detected Spam Log. The original folder is retained for restoration.
 
-Mark as Not Spam: Right-click an email and choose Train AI: Mark as Not Spam. The add-on restores the message to your Inbox, saves a snippet to falsePositives, and instructs OpenAI to prioritize similar emails as HAM.
+Mark as Not Spam: Right-click an email and choose **Mark as Not Spam (Train AI)**. The add-on restores the email to its recorded original folder when available, then adds it to AI Training Memory and removes it from the Detected Spam Log. If the original folder is unavailable, it falls back to the account Inbox.
+
+Both actions leave their logs unchanged if Thunderbird cannot complete the requested move. Message header identifiers are retained to improve restoration matching when Thunderbird assigns a new message ID during an IMAP move.
 
 Message Processing Pipeline
 graph TD
@@ -163,33 +167,45 @@ graph TD
     D --> E[Fetch User Custom Rules + Training Memory]
     E --> F[Send Request to OpenAI API]
     F --> G{Verdict: SPAM or HAM?}
-    G -- SPAM --> H[Move Email to Deleted / Trash]
+    G -- SPAM --> H[Move Email to Configured Spam Destination]
     H --> I[Log Event & Show Restore Notification]
     G -- HAM --> J[Retain Email in Inbox]
 
 🛡️ Permissions & Privacy
 This add-on requires the following WebExtension permissions:
 
-messagesRead & messagesMove: To inspect incoming email headers/bodies and move spam to your trash folder.
+messagesRead & messagesMove: To inspect incoming email headers/bodies and move messages to the configured destination or back to their original folder.
 
-accountsRead: To locate the target Inbox and Deleted folders across configured email accounts.
+accountsRead & accountsFolders: To locate account folders, Junk/Trash/Inbox destinations, and the Local Folders account.
 
 menus: To inject AI training options into the message list context menu.
 
 storage: To save configuration keys, logs, and user training memory locally.
 
-notifications: To alert you when spam is intercepted or when setup errors occur.
-
 Host Permission (https://api.openai.com/*): Required to transmit snippet data to OpenAI endpoints for evaluation.
 
-Privacy Note: Transmitted email content includes the sender address, subject line, and the first 1,000 characters of the body text. Data is processed according to OpenAI's Data Usage Policies. No data is sent to intermediate third-party servers.
+Privacy Note: Transmitted email content includes the sender address, subject line, and up to the first 1,500 characters of the body text. Data is processed according to OpenAI's Data Usage Policies. No data is sent to intermediate third-party servers.
 
 ## Release History
+
+### [v1.3.4] - 2026-09-05
+
+#### Changed
+* Spam and not-spam training actions now update their logs only after Thunderbird confirms the corresponding message move.
+* Failed message moves and folder-resolution failures now surface as errors instead of being reported as successful training actions.
+* The `AI Filtered Spam` folder is searched recursively before creation, and selecting the local destination no longer silently falls back to Trash.
+* Message header identifiers are retained to improve restoration matching when Thunderbird changes a message ID during an IMAP move.
+* Backup restore success is reported only after storage writes and log refresh complete; export cleanup is protected against partial DOM cleanup failures.
+* Full backup and restore controls are centralized in the Detected Spam Log panel; duplicate left-pane rules/key controls were removed.
+
+#### Compatibility
+* Existing JSON backup files remain importable.
+* Plain-text backup exports remain supported and continue to display a warning because API credentials are included.
 
 ### [v1.3.1] - 2026-09-04
 
 #### Added
-* **Dedicated Configuration Export/Import:** Introduced independent configuration backup and restore controls within the left-hand Configuration panel to back up API keys, model selections, and custom prompt rules separately from log data.
+* **Dedicated Configuration Export/Import:** Introduced independent configuration backup and restore controls within the left-hand Configuration panel. These controls were consolidated into the full backup flow in v1.3.4.
 
 #### Changed
 * **Action Styling:** Applied a dedicated slate/navy blue theme (`.btn-slate`) to Configuration panel backup controls to visually distinguish setting actions from log management.

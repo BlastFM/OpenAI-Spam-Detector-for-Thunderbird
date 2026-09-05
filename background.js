@@ -304,6 +304,7 @@ async function handleSpamMessage(messageHeader, fullBody) {
 
   const newEntry = {
     id: messageHeader.id,
+    headerMessageId: messageHeader.headerMessageId || null,
     author: messageHeader.author,
     subject: messageHeader.subject,
     bodySnippet: (fullBody || "").substring(0, 120).replace(/\s+/g, ' '),
@@ -311,10 +312,11 @@ async function handleSpamMessage(messageHeader, fullBody) {
     originFolderId: originFolderId
   };
 
-  const updatedLog = [newEntry, ...spamLog].slice(0, 50);
-  await messenger.storage.local.set({ spamLog: updatedLog });
-
   try {
+    if (!messageHeader.folder) {
+      throw new Error("The message has no source folder.");
+    }
+
     const account = await messenger.accounts.get(messageHeader.folder.accountId);
     let destinationFolder = null;
 
@@ -322,17 +324,22 @@ async function handleSpamMessage(messageHeader, fullBody) {
       destinationFolder = findFolderByType(account.folders, 'junk');
     } else if (targetFolder === 'local_ai_spam') {
       destinationFolder = await getOrCreateLocalAISpamFolder();
-    }
-
-    if (!destinationFolder) {
+    } else {
       destinationFolder = findFolderByType(account.folders, 'trash');
     }
 
     if (destinationFolder) {
       await moveMessageTracked(messageHeader.id, destinationFolder);
+    } else {
+      throw new Error("No destination folder was found for the spam action.");
     }
+
+    // Only record the classification after Thunderbird confirms the move.
+    const updatedLog = [newEntry, ...spamLog].slice(0, 50);
+    await messenger.storage.local.set({ spamLog: updatedLog });
   } catch (err) {
     console.error("[Thunderbird OpenAI Spam Detector] Could not move email to target spam folder:", err);
+    throw err;
   }
 }
 
@@ -344,7 +351,11 @@ async function manualMarkAsNotSpam(messageId) {
     const { spamLog } = await messenger.storage.local.get({ spamLog: [] });
     const { falsePositives } = await messenger.storage.local.get({ falsePositives: [] });
 
-    const logItem = spamLog.find(item => item.id === messageId);
+    const logItem = spamLog.find(item =>
+      item.id === messageId ||
+      (messageHeader.headerMessageId &&
+        item.headerMessageId === messageHeader.headerMessageId)
+    );
     let targetFolder = null;
 
     if (logItem && logItem.originFolderId) {
@@ -362,6 +373,7 @@ async function manualMarkAsNotSpam(messageId) {
 
     const newFP = {
       id: messageHeader.id,
+      headerMessageId: messageHeader.headerMessageId || null,
       author: messageHeader.author,
       subject: messageHeader.subject,
       bodySnippet: (bodyText || "").substring(0, 120).replace(/\s+/g, ' '),
@@ -369,18 +381,22 @@ async function manualMarkAsNotSpam(messageId) {
     };
 
     const updatedFP = [newFP, ...falsePositives].slice(0, 20);
-    const updatedSpamLog = spamLog.filter(item => item.id !== messageId);
+    const updatedSpamLog = spamLog.filter(item => item !== logItem);
 
+    if (!targetFolder) {
+      throw new Error("No destination folder was found for restoring the message.");
+    }
+
+    await moveMessageTracked(messageId, targetFolder);
+
+    // Only update training history after Thunderbird confirms the restore.
     await messenger.storage.local.set({
       falsePositives: updatedFP,
       spamLog: updatedSpamLog
     });
-
-    if (targetFolder) {
-      await moveMessageTracked(messageId, targetFolder);
-    }
   } catch (err) {
     console.error("[Thunderbird OpenAI Spam Detector] Error marking message as not spam:", err);
+    throw err;
   }
 }
 
@@ -407,7 +423,7 @@ async function getOrCreateLocalAISpamFolder() {
 
     if (!localAccount) return null;
 
-    let targetFolder = localAccount.folders.find(f => f.name === "AI Filtered Spam");
+    let targetFolder = findFolderByName(localAccount.folders, "AI Filtered Spam");
 
     if (!targetFolder && localAccount.folders.length > 0) {
       const rootFolder = localAccount.folders[0];
@@ -418,4 +434,13 @@ async function getOrCreateLocalAISpamFolder() {
     console.error("[Thunderbird OpenAI Spam Detector] Could not find or create Local Folders / AI Filtered Spam:", err);
     return null;
   }
+}
+
+function findFolderByName(folders, folderName) {
+  for (let folder of folders || []) {
+    if (folder.name === folderName) return folder;
+    const nested = findFolderByName(folder.subFolders, folderName);
+    if (nested) return nested;
+  }
+  return null;
 }

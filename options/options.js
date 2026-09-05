@@ -343,8 +343,8 @@ function setupBackupHandlers() {
           await api.storage.local.set(importedData);
         }
 
-        showStatus("Full backup restored successfully!", "success");
         await loadLogs();
+        showStatus("Full backup restored successfully!", "success");
       });
     });
   }
@@ -378,14 +378,17 @@ function downloadJson(dataObject, filename) {
   const blob = new Blob([jsonStr], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(() => {
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }, 150);
+  try {
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+  } finally {
+    setTimeout(() => {
+      if (a.parentNode) a.parentNode.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 150);
+  }
 }
 
 function escapeHtml(str) {

@@ -19,21 +19,24 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build XPI Package
+        id: package
         run: |
-          # Package required files explicitly without breaking on missing directories
-          zip -r openai-spam-detector.xpi manifest.json options background.js icons _locales README.md LICENSE -x "*.git*"
+          version=$(jq -r '.version' manifest.json)
+          archive="openai-spam-detector-v${version}.xpi"
+          zip -r "$archive" manifest.json options background.js icons README.md LICENSE -x "*.git*"
+          echo "archive=$archive" >> "$GITHUB_OUTPUT"
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: openai-spam-detector-xpi
-          path: openai-spam-detector.xpi
+          path: ${{ steps.package.outputs.archive }}
 
       - name: Publish to GitHub Releases
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: openai-spam-detector.xpi
+          files: ${{ steps.package.outputs.archive }}
           generate_release_notes: true
           make_latest: "true"
         env:
