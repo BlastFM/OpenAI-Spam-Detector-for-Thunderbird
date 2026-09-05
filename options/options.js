@@ -160,7 +160,7 @@ async function markLogItemAsNotSpam(index) {
   // previously caused the log entry to be recorded twice.
   try {
     await api.runtime.sendMessage({ action: 'restoreMessage', messageId: item.id });
-    showStatus('Message restored and added to AI Training Memory.', 'success');
+    showStatus('Message restored and added to AI Training Memory', 'success');
   } catch (err) {
     console.warn('Could not move physical message:', err);
     showStatus('Message was not restored. ' + getErrorMessage(err), 'error');
@@ -173,7 +173,7 @@ async function removeFalsePositive(index) {
     const { falsePositives } = await api.storage.local.get({ falsePositives: [] });
     falsePositives.splice(index, 1);
     await api.storage.local.set({ falsePositives });
-    showStatus('Training example removed from AI Training Memory.', 'success');
+    showStatus('Training example removed from AI Training Memory', 'success');
   } catch (err) {
     showStatus('Training example could not be removed. ' + getErrorMessage(err), 'error');
   }
@@ -191,7 +191,7 @@ document.getElementById('save').addEventListener('click', async () => {
   const customPrompt = document.getElementById('customPrompt').value.trim();
 
   if (!apiKey) {
-    showStatus('Enter an OpenAI API key before saving settings.', 'error');
+    showStatus('Enter an OpenAI API key before saving settings', 'error');
     return;
   }
 
@@ -201,7 +201,7 @@ document.getElementById('save').addEventListener('click', async () => {
     await api.storage.local.set({ apiKey });
     await api.storage.sync.set({ model, targetFolder, whitelist, blacklist, customPrompt });
     settingsDirty = false;
-    showStatus('Settings saved. New messages will use these rules.', 'success');
+    showStatus('Settings saved. New messages will use these rules', 'success');
   } catch (err) {
     showStatus('Settings could not be saved. ' + getErrorMessage(err), 'error');
   }
@@ -213,7 +213,7 @@ document.getElementById('testKey').addEventListener('click', async () => {
   const spinner = testBtn.querySelector('.btn-spinner');
 
   if (!apiKey) {
-    showStatus('Enter an OpenAI API key before testing the connection.', 'error');
+    showStatus('Enter an OpenAI API key before testing the connection', 'error');
     return;
   }
 
@@ -229,14 +229,14 @@ document.getElementById('testKey').addEventListener('click', async () => {
     });
 
     if (response.ok) {
-      showStatus('OpenAI connection successful. The API key is valid.', 'success');
+      showStatus('OpenAI connection successful. The API key is valid', 'success');
     } else {
       const errData = await response.json().catch(() => ({}));
       const msg = errData.error?.message || `HTTP ${response.status}`;
       showStatus(`OpenAI rejected the request: ${msg}`, 'error');
     }
   } catch (err) {
-    showStatus('Could not reach OpenAI. Check your network connection and try again.', 'error');
+    showStatus('Could not reach OpenAI. Check your network connection and try again', 'error');
   } finally {
     testBtn.disabled = false;
     spinner.classList.add('hidden');
@@ -282,13 +282,13 @@ document.getElementById('clearSpamLog').addEventListener('click', async () => {
   const api = typeof messenger !== 'undefined' ? messenger : browser;
   const confirmed = await requestClearConfirmation(
     'Clear Detected Spam Log?',
-    'All recorded spam entries will be permanently removed. This action cannot be undone.'
+    'All recorded spam entries will be permanently removed. This action cannot be undone'
   );
   if (!confirmed) return;
 
   try {
     await api.storage.local.set({ spamLog: [], spamExamples: [] });
-    showStatus('Detected Spam Log cleared.', 'success');
+    showStatus('Detected Spam Log cleared', 'success');
   } catch (err) {
     showStatus('Detected Spam Log could not be cleared. ' + getErrorMessage(err), 'error');
   }
@@ -298,13 +298,13 @@ document.getElementById('clearFPLog').addEventListener('click', async () => {
   const api = typeof messenger !== 'undefined' ? messenger : browser;
   const confirmed = await requestClearConfirmation(
     'Clear AI Training Memory?',
-    'All learned not-spam examples will be permanently removed. This action cannot be undone.'
+    'All learned not-spam examples will be permanently removed. This action cannot be undone'
   );
   if (!confirmed) return;
 
   try {
     await api.storage.local.set({ falsePositives: [] });
-    showStatus('AI Training Memory cleared.', 'success');
+    showStatus('AI Training Memory cleared', 'success');
   } catch (err) {
     showStatus('AI Training Memory could not be cleared. ' + getErrorMessage(err), 'error');
   }
@@ -358,7 +358,7 @@ function setupBackupHandlers() {
         };
 
         downloadJson(fullBackup, `openai_spam_detector_backup_${new Date().toISOString().slice(0, 10)}.json`);
-        showStatus("Full backup downloaded. Keep the file secure because it contains your API key.", "success");
+        showStatus("Full backup downloaded. Keep the file secure because it contains your API key", "success");
       } catch (err) {
         showStatus("Backup export failed. " + getErrorMessage(err), "error");
       }
@@ -392,7 +392,7 @@ function setupBackupHandlers() {
         }
 
         await loadLogs();
-        showStatus("Full backup restored. Settings, logs, and training memory are now active.", "success");
+        showStatus("Full backup restored. Settings, logs, and training memory are now active", "success");
       });
     });
   }
@@ -413,7 +413,7 @@ function handleImportFile(event, restoreCallback) {
       await restoreCallback(importedData, api);
     } catch (err) {
       console.error("Import error:", err);
-      showStatus("Backup import failed. " + getErrorMessage(err), "error");
+      showStatus("Backup import failed " + getErrorMessage(err), "error");
     } finally {
       event.target.value = '';
     }
