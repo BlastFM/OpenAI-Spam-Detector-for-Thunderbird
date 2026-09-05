@@ -29,7 +29,7 @@ Full backup and restore controls are provided in the Detected Spam Log panel. A 
 ✅ Options Feedback  
 The options page now provides clearer progress, validation, success, and error messages for settings, OpenAI connection tests, spam logs, AI training memory, and backup actions. Status and error announcements use accessible live-region behavior for assistive technology.
 
-🔍 Checksum (Integrity Verification)
+🔍 Checksum (Integrity Verification)  
 Filename: openai-spam-detector-v1.3.4.xpi
 ### SHA-256: `49579AD8CC5A7B9A531625F9FA553A3F04E37C1FA918C9A4CE246B2D8E68FE36`
 
