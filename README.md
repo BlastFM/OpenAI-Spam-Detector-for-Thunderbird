@@ -33,7 +33,7 @@ The options page now provides clearer progress, validation, success, and error m
 
 🔍 Checksum (Integrity Verification)  
 Filename: openai-spam-detector-v1.4.4.xpi
-### SHA-256: `D12FFAAF0F4E986E97B9FBD2DC0F0D9D8CFA170F071070E82F2BEA310219A92F`
+### SHA-256: `0F240A4C667221FC8815FD769E8D00958A1B75609390967EBB845EA6BE8C082C`
 
 ### Configuration Options
 
