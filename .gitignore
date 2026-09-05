@@ -1,12 +1,15 @@
-<<<<<<< HEAD
-openai-spam-detector-v1.2.0.xpi
-openai-spam-detector-v1.2.0.xpi
-openai-spam-detector-v1.2.0.xpi
-openai-spam-detector-v1.2.0.xpi
-openai-spam-detector-v1.3.1.xpi
-openai-spam-detector-v1.2.0.xpi
-=======
-openai-spam-detector-v1.1.0.xpi.xpi
-openai-spam-detector-v1.1.0.xpi.xpi
-openai-spam-detector-v1.1.0.xpi.xpi
->>>>>>> origin/main
+# Operating-system files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editor and IDE settings
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary and backup files
+*.tmp
+*.temp
+*.bak

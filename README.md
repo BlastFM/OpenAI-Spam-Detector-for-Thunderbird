@@ -31,7 +31,7 @@ The options page now provides clearer progress, validation, success, and error m
 
 🔍 Checksum (Integrity Verification)
 Filename: openai-spam-detector-v1.3.4.xpi
-### SHA-256: `81DB05E31EA6FB69A3848F99AB07A33FAD6CAB2BEE09890689BDA9A683F9ACFA`
+### SHA-256: `2B3DC58024BD4ED7D5F34BB092521A200630E64032B1A6886FBD8215238C24AB`
 
 ### Configuration Options
 
@@ -211,6 +211,8 @@ Privacy Note: Transmitted email content includes the sender address, subject lin
 * The Latest marker and timestamp now use a separate top-aligned metadata area so they remain stable while sender addresses wrap.
 * Importing a full backup with an explicitly empty API key now clears the existing locally stored key; backups without the field preserve it.
 * Expanded the Custom Classification Prompt Rules field and made it vertically resizable for easier editing of long rule sets.
+* Manual Mark as Spam actions continue when message-body retrieval fails, allowing the message to move and be recorded with an empty snippet.
+* Context-menu actions now handle selected messages independently and report failures in the background log.
 
 #### Compatibility
 * Existing JSON backup files remain importable.

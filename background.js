@@ -83,15 +83,26 @@ messenger.runtime.onMessage.addListener((request) => {
 });
 
 messenger.menus.onClicked.addListener(async (info, tab) => {
-  if (!info.selectedMessages || info.selectedMessages.messages.length === 0) return;
+  const selectedMessages = info.selectedMessages && info.selectedMessages.messages;
+  if (!selectedMessages || selectedMessages.length === 0) {
+    console.warn("[Thunderbird OpenAI Spam Detector] No message was selected for the context-menu action.");
+    return;
+  }
 
-  for (let message of info.selectedMessages.messages) {
-    if (info.menuItemId === "mark-as-spam") {
-      const fullMessage = await messenger.messages.get(message.id);
-      const bodyText = await getPlainTextBody(message.id);
-      await handleSpamMessage(fullMessage, bodyText);
-    } else if (info.menuItemId === "mark-as-not-spam") {
-      await manualMarkAsNotSpam(message.id);
+  for (let message of selectedMessages) {
+    try {
+      if (info.menuItemId === "mark-as-spam") {
+        const fullMessage = await messenger.messages.get(message.id);
+        const bodyText = await getPlainTextBodyForAction(message.id);
+        await handleSpamMessage(fullMessage, bodyText);
+      } else if (info.menuItemId === "mark-as-not-spam") {
+        await manualMarkAsNotSpam(message.id);
+      }
+    } catch (err) {
+      console.error(
+        `[Thunderbird OpenAI Spam Detector] Context-menu action failed for message ${message.id}:`,
+        err
+      );
     }
   }
 });
@@ -217,6 +228,20 @@ async function getPlainTextBody(messageId) {
     bodyText = messageBody.body;
   }
   return stripHtmlTags(bodyText);
+}
+
+async function getPlainTextBodyForAction(messageId) {
+  try {
+    return await getPlainTextBody(messageId);
+  } catch (err) {
+    // Body access is useful for the log snippet, but must not prevent a
+    // manual spam action from moving and recording the selected message.
+    console.warn(
+      `[Thunderbird OpenAI Spam Detector] Could not read message body for ${messageId}; continuing without a snippet:`,
+      err
+    );
+    return "";
+  }
 }
 
 // Prefers the first text/plain part found anywhere in the MIME tree; only
