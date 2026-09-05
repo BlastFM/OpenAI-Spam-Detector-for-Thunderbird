@@ -26,9 +26,12 @@ Options UI & Scope Fixes: Resolved duplicate DOM element ID conflicts and variab
 🔒 Data Backup & Portability
 Full backup and restore controls are provided in the Detected Spam Log panel. A full JSON backup contains synced settings, the API key, spam history, and AI training memory. Separate rules/key backup controls were removed from the Configuration panel to avoid duplicate backup paths. Backup and restore status is shown only after the corresponding download, storage writes, and log refresh complete successfully. Backups remain compatible with the existing plain-text JSON format and warn users before exporting API credentials.
 
+✅ Options Feedback
+The options page now provides clearer progress, validation, success, and error messages for settings, OpenAI connection tests, spam logs, AI training memory, and backup actions. Status and error announcements use accessible live-region behavior for assistive technology.
+
 🔍 Checksum (Integrity Verification)
 Filename: openai-spam-detector-v1.3.4.xpi
-### SHA-256: Verify the checksum published with the GitHub release asset.
+### SHA-256: `DB7DC95DCDED1E95590E8C1D2C905FA6AE323A509A130470FC9761FEBD156B93`
 
 ### Configuration Options
 
@@ -202,6 +205,7 @@ Privacy Note: Transmitted email content includes the sender address, subject lin
 * Message header identifiers are retained to improve restoration matching when Thunderbird changes a message ID during an IMAP move.
 * Backup restore success is reported only after storage writes and log refresh complete; export cleanup is protected against partial DOM cleanup failures.
 * Full backup and restore controls are centralized in the Detected Spam Log panel; duplicate left-pane rules/key controls were removed.
+* Options-page confirmation, progress, validation, and error messages were improved, with accessible live-region announcements for status feedback.
 
 #### Compatibility
 * Existing JSON backup files remain importable.
