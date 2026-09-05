@@ -1,6 +1,6 @@
 # OpenAI Spam Detector for Thunderbird
 
-![Extension Version](https://img.shields.io/badge/version-1.3-blue.svg)
+![Extension Version](https://img.shields.io/badge/version-1.3.4-blue.svg)
 ![Thunderbird](https://img.shields.io/badge/Thunderbird-115.0%2B-58A6FF.svg?logo=thunderbird&logoColor=white)
 ![Manifest Version](https://img.shields.io/badge/manifest-v3-green.svg)
 ![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)
@@ -13,7 +13,7 @@ Release Date: September 5, 2026
 
 Compatibility: Thunderbird 102.0+ (Manifest V3)
 
-This patch release resolves critical UI rendering issues, fixes archive packaging bugs on Windows, and ensures full compatibility with Thunderbird's Manifest V3 WebExtension standard.
+This release resolves critical UI rendering issues, fixes archive packaging bugs on Windows, and hardens spam training, folder routing, and backup/restore completion handling.
 
 🌟 What's Changed
 🐛 Bug Fixes & Stability Improvements
@@ -24,11 +24,11 @@ Manifest V3 Permission Mapping: Updated manifest.json with complete relative ico
 Options UI & Scope Fixes: Resolved duplicate DOM element ID conflicts and variable scoping errors in options.js and options.html.
 
 🔒 Data Backup & Portability
-Verified export and import handling for rules, custom OpenAI API prompts, blacklists, and full training logs (.json format).
+Verified export and import handling for rules, custom OpenAI API prompts, blacklists, and full training logs (.json format). Backup and restore status is shown only after the corresponding download or storage operations complete successfully. Backups remain compatible with the existing plain-text JSON format and continue to warn users before exporting API credentials.
 
 🔍 Checksum (Integrity Verification)
-Filename: openai-spam-detector-v1.3.2.xpi
-### Hash: 7475FE5FB0100505DF3CF1D8B2CCAD57EBABD09802359084298B961F76FD929B
+Filename: openai-spam-detector-v1.3.4.xpi
+### SHA-256: Verify the checksum published with the GitHub release asset.
 
 ### Configuration Options
 
@@ -75,21 +75,21 @@ To maintain UI performance and prevent layout reflows in Thunderbird, storage ba
 
 ## Download & Installation
 
-[![Download Release](https://img.shields.io/badge/Download-v1.3.2_.XPI-blue?style=for-the-badge&logo=thunderbird&logoColor=white)](https://github.com/BlastFM/OpenAI-Spam-Detector-for-Thunderbird/releases/download/v1.3.2/openai-spam-detector-v1.3.2.xpi)
+[![Download Release](https://img.shields.io/badge/Download-v1.3.4_.XPI-blue?style=for-the-badge&logo=thunderbird&logoColor=white)](https://github.com/BlastFM/OpenAI-Spam-Detector-for-Thunderbird/releases/download/v1.3.4/openai-spam-detector-v1.3.4.xpi)
 [![Get Latest Release](https://img.shields.io/github/v/release/BlastFM/OpenAI-Spam-Detector-for-Thunderbird?color=green&label=Latest%20Release&style=for-the-badge)](https://github.com/BlastFM/OpenAI-Spam-Detector-for-Thunderbird/releases/latest)
 
 ### Direct Downloads
 
 | Asset | Description | Download Link |
 | :--- | :--- | :--- |
-| **Extension Binary** | Ready-to-install Thunderbird Add-on | [`openai-spam-detector-v1.3.2.xpi`](https://github.com/YOUR_USERNAME/YOUR_REPO/releases/download/v1.3.2/openai-spam-detector-v1.3.2.xpi) |
-| **Source Code** | Compressed source files (`.zip`) | [`Source code (zip)`](https://github.com/YOUR_USERNAME/YOUR_REPO/archive/refs/tags/v1.3.2.zip) |
+| **Extension Binary** | Ready-to-install Thunderbird Add-on | [`openai-spam-detector-v1.3.4.xpi`](https://github.com/BlastFM/OpenAI-Spam-Detector-for-Thunderbird/releases/download/v1.3.4/openai-spam-detector-v1.3.4.xpi) |
+| **Source Code** | Compressed source files (`.zip`) | [`Source code (zip)`](https://github.com/BlastFM/OpenAI-Spam-Detector-for-Thunderbird/archive/refs/tags/v1.3.4.zip) |
 
 ---
 
 ### How to Install in Thunderbird
 
-1. Click the download button above to save **`openai-spam-detector-v1.3.2.xpi`** to your computer.
+1. Click the download button above to save **`openai-spam-detector-v1.3.4.xpi`** to your computer.
 2. Open Thunderbird and navigate to **Add-ons and Themes** (`Ctrl+Shift+A` or `Cmd+Shift+A`).
 3. Click the gear icon (**Tools for all add-ons**) in the top-right corner.
 4. Select **Install Add-on From File...** and choose the downloaded `.xpi` file.
@@ -185,6 +185,19 @@ Host Permission (https://api.openai.com/*): Required to transmit snippet data to
 Privacy Note: Transmitted email content includes the sender address, subject line, and the first 1,000 characters of the body text. Data is processed according to OpenAI's Data Usage Policies. No data is sent to intermediate third-party servers.
 
 ## Release History
+
+### [v1.3.4] - 2026-09-05
+
+#### Changed
+* Spam and not-spam training actions now update their logs only after Thunderbird confirms the corresponding message move.
+* Failed message moves and folder-resolution failures now surface as errors instead of being reported as successful training actions.
+* The `AI Filtered Spam` folder is searched recursively before creation, and selecting the local destination no longer silently falls back to Trash.
+* Message header identifiers are retained to improve restoration matching when Thunderbird changes a message ID during an IMAP move.
+* Backup restore success is reported only after storage writes and log refresh complete; export cleanup is protected against partial DOM cleanup failures.
+
+#### Compatibility
+* Existing JSON backup files remain importable.
+* Plain-text backup exports remain supported and continue to display a warning because API credentials are included.
 
 ### [v1.3.1] - 2026-09-04
 
