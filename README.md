@@ -33,7 +33,7 @@ The options page now provides clearer progress, validation, success, and error m
 
 🔍 Checksum (Integrity Verification)  
 Filename: openai-spam-detector-v1.3.6.xpi
-### SHA-256: `29BC0C95F312CD0812A1AE01B18CD0FF9583A8ECB7FA080EA4F2B240A56C627A`
+### SHA-256: `3B7E23E7D958B815A85C4A91135249A8874E8680DFDA12ADB09623CDB0B52F34`
 
 ### Configuration Options
 
@@ -64,7 +64,7 @@ To keep AI-detected spam isolated from server-synced folders:
 - **Scrollable Log Views**: Vertical overflow containers prevent layout disruption regardless of log entry volume.
 - **JSON Backup & Restore**: Export and import your storage configuration and logs at any time.
 - **Dynamic Save Status**: The options header shows whether settings are ready to save, have unsaved changes, are being saved, or were saved successfully.
-- **BlastFM Limited Branding**: The options page identifies the publisher and current free availability.
+- **BlastFM Limited Branding**: The options page displays the supplied BlastFM logo, identifies the publisher, and states the current free availability.
 
 ---
 
@@ -124,6 +124,7 @@ ThunderbirdPersonalSpamFilter/
 ├── README.md
 ├── openai-spam-detector-v1.3.6.xpi
 ├── icons/
+│   ├── blastfm-logo.png
 │   ├── icon-48.png
 │   ├── icon.png
 │   ├── not-spam-green.png
@@ -226,6 +227,7 @@ Privacy Note: Transmitted email content includes the sender address, subject lin
 * Distinguished backup actions from destructive actions with blue and orange visual treatments, pill-shaped controls, and action icons.
 * Updated the in-page confirmation dialog to use the same refreshed destructive-action styling.
 * Added BlastFM Limited branding and a clear FREE availability notice to the options-page header.
+* Added the supplied BlastFM logo as a bundled options-page header asset.
 * Replaced the static “Ready to save” label with dynamic `Unsaved changes`, `Saving...`, `Saved`, `Needs attention`, and `Save failed` states.
 * Updated release links, package naming, and documentation references for v1.3.6.
 
