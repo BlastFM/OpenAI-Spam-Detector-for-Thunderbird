@@ -15,7 +15,7 @@ Compatibility: Thunderbird 102.0+ (Manifest V3)
 
 This release resolves critical UI rendering issues, fixes archive packaging bugs on Windows, and hardens spam training, folder routing, backup/restore completion handling, and the settings layout.
 
-🌟 What's Changed
+🌟 What's Changed  
 🐛 Bug Fixes & Stability Improvements
 Archive Path Resolution (/ Normalization): Switched the XPI build process to .NET archive compilation to enforce forward-slash path separators. This resolves the persistent "Page Not Found" errors on the Options page and missing toolbar icons on Windows installations.
 
@@ -23,13 +23,13 @@ Manifest V3 Permission Mapping: Updated manifest.json with complete relative ico
 
 Options UI & Scope Fixes: Resolved duplicate DOM element ID conflicts and variable scoping errors in options.js and options.html.
 
-🔒 Data Backup & Portability
+🔒 Data Backup & Portability  
 Full backup and restore controls are provided in the Detected Spam Log panel. A full JSON backup contains synced settings, the API key, spam history, and AI training memory. Separate rules/key backup controls were removed from the Configuration panel to avoid duplicate backup paths. Backup and restore status is shown only after the corresponding download, storage writes, and log refresh complete successfully. Backups remain compatible with the existing plain-text JSON format and warn users before exporting API credentials.
 
-✅ Options Feedback
+✅ Options Feedback  
 The options page now provides clearer progress, validation, success, and error messages for settings, OpenAI connection tests, spam logs, AI training memory, and backup actions. Status and error announcements use accessible live-region behavior for assistive technology.
 
-🔍 Checksum (Integrity Verification)
+🔍 Checksum (Integrity Verification)  
 Filename: openai-spam-detector-v1.3.4.xpi
 ### SHA-256: `89893C5392F095414BDD6B38E4B38C3F3739404CBAA6D1E33B51D45A5256FAE2`
 
