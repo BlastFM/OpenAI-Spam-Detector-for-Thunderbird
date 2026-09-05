@@ -231,65 +231,10 @@ function populateFormFields(settings, credentials) {
 function setupBackupHandlers() {
   const exportBtn = document.getElementById('exportBackup');
   const importFileInput = document.getElementById('importFileInput');
-  const exportRulesKeyBtn = document.getElementById('exportRulesKey');
-  const importRulesKeyInput = document.getElementById('importRulesKeyInput');
-  const importRulesBtn = document.getElementById('importRulesBtn');
   const importBackupBtn = document.getElementById('importBackupBtn');
-
-  if (importRulesBtn && importRulesKeyInput) {
-    importRulesBtn.addEventListener('click', () => importRulesKeyInput.click());
-  }
 
   if (importBackupBtn && importFileInput) {
     importBackupBtn.addEventListener('click', () => importFileInput.click());
-  }
-
-  if (exportRulesKeyBtn) {
-    exportRulesKeyBtn.addEventListener('click', async () => {
-      const confirmed = confirm(
-        "This file will contain your OpenAI API key in PLAIN TEXT. " +
-        "Anyone who gets a copy of it can use your key. Continue?"
-      );
-      if (!confirmed) return;
-
-      try {
-        const api = typeof messenger !== 'undefined' ? messenger : browser;
-        const syncData = await api.storage.sync.get(null);
-        const { apiKey } = await api.storage.local.get(['apiKey']);
-
-        const rulesBackup = {
-          version: "1.3.3",
-          exportedAt: new Date().toISOString(),
-          type: "rules_and_key",
-          settings: syncData,
-          credentials: { apiKey: apiKey || '' }
-        };
-
-        downloadJson(rulesBackup, `openai_spam_rules_key_${new Date().toISOString().slice(0, 10)}.json`);
-        showStatus("Rules & API key exported successfully!", "success");
-      } catch (err) {
-        showStatus("Export failed: " + err.message, "error");
-      }
-    });
-  }
-
-  if (importRulesKeyInput) {
-    importRulesKeyInput.addEventListener('change', (e) => {
-      handleImportFile(e, async (importedData, api) => {
-        // Back-compat: older backups (pre-1.3.3) put apiKey inside "settings".
-        const settings = importedData.settings || importedData;
-        const credentials = importedData.credentials || { apiKey: settings.apiKey };
-        const { apiKey, ...syncSettings } = settings;
-
-        await api.storage.sync.set(syncSettings);
-        if (credentials.apiKey) {
-          await api.storage.local.set({ apiKey: credentials.apiKey });
-        }
-
-        populateFormFields(syncSettings, credentials);
-        showStatus("Rules & Key imported successfully!", "success");
-      });
-    });
   }
 
   if (exportBtn) {
