@@ -247,8 +247,9 @@ Privacy Note: Transmitted email content includes the sender address, subject lin
 * Fixed special-folder detection (Junk/Trash/Inbox) to check the current `MailFolder.specialUse` array instead of the removed `MailFolder.type` string.
 * Updated local-account detection to accept both the current `"local"` and legacy `"none"` `MailAccount.type` values.
 * Raised the minimum supported Thunderbird version to 128.0, the first release with official Manifest V3 support.
+* Confirmed fix: resolves "Mark as Spam (Train AI)" silently failing to move or log messages on current Thunderbird releases.
 
-### [v1.4.4] - 2026-09-05
+### [v1.4.3] - 2026-09-05
 
 * Fixed a silent failure where "Mark as Spam (Train AI)" appeared to do nothing on profiles without a Local Folders account: the AI Filtered Spam folder now falls back to being created directly under the message's own account instead of only under Local Folders.
 * Context-menu "Mark as Spam" / "Mark as Not Spam" failures now show a system notification instead of only logging to the Error Console, so a failed move is no longer invisible to the user.
