@@ -353,7 +353,9 @@ async function handleSpamMessage(messageHeader, fullBody) {
       destinationFolder = findFolderByType(account.folders, 'trash');
     }
 
-    if (destinationFolder) {
+    if (destinationFolder && destinationFolder.id === messageHeader.folder.id) {
+      console.log("[Thunderbird OpenAI Spam Detector] Message is already in the configured spam folder.");
+    } else if (destinationFolder) {
       await moveMessageTracked(messageHeader.id, destinationFolder);
     } else {
       throw new Error("No destination folder was found for the spam action.");
