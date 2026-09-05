@@ -17,14 +17,22 @@
           <p class="subtitle">AI-powered email filtering & custom training</p>
         </div>
       </div>
+      <div class="header-status" aria-label="Settings status">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span>Ready to save</span>
+      </div>
     </header>
 
     <!-- Main Grid Layout -->
     <main class="app-main">
       
       <!-- Left Panel: Configuration -->
-      <section class="card">
-        <h2>Configuration</h2>
+      <section class="card configuration-card">
+        <div class="section-heading">
+          <span class="section-kicker">SETTINGS</span>
+          <h2>Configuration</h2>
+          <p>Connect your account and define how messages should be handled.</p>
+        </div>
         
         <div class="form-group">
           <label for="apiKey">OpenAI API Key</label>
@@ -74,21 +82,25 @@
           <span class="field-hint">Add specific rules for the AI to follow during analysis. Drag the lower edge to expand the field.</span>
         </div>
 
-        <div class="form-actions" style="margin-top: 16px;">
+        <div class="form-actions">
           <span id="status" class="status-badge hidden" role="status" aria-live="polite"></span>
-          <button type="button" id="save" class="btn btn-green">Save Settings</button>
+          <button type="button" id="save" class="btn btn-green btn-pill"><span class="btn-icon" aria-hidden="true">✓</span>Save Settings</button>
         </div>
       </section>
 
       <!-- Right Panel: Logs & AI Memory -->
-      <section class="card">
+      <section class="card activity-card">
         <div class="logs-header">
-          <h2>Detected Spam Log</h2>
+          <div class="section-heading compact">
+            <span class="section-kicker">ACTIVITY</span>
+            <h2>Detected Spam Log</h2>
+            <p>Review messages moved by the filter and manage your data.</p>
+          </div>
           <div class="header-actions">
-            <button type="button" id="exportBackup" class="btn btn-sm btn-green-outline">Export Full Backup</button>
-            <button type="button" id="importBackupBtn" class="btn btn-sm btn-green-outline">Import Full Backup</button>
+            <button type="button" id="exportBackup" class="btn btn-sm btn-blue"><span class="btn-icon" aria-hidden="true">↓</span>Export backup</button>
+            <button type="button" id="importBackupBtn" class="btn btn-sm btn-blue-outline"><span class="btn-icon" aria-hidden="true">↑</span>Import backup</button>
             <input type="file" id="importFileInput" accept=".json" class="hidden">
-            <button type="button" id="clearSpamLog" class="btn btn-sm btn-orange-outline">Clear Log</button>
+            <button type="button" id="clearSpamLog" class="btn btn-sm btn-orange-outline"><span class="btn-icon" aria-hidden="true">×</span>Clear log</button>
           </div>
         </div>
 
@@ -99,8 +111,11 @@
         <hr class="divider">
 
         <div class="logs-header">
-          <h2>Active AI Training Memory (Not Spam)</h2>
-          <button type="button" id="clearFPLog" class="btn btn-sm btn-orange-outline">Clear Memory</button>
+          <div class="section-heading compact">
+            <span class="section-kicker">LEARNING</span>
+            <h2>Active AI Training Memory (Not Spam)</h2>
+          </div>
+          <button type="button" id="clearFPLog" class="btn btn-sm btn-orange-outline"><span class="btn-icon" aria-hidden="true">×</span>Clear memory</button>
         </div>
 
         <div id="falsePositivesContainer" class="log-container">

@@ -1,6 +1,6 @@
 # OpenAI Spam Detector for Thunderbird
 
-![Extension Version](https://img.shields.io/badge/version-1.3.4-blue.svg)
+![Extension Version](https://img.shields.io/badge/version-1.3.5-blue.svg)
 ![Thunderbird](https://img.shields.io/badge/Thunderbird-115.0%2B-58A6FF.svg?logo=thunderbird&logoColor=white)
 ![Manifest Version](https://img.shields.io/badge/manifest-v3-green.svg)
 ![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)
@@ -13,7 +13,7 @@ Release Date: September 5, 2026
 
 Compatibility: Thunderbird 102.0+ (Manifest V3)
 
-This release resolves critical UI rendering issues, fixes archive packaging bugs on Windows, and hardens spam training, folder routing, backup/restore completion handling, and the settings layout.
+This release adds a redesigned options interface with clearer action grouping, stronger status cues, and more distinct backup and destructive controls. It also includes the reliability and packaging fixes from v1.3.4.
 
 🌟 What's Changed  
 🐛 Bug Fixes & Stability Improvements
@@ -30,8 +30,8 @@ Full backup and restore controls are provided in the Detected Spam Log panel. A 
 The options page now provides clearer progress, validation, success, and error messages for settings, OpenAI connection tests, spam logs, AI training memory, and backup actions. Status and error announcements use accessible live-region behavior for assistive technology.
 
 🔍 Checksum (Integrity Verification)  
-Filename: openai-spam-detector-v1.3.4.xpi
-### SHA-256: `89893C5392F095414BDD6B38E4B38C3F3739404CBAA6D1E33B51D45A5256FAE2`
+Filename: openai-spam-detector-v1.3.5.xpi
+### SHA-256: `37DE9B683C8682178AB51F8C986E2F494DC45F448A782FFEF242BE260A6EECAE`
 
 ### Configuration Options
 
@@ -84,22 +84,22 @@ Restore success is reported only after storage writes and the log refresh comple
 
 Install [Mozilla Thunderbird](https://www.thunderbird.net/) first, then install the OpenAI Spam Detector extension from the release asset below.
 
-[![Download Release](https://img.shields.io/badge/Download-v1.3.4_.XPI-blue?style=for-the-badge&logo=thunderbird&logoColor=white)](https://github.com/BlastFM/ThunderbirdPersonalSpamFilter/releases/download/v1.3.4/openai-spam-detector-v1.3.4.xpi)
+[![Download Release](https://img.shields.io/badge/Download-v1.3.5_.XPI-blue?style=for-the-badge&logo=thunderbird&logoColor=white)](https://github.com/BlastFM/ThunderbirdPersonalSpamFilter/releases/download/v1.3.5/openai-spam-detector-v1.3.5.xpi)
 [![Get Latest Release](https://img.shields.io/github/v/release/BlastFM/ThunderbirdPersonalSpamFilter?color=green&label=Latest%20Release&style=for-the-badge)](https://github.com/BlastFM/ThunderbirdPersonalSpamFilter/releases/latest)
 
 ### Direct Downloads
 
 | Asset | Description | Download Link |
 | :--- | :--- | :--- |
-| **Extension Binary** | Ready-to-install Thunderbird Add-on | [`openai-spam-detector-v1.3.4.xpi`](https://github.com/BlastFM/ThunderbirdPersonalSpamFilter/releases/download/v1.3.4/openai-spam-detector-v1.3.4.xpi) |
-| **Source Code** | Compressed source files (`.zip`) | [`Source code (zip)`](https://github.com/BlastFM/ThunderbirdPersonalSpamFilter/archive/refs/tags/v1.3.4.zip) |
+| **Extension Binary** | Ready-to-install Thunderbird Add-on | [`openai-spam-detector-v1.3.5.xpi`](https://github.com/BlastFM/ThunderbirdPersonalSpamFilter/releases/download/v1.3.5/openai-spam-detector-v1.3.5.xpi) |
+| **Source Code** | Compressed source files (`.zip`) | [`Source code (zip)`](https://github.com/BlastFM/ThunderbirdPersonalSpamFilter/archive/refs/tags/v1.3.5.zip) |
 
 ---
 
 ### How to Install in Thunderbird
 
 1. Download and install [Mozilla Thunderbird](https://www.thunderbird.net/) if it is not already installed.
-2. Click the extension download button above to save **`openai-spam-detector-v1.3.4.xpi`**.
+2. Click the extension download button above to save **`openai-spam-detector-v1.3.5.xpi`**.
 3. Open Thunderbird and navigate to **Add-ons and Themes** (`Ctrl+Shift+A` or `Cmd+Shift+A`).
 4. Click the gear icon (**Tools for all add-ons**) in the top-right corner.
 5. Select **Install Add-on From File...** and choose the downloaded `.xpi` file.
@@ -118,7 +118,7 @@ ThunderbirdPersonalSpamFilter/
 ├── manifest.json
 ├── background.js
 ├── README.md
-├── openai-spam-detector-v1.3.4.xpi
+├── openai-spam-detector-v1.3.5.xpi
 ├── icons/
 │   ├── icon-48.png
 │   ├── icon.png
@@ -214,6 +214,17 @@ Host Permission (https://api.openai.com/*): Required to transmit snippet data to
 Privacy Note: Transmitted email content includes the sender address, subject line, and up to the first 1,500 characters of the body text. Data is processed according to OpenAI's Data Usage Policies. No data is sent to intermediate third-party servers.
 
 ## Release History
+
+### [v1.3.5] - 2026-09-05
+
+#### Changed
+* Redesigned the options page with a dark teal header, status indicator, purpose-based sections, and stronger visual hierarchy.
+* Grouped backup and destructive actions separately, using pill-shaped controls, icons, and distinct blue/orange action states.
+* Added responsive behavior so the redesigned controls stack cleanly on narrow options windows.
+* Updated the confirmation dialog styling to match the redesigned destructive-action controls.
+
+#### Compatibility
+* Existing settings, logs, training memory, and plaintext JSON backups remain compatible.
 
 ### [v1.3.4] - 2026-09-05
 
