@@ -35,7 +35,7 @@ The options page now provides clearer progress, validation, success, and error m
 
 🔍 Checksum (Integrity Verification)  
 Filename: openai-spam-detector-v1.4.4.xpi
-### SHA-256: `53097EAA50D64BF41C5961A06F69ED1CB574D3ECCA54F37D67D78FB3623E35DB`
+### SHA-256: `D1F0AC09D99C1527C209525230A7F9013B8125BEFE64103EF3A47C577C778934`
 
 ### Configuration Options
 
@@ -251,7 +251,7 @@ Privacy Note: Transmitted email content includes the sender address, subject lin
 * Raised the minimum supported Thunderbird version to 128.0, the first release with official Manifest V3 support.
 * Confirmed fix: resolves "Mark as Spam (Train AI)" silently failing to move or log messages on current Thunderbird releases, and automatic new-message scanning/routing (including for mail arriving in the Junk folder).
 * Aligned the "Mark as Not Spam" button in the Detected Spam Log to the right, matching the "Remove" button position in AI Training Memory.
-* Restyled the "Active Training Prompt" badge to match the "Latest" pill (rounded outline, status dot, matching padding/typography).
+* Restyled the "Active Training Prompt" badge to match the "Latest" pill (rounded outline, green status dot, matching padding/typography).
 * Changed badge text casing from all-caps to title case (e.g. "Latest" instead of "LATEST").
 
 ### [v1.4.3] - 2026-09-05
