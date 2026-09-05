@@ -9,7 +9,35 @@ An AI-powered spam detection and training extension for Mozilla Thunderbird. **O
 
 ---
 
-<<<<<<< HEAD
+Release Date: September 5, 2026
+
+Compatibility: Thunderbird 102.0+ (Manifest V3)
+
+This patch release resolves critical UI rendering issues, fixes archive packaging bugs on Windows, and ensures full compatibility with Thunderbird's Manifest V3 WebExtension standard.
+
+🌟 What's Changed
+🐛 Bug Fixes & Stability Improvements
+Archive Path Resolution (/ Normalization): Switched the XPI build process to .NET archive compilation to enforce forward-slash path separators. This resolves the persistent "Page Not Found" errors on the Options page and missing toolbar icons on Windows installations.
+
+Manifest V3 Permission Mapping: Updated manifest.json with complete relative icon sizing declarations across icons and action.default_icon, alongside updated permissions (accountsRead, accountsFolders, messagesRead, messagesMove, storage, downloads, tabs, menus).
+
+Options UI & Scope Fixes: Resolved duplicate DOM element ID conflicts and variable scoping errors in options.js and options.html.
+
+🔒 Data Backup & Portability
+Verified export and import handling for rules, custom OpenAI API prompts, blacklists, and full training logs (.json format).
+
+📦 Installation
+Download openai-spam-detector-v1.3.2.xpi from the Assets section below.
+
+Open Thunderbird and press Ctrl + Shift + A to open Add-ons and Themes.
+
+Click the gear icon at the top right and select Install Add-on From File...
+
+Select openai-spam-detector-v1.3.2.xpi and click Add.
+
+🔍 Checksum (Integrity Verification)
+Filename: openai-spam-detector-v1.3.2.xpi
+
 ## 🚀 v1.2.0 — Fixed Log Scrolling & Zero-UI Storage Backup
 This release stabilizes the two-column options layout, locks the vertical scrolling behavior for both log containers to prevent display reflows, and provides native keyboard shortcuts for log backup and restoration.🚀 New FeaturesZero-UI JSON Backup & Restore: Added shortcut handlers (Ctrl/Cmd + Shift + E for export, Ctrl/Cmd + Shift + I for import) to backup and restore storage data safely without DOM modifications.
 
