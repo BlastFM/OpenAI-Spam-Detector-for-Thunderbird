@@ -30,7 +30,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   // 4. Attach Backup & Restore handlers
   setupBackupHandlers();
   setupDynamicSaveStatus();
+  renderFooterVersion(api);
 });
+
+// Reads the installed version straight from the manifest so the footer
+// never drifts out of sync with an actual release.
+function renderFooterVersion(api) {
+  const footerText = document.getElementById('footerVersionText');
+  if (!footerText) return;
+
+  const version = api.runtime.getManifest().version;
+  footerText.innerHTML = `OpenAI Spam Detector ${escapeHtml(version)} is offered FREE by <strong>BlastFM Limited</strong>.`;
+}
 
 function setupDynamicSaveStatus() {
   const fields = ['apiKey', 'model', 'targetFolder', 'whitelist', 'blacklist', 'customPrompt'];
